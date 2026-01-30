@@ -176,7 +176,7 @@ pnpm install
 pnpm build
 pnpm ui:build
 
-# 3. 运行诊断（配置 API 密钥等）
+# 3. 运行诊断
 pnpm openclaw doctor
 
 # 4. 设置 Gateway 模式（首次必需，否则网关无法启动）
@@ -185,20 +185,111 @@ pnpm openclaw config set gateway.mode local
 # 5. 设置 Gateway Token（Dashboard 访问认证必需）
 pnpm openclaw config set gateway.auth.token "$(openssl rand -hex 16)"
 
-# 6. 安装并启动 Gateway 服务
+# 6. 配置 AI 模型（二选一）
+#    方式 A：交互式向导（推荐）
+pnpm openclaw onboard
+
+#    方式 B：直接设置 API 密钥
+pnpm openclaw config set env.ANTHROPIC_API_KEY "sk-ant-..."
+pnpm openclaw config set agents.defaults.model.primary "anthropic/claude-sonnet-4-5"
+
+# 7. 安装并启动 Gateway 服务
 pnpm openclaw gateway install --force
 
-# 7. 验证
+# 8. 验证
 pnpm openclaw health
 pnpm openclaw channels status --probe
+pnpm openclaw models status  # 检查 AI 模型配置
 
-# 8. 获取带 Token 的 Dashboard URL
+# 9. 获取带 Token 的 Dashboard URL
 pnpm openclaw dashboard --no-open
 ```
 
 > **重要**：
 > - `gateway.mode` 必须在安装服务前设置，否则网关会报 "Missing config" 错误。`local` 表示网关在本机运行，只监听 loopback 地址。
 > - `gateway.auth.token` 必须设置，否则 Dashboard 会显示 "unauthorized: gateway token missing" 错误。设置后用 `openclaw dashboard --no-open` 获取带 `?token=...` 参数的URL。
+> - **AI 模型配置**是必需的，否则无法与 AI 对话。推荐使用 `openclaw onboard` 向导交互式配置。
+
+### 4.2.1 AI 模型与 Agent 配置
+
+AI 模型和 Agent 配置是 OpenClaw 的核心，详细内容请参考独立文档：
+
+📄 **[AI 模型与 Agent 配置指南](./model-agent-config-guide.md)**
+
+该文档包含：
+- **支持的 AI 提供商**：20+ 个内置和自定义提供商（Anthropic、OpenAI、Google、Moonshot 等）
+- **认证方式**：API Key vs 订阅认证（Claude/ChatGPT/Google/Qwen 订阅）
+- **常用配置示例**：各提供商的详细配置命令
+- **Agent 概念**：单 Agent 与多 Agent 配置
+- **场景推荐**：根据需求选择最佳配置
+
+**快速开始**（交互式向导）：
+
+```bash
+pnpm openclaw onboard
+```
+
+**常用命令**：
+
+```bash
+# 查看可用模型
+pnpm openclaw models list --all
+
+# 检查模型状态
+pnpm openclaw models status
+
+# 查看 Agent 列表
+pnpm openclaw agents list
+```
+
+**场景速查**：
+
+| 使用场景 | 推荐配置 |
+|----------|----------|
+| 最强能力 | `anthropic/claude-opus-4-5` |
+| 性价比 | `anthropic/claude-sonnet-4-5` |
+| 免费试用 | OpenRouter free tier |
+| 本地运行 | `ollama/llama3.3` |
+| 中国访问 | `moonshot/kimi-k2.5` |
+
+> 详细配置请查看 [model-agent-config-guide.md](./model-agent-config-guide.md)
+
+### 4.2.2 消息渠道配置
+
+配置好 AI 模型后，下一步是连接消息渠道（WhatsApp、Telegram 等）。详细内容请参考独立文档：
+
+📄 **[消息渠道部署指南](./channel-deployment-guide.md)**
+
+该文档包含：
+- **渠道概览**：支持的渠道对比（Telegram、WhatsApp、Discord、Signal 等）
+- **详细部署步骤**：每个渠道的配置和登录流程
+- **DM 策略**：pairing、allowlist、open 模式说明
+- **群组配置**：群组策略和 @提及设置
+- **故障排除**：常见问题和解决方案
+
+**快速开始**（推荐 Telegram）：
+
+```bash
+# 1. 设置 Bot Token（从 @BotFather 获取）
+pnpm openclaw config set channels.telegram.botToken "你的token"
+pnpm openclaw config set channels.telegram.enabled true
+
+# 2. 重启 Gateway
+pnpm openclaw gateway restart
+
+# 3. 检查状态
+pnpm openclaw channels status
+```
+
+**渠道推荐**：
+
+| 渠道 | 难度 | 说明 |
+|------|------|------|
+| Telegram | ⭐ 最简单 | 只需 BotFather token |
+| WhatsApp | ⭐⭐ 中等 | 需要扫码 + 真实手机号 |
+| Discord | ⭐⭐ 中等 | 需要创建应用 |
+
+> 详细配置请查看 [channel-deployment-guide.md](./channel-deployment-guide.md)
 
 ### 4.3 后续更新流程
 
@@ -218,9 +309,12 @@ pnpm openclaw gateway restart
 
 # 4. 验证
 pnpm openclaw health
+pnpm openclaw models status  # 确认 AI 模型仍然可用
 ```
 
-> **注意**：`gateway restart` 只能重启已安装的服务。如果提示服务未加载，需要先运行 `gateway install --force`。
+> **注意**：
+> - `gateway restart` 只能重启已安装的服务。如果提示服务未加载，需要先运行 `gateway install --force`。
+> - 如果 AI 认证过期（OAuth token），需要重新运行 `openclaw onboard` 或刷新 setup-token。
 
 ### 4.4 前台运行模式（开发/调试）
 
@@ -606,8 +700,17 @@ fi
 
 ### 9.3 相关文档
 
+**本系列文档：**
+
+- [AI 模型与 Agent 配置指南](./model-agent-config-guide.md)
+- [消息渠道部署指南](./channel-deployment-guide.md)
+- [openclaw doctor 诊断指南](./openclaw-doctor-guide.md)
+
+**官方文档：**
+
 - 更新指南：https://docs.openclaw.ai/install/updating
 - Gateway 配置：https://docs.openclaw.ai/gateway/configuration
+- 消息渠道：https://docs.openclaw.ai/channels
 - 插件开发：https://docs.openclaw.ai/extensions
 - 故障排除：https://docs.openclaw.ai/gateway/troubleshooting
 
