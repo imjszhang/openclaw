@@ -161,7 +161,9 @@ git cherry-pick <commit-hash>
 
 **推荐使用源码安装**，因为需要定制。
 
-### 4.2 部署流程
+### 4.2 首次部署流程
+
+首次部署需要安装 Gateway 服务：
 
 ```bash
 # 1. 拉取生产分支
@@ -174,91 +176,101 @@ pnpm install
 pnpm build
 pnpm ui:build
 
-# 3. 运行诊断
+# 3. 运行诊断（配置 API 密钥等）
 pnpm openclaw doctor
 
-# 4. 启动/重启 Gateway
-pnpm openclaw gateway restart
+# 4. 设置 Gateway 模式（首次必需，否则网关无法启动）
+pnpm openclaw config set gateway.mode local
 
-# 5. 验证
+# 5. 设置 Gateway Token（Dashboard 访问认证必需）
+pnpm openclaw config set gateway.auth.token "$(openssl rand -hex 16)"
+
+# 6. 安装并启动 Gateway 服务
+pnpm openclaw gateway install --force
+
+# 7. 验证
 pnpm openclaw health
 pnpm openclaw channels status --probe
+
+# 8. 获取带 Token 的 Dashboard URL
+pnpm openclaw dashboard --no-open
 ```
 
-### 4.3 部署脚本示例
+> **重要**：
+> - `gateway.mode` 必须在安装服务前设置，否则网关会报 "Missing config" 错误。`local` 表示网关在本机运行，只监听 loopback 地址。
+> - `gateway.auth.token` 必须设置，否则 Dashboard 会显示 "unauthorized: gateway token missing" 错误。设置后用 `openclaw dashboard --no-open` 获取带 `?token=...` 参数的URL。
 
-创建部署脚本 `scripts/deploy.sh`：
+### 4.3 后续更新流程
+
+服务已安装后，更新代码只需重启：
 
 ```bash
-#!/bin/bash
-set -e
-
-echo "=== OpenClaw 生产部署 ==="
-
-# 切换到项目目录
-cd "$(dirname "$0")/.."
-
-# 拉取最新代码
-echo ">>> 拉取 production 分支..."
+# 1. 拉取最新代码
 git checkout production
 git pull origin production
 
-# 安装依赖
-echo ">>> 安装依赖..."
+# 2. 重新构建
 pnpm install
-
-# 构建
-echo ">>> 构建项目..."
 pnpm build
-pnpm ui:build
 
-# 诊断
-echo ">>> 运行诊断..."
-pnpm openclaw doctor --non-interactive
-
-# 重启 Gateway
-echo ">>> 重启 Gateway..."
+# 3. 重启 Gateway（服务已安装时可用）
 pnpm openclaw gateway restart
 
-# 等待启动
-sleep 3
-
-# 验证
-echo ">>> 验证服务状态..."
+# 4. 验证
 pnpm openclaw health
-
-echo "=== 部署完成 ==="
 ```
 
-### 4.4 macOS 特定配置
+> **注意**：`gateway restart` 只能重启已安装的服务。如果提示服务未加载，需要先运行 `gateway install --force`。
 
-如果在 macOS 上部署：
+### 4.4 前台运行模式（开发/调试）
+
+如果不想安装系统服务，可以直接前台运行：
 
 ```bash
-# Gateway 通过 macOS 菜单栏应用运行
-# 重启方式：
-./scripts/restart-mac.sh
+# 首先确保配置已设置（或使用 --allow-unconfigured 跳过检查）
+pnpm openclaw config set gateway.mode local
 
-# 或者通过 launchctl
-launchctl kickstart -k gui/$UID/bot.molt.gateway
+# 前台运行（Ctrl+C 停止）
+pnpm openclaw gateway run --bind loopback --port 18789
+
+# 或者后台运行
+nohup pnpm openclaw gateway run --bind loopback --port 18789 > /tmp/openclaw-gateway.log 2>&1 &
+
+# 快速临时运行（跳过配置检查，仅用于测试）
+pnpm openclaw gateway run --bind loopback --port 18789 --allow-unconfigured
+```
+
+这种方式适合：
+- 开发调试
+- 临时测试
+- 不需要开机自启动的场景
+
+### 4.5 系统服务管理
+
+Gateway 支持作为系统服务运行（Linux systemd / macOS launchd / Windows schtasks）：
+
+```bash
+# 服务管理命令（跨平台通用）
+pnpm openclaw gateway install --force  # 安装服务
+pnpm openclaw gateway restart          # 重启服务
+pnpm openclaw gateway stop             # 停止服务
+pnpm openclaw gateway status           # 查看状态
+pnpm openclaw gateway uninstall        # 卸载服务
 
 # 查看日志
-./scripts/clawlog.sh --follow
+tail -f ~/.openclaw/logs/gateway.log
 ```
 
-### 4.5 Linux 特定配置
+**Linux systemd 额外命令**：
 
 ```bash
-# 安装 systemd 服务
-pnpm openclaw gateway install
-
-# 管理服务
+# 使用 systemctl 管理
 systemctl --user start openclaw-gateway
 systemctl --user stop openclaw-gateway
 systemctl --user restart openclaw-gateway
 systemctl --user status openclaw-gateway
 
-# 查看日志
+# 查看 systemd 日志
 journalctl --user -u openclaw-gateway -f
 ```
 
