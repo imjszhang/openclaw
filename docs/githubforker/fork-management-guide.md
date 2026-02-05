@@ -11,6 +11,7 @@
 2. [Git 工作流策略](#2-git-工作流策略)
 3. [上游同步工作流](#3-上游同步工作流)
 4. [生产环境部署](#4-生产环境部署)
+   - [4.4.1 开发模式命令别名配置](#441-开发模式命令别名配置)
 5. [定制化最佳实践](#5-定制化最佳实践)
 6. [稳定性保障措施](#6-稳定性保障措施)
 7. [升级策略选择](#7-升级策略选择)
@@ -23,11 +24,11 @@
 
 ### 1.1 核心矛盾
 
-| 需求 | 挑战 |
-|------|------|
-| **官方更新频繁** | OpenClaw 处于 pre-1.0 阶段，迭代快速 |
-| **个人定制需求** | 需要保持自己的修改不被上游覆盖 |
-| **生产环境稳定性** | 需要可靠运行，不能频繁出问题 |
+| 需求               | 挑战                                 |
+| ------------------ | ------------------------------------ |
+| **官方更新频繁**   | OpenClaw 处于 pre-1.0 阶段，迭代快速 |
+| **个人定制需求**   | 需要保持自己的修改不被上游覆盖       |
+| **生产环境稳定性** | 需要可靠运行，不能频繁出问题         |
 
 ### 1.2 解决思路
 
@@ -60,11 +61,11 @@
 
 ### 2.2 分支职责
 
-| 分支 | 用途 | 更新策略 |
-|------|------|----------|
-| `main` | 与上游保持同步 | `git fetch upstream && git merge upstream/main` |
-| `production` | 生产部署分支 | 从 main rebase/cherry-pick + 定制提交 |
-| `feature/*` | 定制功能开发 | 完成后合并到 production |
+| 分支         | 用途           | 更新策略                                        |
+| ------------ | -------------- | ----------------------------------------------- |
+| `main`       | 与上游保持同步 | `git fetch upstream && git merge upstream/main` |
+| `production` | 生产部署分支   | 从 main rebase/cherry-pick + 定制提交           |
+| `feature/*`  | 定制功能开发   | 完成后合并到 production                         |
 
 ### 2.3 初始化设置
 
@@ -138,12 +139,12 @@ git cherry-pick <commit-hash>
 
 冲突通常发生在以下文件：
 
-| 文件类型 | 处理建议 |
-|----------|----------|
-| `package.json` | 保留上游依赖版本，合并你的定制依赖 |
-| `tsconfig.json` | 通常保留上游配置 |
-| 核心源码文件 | 仔细对比，保留你的 `// CUSTOM` 标记代码 |
-| 配置示例文件 | 可以直接接受上游版本 |
+| 文件类型        | 处理建议                                |
+| --------------- | --------------------------------------- |
+| `package.json`  | 保留上游依赖版本，合并你的定制依赖      |
+| `tsconfig.json` | 通常保留上游配置                        |
+| 核心源码文件    | 仔细对比，保留你的 `// CUSTOM` 标记代码 |
+| 配置示例文件    | 可以直接接受上游版本                    |
 
 ---
 
@@ -153,11 +154,11 @@ git cherry-pick <commit-hash>
 
 ### 4.1 安装方式选择
 
-| 方式 | 优点 | 缺点 | 推荐场景 |
-|------|------|------|----------|
-| **源码安装 (git)** | 完全可控，易于定制 | 需要编译 | ✅ Fork 定制场景 |
-| npm 全局安装 | 简单，自动更新 | 无法定制 | 普通用户 |
-| Docker | 隔离环境 | 资源开销大 | 服务器部署 |
+| 方式               | 优点               | 缺点       | 推荐场景         |
+| ------------------ | ------------------ | ---------- | ---------------- |
+| **源码安装 (git)** | 完全可控，易于定制 | 需要编译   | ✅ Fork 定制场景 |
+| npm 全局安装       | 简单，自动更新     | 无法定制   | 普通用户         |
+| Docker             | 隔离环境           | 资源开销大 | 服务器部署       |
 
 **推荐使用源码安装**，因为需要定制。
 
@@ -206,6 +207,7 @@ pnpm openclaw dashboard --no-open
 ```
 
 > **重要**：
+>
 > - `gateway.mode` 必须在安装服务前设置，否则网关会报 "Missing config" 错误。`local` 表示网关在本机运行，只监听 loopback 地址。
 > - `gateway.auth.token` 必须设置，否则 Dashboard 会显示 "unauthorized: gateway token missing" 错误。设置后用 `openclaw dashboard --no-open` 获取带 `?token=...` 参数的URL。
 > - **AI 模型配置**是必需的，否则无法与 AI 对话。推荐使用 `openclaw onboard` 向导交互式配置。
@@ -217,6 +219,7 @@ AI 模型和 Agent 配置是 OpenClaw 的核心，详细内容请参考独立文
 📄 **[AI 模型与 Agent 配置指南](./model-agent-config-guide.md)**
 
 该文档包含：
+
 - **支持的 AI 提供商**：20+ 个内置和自定义提供商（Anthropic、OpenAI、Google、Moonshot 等）
 - **认证方式**：API Key vs 订阅认证（Claude/ChatGPT/Google/Qwen 订阅）
 - **常用配置示例**：各提供商的详细配置命令
@@ -244,13 +247,13 @@ pnpm openclaw agents list
 
 **场景速查**：
 
-| 使用场景 | 推荐配置 |
-|----------|----------|
-| 最强能力 | `anthropic/claude-opus-4-5` |
-| 性价比 | `anthropic/claude-sonnet-4-5` |
-| 免费试用 | OpenRouter free tier |
-| 本地运行 | `ollama/llama3.3` |
-| 中国访问 | `moonshot/kimi-k2.5` |
+| 使用场景 | 推荐配置                      |
+| -------- | ----------------------------- |
+| 最强能力 | `anthropic/claude-opus-4-5`   |
+| 性价比   | `anthropic/claude-sonnet-4-5` |
+| 免费试用 | OpenRouter free tier          |
+| 本地运行 | `ollama/llama3.3`             |
+| 中国访问 | `moonshot/kimi-k2.5`          |
 
 > 详细配置请查看 [model-agent-config-guide.md](./model-agent-config-guide.md)
 
@@ -261,6 +264,7 @@ pnpm openclaw agents list
 📄 **[消息渠道部署指南](./channel-deployment-guide.md)**
 
 该文档包含：
+
 - **渠道概览**：支持的渠道对比（Telegram、WhatsApp、Discord、Signal 等）
 - **详细部署步骤**：每个渠道的配置和登录流程
 - **DM 策略**：pairing、allowlist、open 模式说明
@@ -283,11 +287,11 @@ pnpm openclaw channels status
 
 **渠道推荐**：
 
-| 渠道 | 难度 | 说明 |
-|------|------|------|
-| Telegram | ⭐ 最简单 | 只需 BotFather token |
+| 渠道     | 难度      | 说明                  |
+| -------- | --------- | --------------------- |
+| Telegram | ⭐ 最简单 | 只需 BotFather token  |
 | WhatsApp | ⭐⭐ 中等 | 需要扫码 + 真实手机号 |
-| Discord | ⭐⭐ 中等 | 需要创建应用 |
+| Discord  | ⭐⭐ 中等 | 需要创建应用          |
 
 > 详细配置请查看 [channel-deployment-guide.md](./channel-deployment-guide.md)
 
@@ -313,6 +317,7 @@ pnpm openclaw models status  # 确认 AI 模型仍然可用
 ```
 
 > **注意**：
+>
 > - `gateway restart` 只能重启已安装的服务。如果提示服务未加载，需要先运行 `gateway install --force`。
 > - 如果 AI 认证过期（OAuth token），需要重新运行 `openclaw onboard` 或刷新 setup-token。
 
@@ -335,9 +340,86 @@ pnpm openclaw gateway run --bind loopback --port 18789 --allow-unconfigured
 ```
 
 这种方式适合：
+
 - 开发调试
 - 临时测试
 - 不需要开机自启动的场景
+
+### 4.4.1 开发模式命令别名配置
+
+在开发模式下，每次输入 `pnpm openclaw ...` 比较繁琐。可以配置命令别名，直接使用 `openclaw` 命令。
+
+#### macOS / Linux (Zsh)
+
+```bash
+# 添加到 ~/.zshrc
+echo 'alias openclaw="pnpm --dir /path/to/your/openclaw openclaw"' >> ~/.zshrc
+
+# 生效
+source ~/.zshrc
+
+# 验证
+openclaw --version
+```
+
+#### macOS / Linux (Bash)
+
+```bash
+# 添加到 ~/.bashrc
+echo 'alias openclaw="pnpm --dir /path/to/your/openclaw openclaw"' >> ~/.bashrc
+
+# 生效
+source ~/.bashrc
+```
+
+#### Windows PowerShell
+
+```powershell
+# 查看 PowerShell 配置文件路径
+echo $PROFILE
+
+# 创建配置文件（如果不存在）
+if (!(Test-Path -Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force }
+
+# 添加函数别名
+Add-Content -Path $PROFILE -Value @'
+function openclaw {
+    pnpm --dir "C:\path\to\your\openclaw" openclaw $args
+}
+'@
+
+# 重新加载配置
+. $PROFILE
+```
+
+#### Windows CMD
+
+CMD 不支持持久化别名，但可以使用以下方法：
+
+**方法 1：创建批处理文件**
+
+```batch
+:: 创建 openclaw.bat 并放入 PATH 目录（如 C:\Windows 或自定义目录）
+@echo off
+pnpm --dir "C:\path\to\your\openclaw" openclaw %*
+```
+
+**方法 2：使用 doskey（仅当前会话有效）**
+
+```batch
+doskey openclaw=pnpm --dir "C:\path\to\your\openclaw" openclaw $*
+```
+
+#### 配置对比
+
+| 系统               | 方式      | 持久化 | 配置文件                  |
+| ------------------ | --------- | ------ | ------------------------- |
+| macOS/Linux        | alias     | ✅     | `~/.zshrc` 或 `~/.bashrc` |
+| Windows PowerShell | function  | ✅     | `$PROFILE`                |
+| Windows CMD        | .bat 文件 | ✅     | PATH 中的 .bat 文件       |
+| Windows CMD        | doskey    | ❌     | 仅当前会话                |
+
+> **提示**：配置完成后，可以直接使用 `openclaw channels status --probe` 等命令，无需再加 `pnpm` 前缀。
 
 ### 4.5 系统服务管理
 
@@ -387,14 +469,14 @@ journalctl --user -u openclaw-gateway -f
 
 **工作区可定制文件**：
 
-| 文件 | 用途 |
-|------|------|
-| `AGENTS.md` | 操作指令 + "记忆" |
-| `SOUL.md` | 人格、边界、语气 |
-| `TOOLS.md` | 工具使用说明 |
-| `BOOTSTRAP.md` | 首次运行仪式（完成后删除）|
-| `IDENTITY.md` | 代理名称/风格/表情符号 |
-| `USER.md` | 用户档案 + 偏好称呼 |
+| 文件           | 用途                       |
+| -------------- | -------------------------- |
+| `AGENTS.md`    | 操作指令 + "记忆"          |
+| `SOUL.md`      | 人格、边界、语气           |
+| `TOOLS.md`     | 工具使用说明               |
+| `BOOTSTRAP.md` | 首次运行仪式（完成后删除） |
+| `IDENTITY.md`  | 代理名称/风格/表情符号     |
+| `USER.md`      | 用户档案 + 偏好称呼        |
 
 **同步影响**：⭐ 无影响
 
@@ -466,13 +548,13 @@ const myCustomLogic = ...
 
 ### 5.5 定制层级对比
 
-| 层级 | 定制方式 | 同步难度 | 推荐度 |
-|------|----------|----------|--------|
-| 配置 | `~/.openclaw/` 文件 | ⭐ 无影响 | ✅ 优先 |
-| 工作区 | `~/.openclaw/workspace/` | ⭐ 无影响 | ✅ 优先 |
-| 技能 | `workspace/skills/` 或全局 skills | ⭐ 无影响 | ✅ 优先 |
-| 插件 | `extensions/` 独立目录 | ⭐⭐ 低冲突 | ✅ 推荐 |
-| 源码 | 核心代码修改 | ⭐⭐⭐⭐ 高冲突 | ⚠️ 谨慎 |
+| 层级   | 定制方式                          | 同步难度        | 推荐度  |
+| ------ | --------------------------------- | --------------- | ------- |
+| 配置   | `~/.openclaw/` 文件               | ⭐ 无影响       | ✅ 优先 |
+| 工作区 | `~/.openclaw/workspace/`          | ⭐ 无影响       | ✅ 优先 |
+| 技能   | `workspace/skills/` 或全局 skills | ⭐ 无影响       | ✅ 优先 |
+| 插件   | `extensions/` 独立目录            | ⭐⭐ 低冲突     | ✅ 推荐 |
+| 源码   | 核心代码修改                      | ⭐⭐⭐⭐ 高冲突 | ⚠️ 谨慎 |
 
 ---
 
@@ -541,17 +623,18 @@ pnpm openclaw nodes status
 
 ### 7.1 策略对比
 
-| 策略 | 同步频率 | 适用场景 | 风险 |
-|------|----------|----------|------|
-| **保守策略** | 每月一次 | 生产环境稳定优先 | 低 |
-| **积极策略** | 每周一次 | 需要新功能，可接受偶尔问题 | 中 |
-| **按需策略** | 需要时 | 功能已满足当前需求 | 最低 |
+| 策略         | 同步频率 | 适用场景                   | 风险 |
+| ------------ | -------- | -------------------------- | ---- |
+| **保守策略** | 每月一次 | 生产环境稳定优先           | 低   |
+| **积极策略** | 每周一次 | 需要新功能，可接受偶尔问题 | 中   |
+| **按需策略** | 需要时   | 功能已满足当前需求         | 最低 |
 
 ### 7.2 推荐：保守策略
 
 对于生产环境，推荐采用**保守策略**：
 
 1. **每月审查上游 changelog**
+
    ```bash
    # 查看上游更新
    git fetch upstream
@@ -591,7 +674,7 @@ name: Check Upstream Updates
 
 on:
   schedule:
-    - cron: '0 9 * * 1'  # 每周一上午 9 点
+    - cron: "0 9 * * 1" # 每周一上午 9 点
   workflow_dispatch:
 
 jobs:
@@ -716,4 +799,4 @@ fi
 
 ---
 
-*文档编写：2026-01-31*
+_文档编写：2026-01-31_
