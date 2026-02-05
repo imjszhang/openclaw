@@ -37,7 +37,11 @@ export async function onTimer(state: CronServiceState) {
   state.running = true;
   try {
     await locked(state, async () => {
-      await ensureLoaded(state, { forceReload: true });
+      // Skip recomputeNextRuns before runDueJobs to avoid updating nextRunAtMs
+      // before checking which jobs are due. The ensureLoaded with forceReload
+      // will reload the store but we need to run due jobs based on the original
+      // nextRunAtMs values, then recompute after execution.
+      await ensureLoaded(state, { forceReload: true, skipRecompute: true });
       await runDueJobs(state);
       await persist(state);
       armTimer(state);
