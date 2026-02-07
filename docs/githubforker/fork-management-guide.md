@@ -11,6 +11,7 @@
 2. [Git 工作流策略](#2-git-工作流策略)
 3. [上游同步工作流](#3-上游同步工作流)
 4. [生产环境部署](#4-生产环境部署)
+   - [4.2.3 Windows 环境注意事项](#423-windows-环境注意事项)
    - [4.4.1 开发模式命令别名配置](#441-开发模式命令别名配置)
 5. [定制化最佳实践](#5-定制化最佳实践)
 6. [稳定性保障措施](#6-稳定性保障措施)
@@ -295,6 +296,81 @@ pnpm openclaw channels status
 
 > 详细配置请查看 [channel-deployment-guide.md](./channel-deployment-guide.md)
 
+### 4.2.3 Windows 环境注意事项
+
+在 Windows 上构建和运行 OpenClaw 会遇到一些特有问题，需要提前处理。
+
+#### 问题 1：`pnpm build` 失败 — bash 解析到 WSL
+
+**症状**：执行 `pnpm build` 时报错：
+
+```
+> bash scripts/bundle-a2ui.sh
+
+<3>WSL (10 - Relay) ERROR: CreateProcessCommon:735: execvpe(/bin/bash) failed: No such file or directory
+ ELIFECYCLE  Command failed with exit code 1.
+```
+
+**原因**：`pnpm build` 的第一步 `canvas:a2ui:bundle` 会执行 `bash scripts/bundle-a2ui.sh`。Windows 系统中 `bash` 命令默认解析到 `C:\WINDOWS\system32\bash.exe`（WSL 的 bash），而非 Git Bash（`<Git安装目录>\bin\bash.exe`）。如果 WSL 未安装或未配置 Linux 发行版，就会报此错误。
+
+**解决方案**：在项目根目录的 `.npmrc` 中添加 `script-shell` 配置，让 pnpm 使用 Git Bash 执行脚本：
+
+```ini
+# .npmrc（追加到已有内容之后）
+script-shell=d:\\Program Files\\Git\\bin\\bash.exe
+```
+
+> **注意**：路径中的反斜杠需要转义为 `\\`。请将路径替换为你实际的 Git 安装目录。  
+> 可以通过 `where.exe git` 找到 Git 安装位置，bash.exe 通常在同级的 `bin` 目录下。
+
+**防止 `.npmrc` 修改被提交到 Git**：
+
+`script-shell` 配置仅在 Windows 上需要，不应提交到仓库。使用 `skip-worktree` 让 git 忽略此文件的本地修改：
+
+```powershell
+# 标记 .npmrc 为 skip-worktree（git 将忽略本地修改）
+git update-index --skip-worktree .npmrc
+
+# 验证：文件前缀显示 S 表示已生效
+git ls-files -v .npmrc
+# 输出：S .npmrc
+
+# 如果将来需要取消标记（恢复 git 跟踪本地修改）
+git update-index --no-skip-worktree .npmrc
+```
+
+> **说明**：`skip-worktree` 只影响本地仓库，不会影响其他协作者。仓库中的原版 `.npmrc` 仍然正常跟踪，你的本地修改不会出现在 `git status` 或 `git diff` 中，也不会被意外提交。
+
+#### 问题 2：`pnpm` 命令未找到
+
+**症状**：PowerShell 中执行 `pnpm` 提示"无法将 pnpm 识别为 cmdlet"。
+
+**原因**：使用 nvm-windows（nvm4w）管理 Node.js 时，`pnpm` 需要通过 `corepack` 激活才能使用。Node.js 自带 corepack 但默认未启用 pnpm 的 shim。
+
+**解决方案**：
+
+```powershell
+# 启用 corepack（会在 Node.js 目录下创建 pnpm shim）
+corepack enable
+
+# 激活最新版 pnpm
+corepack prepare pnpm@latest --activate
+
+# 验证
+pnpm --version
+```
+
+> **提示**：`corepack enable` 只需执行一次，之后切换 Node.js 版本时可能需要重新执行。
+
+#### Windows 构建前置检查清单
+
+| 检查项 | 命令 | 预期结果 |
+| --- | --- | --- |
+| Node.js 已安装 | `node --version` | v22+ |
+| pnpm 可用 | `pnpm --version` | 10+ |
+| Git Bash 存在 | `Test-Path "d:\Program Files\Git\bin\bash.exe"` | True |
+| `.npmrc` 已配置 script-shell | 检查项目 `.npmrc` 文件 | 包含 `script-shell=...bash.exe` |
+
 ### 4.3 后续更新流程
 
 服务已安装后，更新代码只需重启：
@@ -384,13 +460,15 @@ if (!(Test-Path -Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force
 # 添加函数别名
 Add-Content -Path $PROFILE -Value @'
 function openclaw {
-    pnpm --dir "C:\path\to\your\openclaw" openclaw $args
+    pnpm --dir "C:\path\to\your\openclaw" openclaw @args
 }
 '@
 
 # 重新加载配置
 . $PROFILE
 ```
+
+> **注意**：函数中使用 `@args` 而非 `$args`。`@args` 是 PowerShell 的 splatting 语法，能正确地将所有参数逐个传递给 pnpm；而 `$args` 在某些场景下会导致参数合并或引号丢失。
 
 #### Windows CMD
 
