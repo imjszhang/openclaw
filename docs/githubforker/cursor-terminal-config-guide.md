@@ -203,7 +203,28 @@ Cursor 中 AI Agent 使用的 Shell 可能独立于集成终端设置。如果 A
 
 3. 保存并重新加载窗口
 
-## 八、相关资源
+## 八、切换后的命令别名配置
+
+切换到 Git Bash 后，如果在项目目录下直接运行 `openclaw` 提示 `command not found`，这是因为 `openclaw` 是项目本地的 `bin` 命令，并非全局安装的程序。
+
+可以在 `~/.bashrc` 中配置别名来解决：
+
+```bash
+# 添加 openclaw 命令别名（将路径替换为你的实际项目路径）
+echo 'alias openclaw="pnpm --dir /d/github/fork/openclaw openclaw"' >> ~/.bashrc
+
+# 立即生效
+source ~/.bashrc
+
+# 验证
+openclaw --version
+```
+
+> **说明**：Git Bash 使用 Unix 风格路径，Windows 的 `D:\github\fork\openclaw` 对应 `/d/github/fork/openclaw`。
+>
+> 更多别名配置方式（PowerShell、CMD 等）请参阅 [Fork 管理指南 - 4.4.1 开发模式命令别名配置](./fork-management-guide.md#441-开发模式命令别名配置)。
+
+## 九、相关资源
 
 - [Git for Windows 下载](https://git-scm.com/download/win)
 - [VS Code / Cursor 终端配置文档](https://code.visualstudio.com/docs/terminal/profiles)
