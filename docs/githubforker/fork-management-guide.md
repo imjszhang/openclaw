@@ -12,6 +12,7 @@
 3. [上游同步工作流](#3-上游同步工作流)
 4. [生产环境部署](#4-生产环境部署)
    - [4.2.3 Windows 环境注意事项](#423-windows-环境注意事项)
+   - [4.2.4 自定义 State 目录位置（迁移 .openclaw 到其他盘）](#424-自定义-state-目录位置迁移-openclaw-到其他盘)
    - [4.4.1 开发模式命令别名配置](#441-开发模式命令别名配置)
 5. [定制化最佳实践](#5-定制化最佳实践)
 6. [稳定性保障措施](#6-稳定性保障措施)
@@ -364,12 +365,122 @@ pnpm --version
 
 #### Windows 构建前置检查清单
 
-| 检查项 | 命令 | 预期结果 |
-| --- | --- | --- |
-| Node.js 已安装 | `node --version` | v22+ |
-| pnpm 可用 | `pnpm --version` | 10+ |
-| Git Bash 存在 | `Test-Path "d:\Program Files\Git\bin\bash.exe"` | True |
-| `.npmrc` 已配置 script-shell | 检查项目 `.npmrc` 文件 | 包含 `script-shell=...bash.exe` |
+| 检查项                       | 命令                                            | 预期结果                        |
+| ---------------------------- | ----------------------------------------------- | ------------------------------- |
+| Node.js 已安装               | `node --version`                                | v22+                            |
+| pnpm 可用                    | `pnpm --version`                                | 10+                             |
+| Git Bash 存在                | `Test-Path "d:\Program Files\Git\bin\bash.exe"` | True                            |
+| `.npmrc` 已配置 script-shell | 检查项目 `.npmrc` 文件                          | 包含 `script-shell=...bash.exe` |
+
+### 4.2.4 自定义 State 目录位置（迁移 .openclaw 到其他盘）
+
+默认情况下，OpenClaw 的 state 目录（存储配置、会话、日志、凭据等数据）位于用户主目录下：
+
+- **Windows**：`C:\Users\<用户名>\.openclaw`
+- **macOS/Linux**：`~/.openclaw`
+
+如果希望将其迁移到其他位置（例如 D 盘），**无需修改任何源码**，项目已内建环境变量覆盖机制。
+
+#### 原理
+
+核心逻辑在 `src/config/paths.ts` 的 `resolveStateDir()` 函数中：
+
+```typescript
+export function resolveStateDir(
+  env: NodeJS.ProcessEnv = process.env,
+  homedir: () => string = os.homedir,
+): string {
+  const override = env.OPENCLAW_STATE_DIR?.trim() || env.CLAWDBOT_STATE_DIR?.trim();
+  if (override) {
+    return resolveUserPath(override);
+  }
+  // ... 默认使用 ~/.openclaw
+}
+```
+
+只要设置环境变量 **`OPENCLAW_STATE_DIR`**，所有依赖 state 目录的路径都会自动跟随变化。
+
+#### 操作步骤（以迁移到 `D:\.openclaw` 为例）
+
+**第一步：复制数据到新位置**
+
+```powershell
+# PowerShell
+Copy-Item -Path "$env:USERPROFILE\.openclaw" -Destination "D:\.openclaw" -Recurse
+```
+
+或使用文件管理器手动将 `C:\Users\<用户名>\.openclaw` 文件夹复制到 `D:\.openclaw`。
+
+**第二步：设置系统环境变量**
+
+```powershell
+# PowerShell（永久生效，需要重启终端/应用）
+[System.Environment]::SetEnvironmentVariable("OPENCLAW_STATE_DIR", "D:\.openclaw", "User")
+
+# 或使用 setx（效果相同）
+setx OPENCLAW_STATE_DIR "D:\.openclaw"
+```
+
+也可以通过 GUI 操作：**系统属性** → **高级** → **环境变量** → 在"用户变量"中新建：
+
+| 变量名               | 变量值         |
+| -------------------- | -------------- |
+| `OPENCLAW_STATE_DIR` | `D:\.openclaw` |
+
+**第三步：验证**
+
+重启终端后，运行以下命令确认路径已生效：
+
+```bash
+pnpm openclaw doctor
+pnpm openclaw health
+```
+
+**第四步（可选）：删除旧目录**
+
+确认一切正常后，可以删除原来的目录：
+
+```powershell
+Remove-Item -Path "$env:USERPROFILE\.openclaw" -Recurse -Force
+```
+
+#### 受影响的路径一览
+
+设置 `OPENCLAW_STATE_DIR` 后，以下路径全部自动跟随：
+
+| 路径       | 迁移前                        | 迁移后                       |
+| ---------- | ----------------------------- | ---------------------------- |
+| State 目录 | `C:\Users\<用户名>\.openclaw` | `D:\.openclaw`               |
+| 配置文件   | `~\.openclaw\openclaw.json`   | `D:\.openclaw\openclaw.json` |
+| OAuth 凭据 | `~\.openclaw\credentials\`    | `D:\.openclaw\credentials\`  |
+| 全局 .env  | `~\.openclaw\.env`            | `D:\.openclaw\.env`          |
+| 日志目录   | `~\.openclaw\logs\`           | `D:\.openclaw\logs\`         |
+| 工作区     | `~\.openclaw\workspace\`      | `D:\.openclaw\workspace\`    |
+
+#### 其他可用的路径覆盖环境变量
+
+除了 `OPENCLAW_STATE_DIR`，项目还支持更细粒度的覆盖：
+
+| 环境变量               | 作用                 | 默认值                              |
+| ---------------------- | -------------------- | ----------------------------------- |
+| `OPENCLAW_STATE_DIR`   | State 目录（总开关） | `~/.openclaw`                       |
+| `OPENCLAW_CONFIG_PATH` | 配置文件路径         | `$OPENCLAW_STATE_DIR/openclaw.json` |
+| `OPENCLAW_OAUTH_DIR`   | OAuth 凭据目录       | `$OPENCLAW_STATE_DIR/credentials`   |
+
+通常只需设置 `OPENCLAW_STATE_DIR` 一个变量即可，其他路径会自动推导。
+
+#### 注意事项
+
+- `src/daemon/paths.ts` 中的 `resolveGatewayStateDir()` 也读取 `OPENCLAW_STATE_DIR`，gateway 服务会正确跟随。
+- 如果使用了 Windows 计划任务（schtasks）运行 gateway，请确保该任务的运行环境中能读取到此环境变量。设置"用户变量"级别即可满足需求。
+- 项目兼容旧版目录名（`.clawdbot`、`.moltbot`、`.moldbot`），但迁移后只需关注 `.openclaw` 即可。
+- macOS/Linux 用户同样适用，只是设置环境变量的方式不同（写入 `~/.zshrc` 或 `~/.bashrc`）：
+
+```bash
+# macOS/Linux
+echo 'export OPENCLAW_STATE_DIR="/mnt/data/.openclaw"' >> ~/.zshrc
+source ~/.zshrc
+```
 
 ### 4.3 后续更新流程
 
@@ -877,4 +988,4 @@ fi
 
 ---
 
-_文档编写：2026-01-31_
+_文档编写：2026-01-31 | 更新：2026-02-09_
