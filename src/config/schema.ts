@@ -228,8 +228,7 @@ const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.memorySearch.enabled": "Enable Memory Search",
   "agents.defaults.memorySearch.sources": "Memory Search Sources",
   "agents.defaults.memorySearch.extraPaths": "Extra Memory Paths",
-  "agents.defaults.memorySearch.experimental.sessionMemory":
-    "Memory Search Session Index (Experimental)",
+  "agents.defaults.memorySearch.experimental.sessionMemory": "Session Memory Index (Experimental)",
   "agents.defaults.memorySearch.provider": "Memory Search Provider",
   "agents.defaults.memorySearch.remote.baseUrl": "Remote Embedding Base URL",
   "agents.defaults.memorySearch.remote.apiKey": "Remote Embedding API Key",
@@ -254,8 +253,7 @@ const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.memorySearch.query.hybrid.enabled": "Memory Search Hybrid",
   "agents.defaults.memorySearch.query.hybrid.vectorWeight": "Memory Search Vector Weight",
   "agents.defaults.memorySearch.query.hybrid.textWeight": "Memory Search Text Weight",
-  "agents.defaults.memorySearch.query.hybrid.candidateMultiplier":
-    "Memory Search Hybrid Candidate Multiplier",
+  "agents.defaults.memorySearch.query.hybrid.candidateMultiplier": "Hybrid Candidate Multiplier",
   "agents.defaults.memorySearch.cache.enabled": "Memory Search Embedding Cache",
   "agents.defaults.memorySearch.cache.maxEntries": "Memory Search Embedding Cache Max Entries",
   memory: "Memory",
@@ -455,19 +453,15 @@ const FIELD_HELP: Record<string, string> = {
     "Include full message payloads in trace output (default: true).",
   "diagnostics.cacheTrace.includePrompt": "Include prompt text in trace output (default: true).",
   "diagnostics.cacheTrace.includeSystem": "Include system prompt in trace output (default: true).",
-  "tools.exec.shell":
-    'Custom shell binary path for exec commands (e.g. "d:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe"). Defaults to PowerShell on Windows, $SHELL on Unix.',
-  "tools.exec.shellArgs":
-    'Custom shell arguments (e.g. ["-c"]). If omitted, auto-detected based on shell binary name.',
+  "tools.exec.shell": "Exec shell binary path (PowerShell on Windows, $SHELL on Unix).",
+  "tools.exec.shellArgs": "Exec shell arguments. Auto-detected when omitted.",
   "tools.exec.applyPatch.enabled":
     "Experimental. Enables apply_patch for OpenAI models when allowed by tool policy.",
   "tools.exec.applyPatch.allowModels":
     'Optional allowlist of model ids (e.g. "gpt-5.2" or "openai/gpt-5.2").',
-  "tools.exec.notifyOnExit":
-    "When true (default), backgrounded exec sessions enqueue a system event and request a heartbeat on exit.",
+  "tools.exec.notifyOnExit": "Backgrounded exec sessions send a system event on exit.",
   "tools.exec.pathPrepend": "Directories to prepend to PATH for exec runs (gateway/sandbox).",
-  "tools.exec.safeBins":
-    "Allow stdin-only safe binaries to run without explicit allowlist entries.",
+  "tools.exec.safeBins": "Allow safe stdin-only binaries without allowlist entries.",
   "tools.message.allowCrossContextSend":
     "Legacy override: allow cross-context sends across all providers.",
   "tools.message.crossContext.allowWithinProvider":
