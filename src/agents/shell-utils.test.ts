@@ -90,7 +90,7 @@ describe("getShellConfig", () => {
     if (isWin) {
       expect(shell.toLowerCase()).toContain("powershell");
     } else {
-      expect(typeof shell).toBe("string");
+      expect(shell).toMatch(/^\/|^sh$/);
     }
     expect(args).toEqual(customArgs);
   });
@@ -100,8 +100,8 @@ describe("getShellConfig", () => {
     if (isWin) {
       expect(shell.toLowerCase()).toContain("powershell");
     } else {
-      // Falls through to the normal logic
-      expect(typeof shell).toBe("string");
+      // Falls through to the normal logic — should be an absolute path or "sh"
+      expect(shell).toMatch(/^\/|^sh$/);
     }
   });
 

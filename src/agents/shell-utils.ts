@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { logInfo, logWarn } from "../logger.js";
 
 function resolvePowerShellPath(): string {
   const systemRoot = process.env.SystemRoot || process.env.WINDIR;
@@ -28,7 +29,10 @@ function detectShellArgs(shellPath: string): string[] {
     .basename(shellPath)
     .toLowerCase()
     .replace(/\.exe$/, "");
-  if (name === "bash" || name === "sh" || name === "zsh") {
+  if (name === "bash" || name === "sh" || name === "zsh" || name === "dash" || name === "ksh") {
+    return ["-c"];
+  }
+  if (name === "fish") {
     return ["-c"];
   }
   if (name.includes("powershell") || name === "pwsh") {
@@ -44,6 +48,11 @@ export function getShellConfig(overrides?: { shell?: string; shellArgs?: string[
 } {
   // When a custom shell is configured, use it directly.
   if (overrides?.shell) {
+    // Warn when an absolute path doesn't exist, but still honor the user's choice.
+    if (path.isAbsolute(overrides.shell) && !fs.existsSync(overrides.shell)) {
+      logWarn(`exec: configured shell not found: ${overrides.shell}`);
+    }
+    logInfo(`exec: using custom shell: ${overrides.shell}`);
     const args = overrides.shellArgs ?? detectShellArgs(overrides.shell);
     return { shell: overrides.shell, args };
   }
