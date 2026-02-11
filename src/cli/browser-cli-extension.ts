@@ -100,7 +100,7 @@ export function registerBrowserExtensionCommands(
             "Next:",
             `- Chrome → chrome://extensions → enable “Developer mode”`,
             `- “Load unpacked” → select: ${displayPath}`,
-            `- Pin “OpenClaw Browser Relay”, then click it on the tab (badge shows ON)`,
+            `- Pin “OpenClaw Browser Relay”, then click it on the tab (badge shows ON). Right-click the icon for "Attach all tabs in this window".`,
             "",
             `${theme.muted("Docs:")} ${formatDocsLink("/tools/chrome-extension", "docs.openclaw.ai/tools/chrome-extension")}`,
           ].join("\n"),

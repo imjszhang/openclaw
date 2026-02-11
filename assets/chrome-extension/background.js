@@ -317,6 +317,103 @@ async function connectOrToggleForActiveTab() {
   }
 }
 
+/**
+ * Attach all tabs in the current window. Skips chrome:///extension:// pages and already-attached tabs.
+ * Right-click the extension icon → "Attach all tabs in this window".
+ */
+async function attachAllTabsInWindow() {
+  const cur = await chrome.windows.getCurrent()
+  if (!cur?.id) return
+  const windowTabs = await chrome.tabs.query({ windowId: cur.id })
+  const attachable = windowTabs.filter((t) => {
+    if (!t.id) return false
+    if (tabs.get(t.id)?.state === 'connected') return false
+    const u = (t.url || '').toLowerCase()
+    if (u.startsWith('chrome://') || u.startsWith('chrome-extension://') || u.startsWith('edge://')) return false
+    return true
+  })
+  if (attachable.length === 0) return
+
+  try {
+    await ensureRelayConnection()
+  } catch (err) {
+    void maybeOpenHelpOnce()
+    console.warn('attachAll: relay not reachable', err instanceof Error ? err.message : String(err))
+    return
+  }
+
+  for (const t of attachable) {
+    if (!t.id) continue
+    tabs.set(t.id, { state: 'connecting' })
+    setBadge(t.id, 'connecting')
+    try {
+      await attachTab(t.id)
+    } catch {
+      tabs.delete(t.id)
+      setBadge(t.id, 'off')
+    }
+  }
+}
+
+/**
+ * Detach all attached tabs. Right-click the extension icon → "Detach all tabs".
+ */
+async function detachAllTabs() {
+  const ids = [...tabs.keys()]
+  for (const tabId of ids) {
+    await detachTab(tabId, 'detach-all')
+  }
+}
+
+function setupContextMenus() {
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: 'attach-all',
+      title: 'Attach all tabs in this window',
+      contexts: ['action'],
+    })
+    chrome.contextMenus.create({
+      id: 'detach-all',
+      title: 'Detach all tabs',
+      contexts: ['action'],
+    })
+  })
+}
+
+function isUrlAttachable(url) {
+  const u = (url || '').toLowerCase()
+  return !u.startsWith('chrome://') && !u.startsWith('chrome-extension://') && !u.startsWith('edge://')
+}
+
+/**
+ * Auto-attach new tabs when the same window already has attached tabs.
+ * This way Cmd+T / Ctrl+T opens a new tab that is immediately controllable.
+ */
+async function maybeAutoAttachNewTab(tab) {
+  if (!tab?.id || !tab.windowId) return
+  if (tabs.get(tab.id)?.state === 'connected') return
+  if (tab.url && !isUrlAttachable(tab.url)) return
+
+  const windowTabs = await chrome.tabs.query({ windowId: tab.windowId })
+  const anyAttached = windowTabs.some((t) => t.id && tabs.get(t.id)?.state === 'connected')
+  if (!anyAttached) return
+
+  try {
+    await ensureRelayConnection()
+  } catch {
+    return
+  }
+
+  tabs.set(tab.id, { state: 'connecting' })
+  setBadge(tab.id, 'connecting')
+  try {
+    await attachTab(tab.id)
+  } catch {
+    tabs.delete(tab.id)
+    setBadge(tab.id, 'off')
+  }
+}
+
 async function handleForwardCdpCommand(msg) {
   const method = String(msg?.params?.method || '').trim()
   const params = msg?.params?.params || undefined
@@ -432,7 +529,25 @@ function onDebuggerDetach(source, reason) {
 
 chrome.action.onClicked.addListener(() => void connectOrToggleForActiveTab())
 
+chrome.tabs.onCreated.addListener((tab) => {
+  // Small delay so the tab is ready for debugger attach
+  setTimeout(() => void maybeAutoAttachNewTab(tab), 150)
+})
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  // When a tab navigates from chrome://newtab to a regular URL, auto-attach if window has other attached tabs
+  if (changeInfo.url && isUrlAttachable(changeInfo.url)) {
+    void maybeAutoAttachNewTab(tab)
+  }
+})
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === 'attach-all') void attachAllTabsInWindow()
+  else if (info.menuItemId === 'detach-all') void detachAllTabs()
+})
+
 chrome.runtime.onInstalled.addListener(() => {
+  setupContextMenus()
   // Useful: first-time instructions.
   void chrome.runtime.openOptionsPage()
 })

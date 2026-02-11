@@ -79,10 +79,21 @@ openclaw browser create-profile \
   - Badge shows `ON` when attached.
 - Click again to detach.
 
+## Attach all tabs in a window
+
+To let OpenClaw control **all tabs** in the current window (e.g. every open website):
+
+- **Right-click** the extension icon in the toolbar.
+- Choose **“Attach all tabs in this window”**.
+- All regular web tabs in that window are attached (badge `ON` on each). Chrome/extension pages are skipped.
+- Choose **“Detach all tabs”** to detach every attached tab.
+
+**New tabs** opened in that window (e.g. Cmd+T / Ctrl+T) are **auto-attached**; you do not need to click the extension icon again.
+
 ## Which tab does it control?
 
 - It does **not** automatically control “whatever tab you’re looking at”.
-- It controls **only the tab(s) you explicitly attached** by clicking the toolbar button.
+- It controls **only the tab(s) you explicitly attached** by clicking the toolbar button (or via “Attach all tabs in this window”).
 - To switch: open the other tab and click the extension icon there.
 
 ## Badge + common errors
