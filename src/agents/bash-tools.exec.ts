@@ -479,7 +479,10 @@ async function runExecProcess(opts: {
     child = spawned as ChildProcessWithoutNullStreams;
     stdin = child.stdin;
   } else if (opts.usePty) {
-    const { shell, args: shellArgs } = getShellConfig({ shell: opts.shell, shellArgs: opts.shellArgs });
+    const { shell, args: shellArgs } = getShellConfig({
+      shell: opts.shell,
+      shellArgs: opts.shellArgs,
+    });
     try {
       const ptyModule = (await import("@lydell/node-pty")) as unknown as {
         spawn?: PtySpawn;
@@ -546,7 +549,10 @@ async function runExecProcess(opts: {
       stdin = child.stdin;
     }
   } else {
-    const { shell, args: shellArgs } = getShellConfig({ shell: opts.shell, shellArgs: opts.shellArgs });
+    const { shell, args: shellArgs } = getShellConfig({
+      shell: opts.shell,
+      shellArgs: opts.shellArgs,
+    });
     const { child: spawned } = await spawnWithFallback({
       argv: [shell, ...shellArgs, opts.command],
       options: {
@@ -821,6 +827,10 @@ export function createExecTool(
   const notifyOnExit = defaults?.notifyOnExit !== false;
   const notifySessionKey = defaults?.sessionKey?.trim() || undefined;
   const approvalRunningNoticeMs = resolveApprovalRunningNoticeMs(defaults?.approvalRunningNoticeMs);
+  const { shell: defaultShell, args: defaultShellArgs } = getShellConfig({
+    shell: defaults?.shell,
+    shellArgs: defaults?.shellArgs,
+  });
   // Derive agentId only when sessionKey is an agent session key.
   const parsedAgentSession = parseAgentSessionKey(defaults?.sessionKey);
   const agentId =
