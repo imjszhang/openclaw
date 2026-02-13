@@ -275,7 +275,7 @@ export const AgentToolsSchema = z
       .optional(),
     exec: z
       .object({
-        shell: z.string().optional(),
+        shell: z.string().min(1).optional(),
         shellArgs: z.array(z.string()).optional(),
         host: z.enum(["sandbox", "gateway", "node"]).optional(),
         security: z.enum(["deny", "allowlist", "full"]).optional(),
@@ -529,7 +529,7 @@ export const ToolsSchema = z
       .optional(),
     exec: z
       .object({
-        shell: z.string().optional(),
+        shell: z.string().min(1).optional(),
         shellArgs: z.array(z.string()).optional(),
         host: z.enum(["sandbox", "gateway", "node"]).optional(),
         security: z.enum(["deny", "allowlist", "full"]).optional(),
