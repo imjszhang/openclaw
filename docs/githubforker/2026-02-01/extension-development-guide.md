@@ -37,13 +37,13 @@ OpenClaw 的扩展系统基于以下核心概念：
 
 OpenClaw 支持多种扩展类型：
 
-| 类型 | 说明 | 示例 |
-|------|------|------|
-| **Channel** | 消息渠道（Telegram、Discord 等） | `telegram`, `twitch`, `matrix` |
-| **Provider** | AI 模型提供商（认证流程） | `google-antigravity-auth` |
-| **Tool** | AI Agent 可调用的工具 | `llm-task`, `voice-call` |
-| **Memory** | 长期记忆存储 | `memory-lancedb` |
-| **Service** | 后台服务 | `diagnostics-otel` |
+| 类型         | 说明                             | 示例                           |
+| ------------ | -------------------------------- | ------------------------------ |
+| **Channel**  | 消息渠道（Telegram、Discord 等） | `telegram`, `twitch`, `matrix` |
+| **Provider** | AI 模型提供商（认证流程）        | `google-antigravity-auth`      |
+| **Tool**     | AI Agent 可调用的工具            | `llm-task`, `voice-call`       |
+| **Memory**   | 长期记忆存储                     | `memory-lancedb`               |
+| **Service**  | 后台服务                         | `diagnostics-otel`             |
 
 ## 快速开始
 
@@ -61,10 +61,10 @@ const plugin = {
   name: "My Plugin",
   description: "A simple example plugin",
   configSchema: emptyPluginConfigSchema(),
-  
+
   register(api: OpenClawPluginApi) {
     api.logger.info("my-plugin: loaded successfully");
-    
+
     // 注册一个简单工具
     api.registerTool({
       name: "hello_world",
@@ -174,21 +174,21 @@ extensions/my-plugin/
 
 **字段说明：**
 
-| 字段 | 说明 |
-|------|------|
-| `id` | 唯一标识符（必需） |
-| `kind` | 扩展类型，如 `"memory"` |
-| `channels` | 注册的渠道 ID 列表 |
-| `uiHints` | UI 配置提示（标签、敏感字段等） |
-| `configSchema` | JSON Schema 配置验证 |
+| 字段           | 说明                            |
+| -------------- | ------------------------------- |
+| `id`           | 唯一标识符（必需）              |
+| `kind`         | 扩展类型，如 `"memory"`         |
+| `channels`     | 注册的渠道 ID 列表              |
+| `uiHints`      | UI 配置提示（标签、敏感字段等） |
+| `configSchema` | JSON Schema 配置验证            |
 
 ### uiHints 选项
 
 ```typescript
 type PluginConfigUiHint = {
-  label?: string;      // 显示标签
-  help?: string;       // 帮助文本
-  advanced?: boolean;  // 是否为高级选项
+  label?: string; // 显示标签
+  help?: string; // 帮助文本
+  advanced?: boolean; // 是否为高级选项
   sensitive?: boolean; // 是否为敏感信息（密码、密钥）
   placeholder?: string; // 输入占位符
 };
@@ -208,15 +208,15 @@ type OpenClawPluginApi = {
   version?: string;
   description?: string;
   source: string;
-  
+
   // 配置
-  config: OpenClawConfig;        // 全局配置
+  config: OpenClawConfig; // 全局配置
   pluginConfig?: Record<string, unknown>; // 插件专属配置
-  
+
   // 运行时
-  runtime: PluginRuntime;        // 运行时工具集
-  logger: PluginLogger;          // 日志记录器
-  
+  runtime: PluginRuntime; // 运行时工具集
+  logger: PluginLogger; // 日志记录器
+
   // 注册方法
   registerTool(tool, opts?): void;
   registerHook(events, handler, opts?): void;
@@ -228,10 +228,10 @@ type OpenClawPluginApi = {
   registerCli(registrar, opts?): void;
   registerService(service): void;
   registerCommand(command): void;
-  
+
   // 工具函数
   resolvePath(input: string): string;
-  
+
   // 类型安全钩子
   on<K extends PluginHookName>(hookName, handler, opts?): void;
 };
@@ -243,7 +243,7 @@ type OpenClawPluginApi = {
 api.logger.info("Information message");
 api.logger.warn("Warning message");
 api.logger.error("Error message");
-api.logger.debug?.("Debug message");  // debug 是可选的
+api.logger.debug?.("Debug message"); // debug 是可选的
 ```
 
 ### PluginRuntime
@@ -282,17 +282,17 @@ api.registerTool(
     }),
     async execute(toolCallId, params) {
       const { query, limit = 10 } = params as { query: string; limit?: number };
-      
+
       // 执行工具逻辑
       const results = await doSomething(query, limit);
-      
+
       return {
         content: [{ type: "text", text: `Found ${results.length} items` }],
         details: { count: results.length, results },
       };
     },
   },
-  { name: "my_tool", optional: true }
+  { name: "my_tool", optional: true },
 );
 ```
 
@@ -320,13 +320,23 @@ const myChannelPlugin: ChannelPlugin = {
       media: { audio: true, images: true },
     },
   },
-  
+
   // 各种适配器
-  configAdapter: { /* 配置适配 */ },
-  authAdapter: { /* 认证适配 */ },
-  messagingAdapter: { /* 消息发送 */ },
-  statusAdapter: { /* 状态检查 */ },
-  gatewayAdapter: { /* 网关处理 */ },
+  configAdapter: {
+    /* 配置适配 */
+  },
+  authAdapter: {
+    /* 认证适配 */
+  },
+  messagingAdapter: {
+    /* 消息发送 */
+  },
+  statusAdapter: {
+    /* 状态检查 */
+  },
+  gatewayAdapter: {
+    /* 网关处理 */
+  },
   // ...
 };
 
@@ -344,7 +354,7 @@ api.registerProvider({
   docsPath: "/providers/my-provider",
   aliases: ["myp"],
   envVars: ["MY_PROVIDER_API_KEY"],
-  
+
   auth: [
     {
       id: "api_key",
@@ -354,7 +364,7 @@ api.registerProvider({
         const key = await ctx.prompter.text({
           message: "Enter your API key:",
         });
-        
+
         return {
           profiles: [
             {
@@ -390,17 +400,15 @@ api.registerProvider({
 ```typescript
 api.registerCli(
   ({ program, config, logger }) => {
-    const cmd = program
-      .command("myplugin")
-      .description("My plugin commands");
-    
+    const cmd = program.command("myplugin").description("My plugin commands");
+
     cmd
       .command("status")
       .description("Show status")
       .action(async () => {
         console.log("Plugin is running!");
       });
-    
+
     cmd
       .command("do-something")
       .argument("<input>", "Input value")
@@ -412,7 +420,7 @@ api.registerCli(
         // 执行操作
       });
   },
-  { commands: ["myplugin"] }
+  { commands: ["myplugin"] },
 );
 ```
 
@@ -490,7 +498,7 @@ api.registerCommand({
     if (!feature) {
       return { text: "Usage: /toggle <feature>" };
     }
-    
+
     // 处理命令
     return { text: `Toggled ${feature}` };
   },
@@ -503,22 +511,22 @@ api.registerCommand({
 
 ### 可用钩子
 
-| 钩子名称 | 触发时机 | 可修改返回值 |
-|---------|---------|-------------|
-| `before_agent_start` | Agent 开始前 | 是（注入上下文） |
-| `agent_end` | Agent 结束后 | 否 |
-| `before_compaction` | 压缩前 | 否 |
-| `after_compaction` | 压缩后 | 否 |
-| `message_received` | 收到消息时 | 否 |
-| `message_sending` | 发送消息前 | 是（修改/取消） |
-| `message_sent` | 消息发送后 | 否 |
-| `before_tool_call` | 工具调用前 | 是（修改参数/阻止） |
-| `after_tool_call` | 工具调用后 | 否 |
-| `tool_result_persist` | 工具结果持久化前 | 是（修改消息） |
-| `session_start` | 会话开始 | 否 |
-| `session_end` | 会话结束 | 否 |
-| `gateway_start` | Gateway 启动 | 否 |
-| `gateway_stop` | Gateway 停止 | 否 |
+| 钩子名称              | 触发时机         | 可修改返回值        |
+| --------------------- | ---------------- | ------------------- |
+| `before_agent_start`  | Agent 开始前     | 是（注入上下文）    |
+| `agent_end`           | Agent 结束后     | 否                  |
+| `before_compaction`   | 压缩前           | 否                  |
+| `after_compaction`    | 压缩后           | 否                  |
+| `message_received`    | 收到消息时       | 否                  |
+| `message_sending`     | 发送消息前       | 是（修改/取消）     |
+| `message_sent`        | 消息发送后       | 否                  |
+| `before_tool_call`    | 工具调用前       | 是（修改参数/阻止） |
+| `after_tool_call`     | 工具调用后       | 否                  |
+| `tool_result_persist` | 工具结果持久化前 | 是（修改消息）      |
+| `session_start`       | 会话开始         | 否                  |
+| `session_end`         | 会话结束         | 否                  |
+| `gateway_start`       | Gateway 启动     | 否                  |
+| `gateway_stop`        | Gateway 停止     | 否                  |
 
 ### 示例：自动记忆注入
 
@@ -526,14 +534,12 @@ api.registerCommand({
 // 在 Agent 开始前注入相关记忆
 api.on("before_agent_start", async (event, ctx) => {
   if (!event.prompt || event.prompt.length < 5) return;
-  
+
   const memories = await searchMemories(event.prompt);
   if (memories.length === 0) return;
-  
-  const context = memories
-    .map((m) => `- ${m.text}`)
-    .join("\n");
-  
+
+  const context = memories.map((m) => `- ${m.text}`).join("\n");
+
   return {
     prependContext: `<relevant-memories>\n${context}\n</relevant-memories>`,
   };
@@ -542,7 +548,7 @@ api.on("before_agent_start", async (event, ctx) => {
 // 在 Agent 结束后自动捕获重要信息
 api.on("agent_end", async (event, ctx) => {
   if (!event.success) return;
-  
+
   // 分析消息并存储重要信息
   for (const msg of event.messages) {
     if (shouldCapture(msg)) {
@@ -562,7 +568,7 @@ api.on("message_sending", async (event, ctx) => {
       content: redactSensitiveData(event.content),
     };
   }
-  
+
   // 取消发送
   if (shouldBlock(event.content)) {
     return { cancel: true };
@@ -576,14 +582,14 @@ api.on("message_sending", async (event, ctx) => {
 api.on("before_tool_call", async (event, ctx) => {
   // 记录工具调用
   api.logger.info(`Tool call: ${event.toolName}`);
-  
+
   // 修改参数
   if (event.toolName === "search" && !event.params.limit) {
     return {
       params: { ...event.params, limit: 10 },
     };
   }
-  
+
   // 阻止危险操作
   if (event.toolName === "delete" && !ctx.agentId) {
     return {
@@ -690,7 +696,7 @@ const params = Type.Object({
   options: Type.Optional(
     Type.Object({
       limit: Type.Number(),
-    })
+    }),
   ),
 });
 

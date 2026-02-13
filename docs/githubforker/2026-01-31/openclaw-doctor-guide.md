@@ -28,14 +28,14 @@ pnpm openclaw doctor --deep
 
 ## 命令选项
 
-| 选项 | 说明 |
-|------|------|
-| `--yes` | 自动接受默认选项，无需交互确认 |
-| `--repair` | 应用推荐的修复操作，无需提示确认 |
-| `--force` | 与 `--repair` 一起使用，执行激进修复（如覆盖自定义 supervisor 配置） |
-| `--non-interactive` | 无提示运行，仅执行安全的配置规范化和磁盘状态迁移 |
-| `--deep` | 深度扫描系统服务，检测额外的网关安装（launchd/systemd/schtasks） |
-| `--generate-gateway-token` | 强制生成网关认证 token |
+| 选项                       | 说明                                                                 |
+| -------------------------- | -------------------------------------------------------------------- |
+| `--yes`                    | 自动接受默认选项，无需交互确认                                       |
+| `--repair`                 | 应用推荐的修复操作，无需提示确认                                     |
+| `--force`                  | 与 `--repair` 一起使用，执行激进修复（如覆盖自定义 supervisor 配置） |
+| `--non-interactive`        | 无提示运行，仅执行安全的配置规范化和磁盘状态迁移                     |
+| `--deep`                   | 深度扫描系统服务，检测额外的网关安装（launchd/systemd/schtasks）     |
+| `--generate-gateway-token` | 强制生成网关认证 token                                               |
 
 ## 功能模块详解
 
@@ -46,6 +46,7 @@ pnpm openclaw doctor --deep
 ### 2. UI 协议新鲜度检查
 
 检查 Control UI 资源是否过时：
+
 - 如果 `src/gateway/protocol/schema.ts` 比 `dist/control-ui/index.html` 更新
 - 提示是否需要重新构建 UI 资源
 - 运行 `pnpm ui:build` 进行重建
@@ -53,6 +54,7 @@ pnpm openclaw doctor --deep
 ### 3. 配置规范化
 
 将旧版配置值格式转换为当前 schema：
+
 - 自动检测 legacy 配置格式
 - 提示或自动迁移到新格式
 - 保留备份文件 `~/.openclaw/openclaw.json.bak`
@@ -61,23 +63,24 @@ pnpm openclaw doctor --deep
 
 支持的迁移路径：
 
-| 旧路径 | 新路径 |
-|--------|--------|
-| `routing.allowFrom` | `channels.whatsapp.allowFrom` |
-| `routing.groupChat.requireMention` | `channels.whatsapp/telegram/imessage.groups."*".requireMention` |
-| `routing.groupChat.historyLimit` | `messages.groupChat.historyLimit` |
-| `routing.groupChat.mentionPatterns` | `messages.groupChat.mentionPatterns` |
-| `routing.queue` | `messages.queue` |
-| `routing.bindings` | 顶层 `bindings` |
-| `routing.agents`/`routing.defaultAgentId` | `agents.list` + `agents.list[].default` |
-| `routing.agentToAgent` | `tools.agentToAgent` |
-| `routing.transcribeAudio` | `tools.media.audio.models` |
-| `identity` | `agents.list[].identity` |
-| `agent.*` | `agents.defaults` + `tools.*` |
+| 旧路径                                    | 新路径                                                          |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `routing.allowFrom`                       | `channels.whatsapp.allowFrom`                                   |
+| `routing.groupChat.requireMention`        | `channels.whatsapp/telegram/imessage.groups."*".requireMention` |
+| `routing.groupChat.historyLimit`          | `messages.groupChat.historyLimit`                               |
+| `routing.groupChat.mentionPatterns`       | `messages.groupChat.mentionPatterns`                            |
+| `routing.queue`                           | `messages.queue`                                                |
+| `routing.bindings`                        | 顶层 `bindings`                                                 |
+| `routing.agents`/`routing.defaultAgentId` | `agents.list` + `agents.list[].default`                         |
+| `routing.agentToAgent`                    | `tools.agentToAgent`                                            |
+| `routing.transcribeAudio`                 | `tools.media.audio.models`                                      |
+| `identity`                                | `agents.list[].identity`                                        |
+| `agent.*`                                 | `agents.defaults` + `tools.*`                                   |
 
 ### 5. OpenCode Zen Provider 覆盖警告
 
 检测并警告手动设置的 `models.providers.opencode` 或 `models.providers.opencode-zen`：
+
 - 这些覆盖会屏蔽内置的 API 路由和成本计算
 - 建议移除以恢复默认行为
 
@@ -85,10 +88,10 @@ pnpm openclaw doctor --deep
 
 自动迁移旧的磁盘布局：
 
-| 迁移内容 | 来源 | 目标 |
-|----------|------|------|
-| Sessions 存储 | `~/.openclaw/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` |
-| Agent 目录 | `~/.openclaw/agent/` | `~/.openclaw/agents/<agentId>/agent/` |
+| 迁移内容      | 来源                             | 目标                                            |
+| ------------- | -------------------------------- | ----------------------------------------------- |
+| Sessions 存储 | `~/.openclaw/sessions/`          | `~/.openclaw/agents/<agentId>/sessions/`        |
+| Agent 目录    | `~/.openclaw/agent/`             | `~/.openclaw/agents/<agentId>/agent/`           |
 | WhatsApp 认证 | `~/.openclaw/credentials/*.json` | `~/.openclaw/credentials/whatsapp/<accountId>/` |
 
 ### 7. 状态完整性检查
@@ -96,6 +99,7 @@ pnpm openclaw doctor --deep
 检查关键目录和文件的状态：
 
 #### 检查项目
+
 - **状态目录缺失**: 警告并提示创建 `~/.openclaw/`
 - **状态目录权限**: 验证可写性，提供 `chown` 修复建议
 - **Sessions 目录缺失**: 检查必需的 sessions 和 store 目录
@@ -108,6 +112,7 @@ pnpm openclaw doctor --deep
 ### 8. 模型认证健康检查
 
 检查 OAuth profiles 状态：
+
 - 检测过期/即将过期的 tokens
 - 提供刷新选项（交互模式）
 - 报告 cooldown 或 disabled 状态的 profiles
@@ -116,12 +121,14 @@ pnpm openclaw doctor --deep
 ### 9. Hooks 模型验证
 
 如果设置了 `hooks.gmail.model`，验证：
+
 - 模型引用是否在 catalog 中
 - 是否在 allowlist 中
 
 ### 10. 沙箱镜像修复
 
 当启用 sandboxing 时：
+
 - 检查 Docker 是否可用
 - 验证配置的镜像是否存在
 - 提供构建或切换到旧版镜像名的选项
@@ -142,6 +149,7 @@ scripts/sandbox-browser-setup.sh   # 浏览器镜像
 ### 12. 安全警告
 
 检查安全配置：
+
 - **网关网络暴露**: 检测危险的绑定配置（非 loopback 且无认证）
 - **DM 策略**: 警告开放的 DM 策略（policy="open"）
 - **Allowlist**: 检查是否配置了发送者白名单
@@ -155,12 +163,14 @@ openclaw security audit --deep
 ### 13. systemd Linger（Linux）
 
 在 Linux 上运行 systemd 用户服务时：
+
 - 确保启用 lingering
 - 防止登出/空闲后 systemd 停止用户 session
 
 ### 14. Skills 状态汇总
 
 打印当前工作区的 skills 状态：
+
 - eligible（可用）
 - missing（缺失）
 - blocked（阻塞）
@@ -168,6 +178,7 @@ openclaw security audit --deep
 ### 15. 网关认证检查
 
 当本地网关缺少 `gateway.auth` 时：
+
 - 发出警告
 - 提供生成 token 的选项
 
@@ -179,6 +190,7 @@ openclaw security audit --deep
 ### 17. 频道状态警告
 
 如果网关健康，运行频道状态探测并报告：
+
 - 连接问题
 - 配置问题
 - 建议的修复方案
@@ -186,17 +198,20 @@ openclaw security audit --deep
 ### 18. Supervisor 配置审计与修复
 
 检查已安装的 supervisor 配置：
+
 - launchd（macOS）
 - systemd（Linux）
 - schtasks（Windows）
 
 检测缺失或过时的默认值，如：
+
 - systemd 网络依赖
 - 重启延迟配置
 
 ### 19. 网关运行时最佳实践
 
 警告以下情况：
+
 - 使用 Bun 运行网关服务
 - 使用版本管理器路径（nvm/fnm/volta/asdf）
 - 建议迁移到系统 Node 安装（Homebrew/apt/choco）
@@ -204,6 +219,7 @@ openclaw security audit --deep
 ### 20. 网关端口诊断
 
 检查默认端口 `18789`：
+
 - 端口冲突检测
 - 报告可能的原因（如网关已运行、SSH 隧道）
 
@@ -296,15 +312,15 @@ pnpm openclaw doctor --repair --force
 
 ## 相关命令
 
-| 命令 | 说明 |
-|------|------|
-| `openclaw configure` | 交互式配置向导 |
-| `openclaw config set <key> <value>` | 直接设置配置值 |
-| `openclaw gateway install` | 安装网关服务 |
-| `openclaw gateway install --force` | 强制重写服务文件 |
-| `openclaw channels status --probe` | 检查频道状态 |
-| `openclaw security audit --deep` | 深度安全审计 |
-| `openclaw models auth setup-token` | 设置模型认证 token |
+| 命令                                | 说明               |
+| ----------------------------------- | ------------------ |
+| `openclaw configure`                | 交互式配置向导     |
+| `openclaw config set <key> <value>` | 直接设置配置值     |
+| `openclaw gateway install`          | 安装网关服务       |
+| `openclaw gateway install --force`  | 强制重写服务文件   |
+| `openclaw channels status --probe`  | 检查频道状态       |
+| `openclaw security audit --deep`    | 深度安全审计       |
+| `openclaw models auth setup-token`  | 设置模型认证 token |
 
 ## 最佳实践
 
@@ -350,17 +366,17 @@ chmod 600 ~/.openclaw/openclaw.json
 
 主要实现文件位于 `src/commands/` 目录：
 
-| 文件 | 功能 |
-|------|------|
-| `doctor.ts` | 主入口和流程编排 |
-| `doctor-prompter.ts` | 交互提示器 |
-| `doctor-config-flow.ts` | 配置迁移流程 |
-| `doctor-state-integrity.ts` | 状态完整性检查 |
-| `doctor-state-migrations.ts` | 磁盘布局迁移 |
-| `doctor-security.ts` | 安全警告检查 |
-| `doctor-sandbox.ts` | 沙箱镜像修复 |
-| `doctor-gateway-health.ts` | 网关健康检查 |
-| `doctor-gateway-services.ts` | 网关服务管理 |
-| `doctor-auth.ts` | 认证 profile 管理 |
-| `doctor-ui.ts` | UI 协议检查 |
-| `doctor-update.ts` | Git 安装更新 |
+| 文件                         | 功能              |
+| ---------------------------- | ----------------- |
+| `doctor.ts`                  | 主入口和流程编排  |
+| `doctor-prompter.ts`         | 交互提示器        |
+| `doctor-config-flow.ts`      | 配置迁移流程      |
+| `doctor-state-integrity.ts`  | 状态完整性检查    |
+| `doctor-state-migrations.ts` | 磁盘布局迁移      |
+| `doctor-security.ts`         | 安全警告检查      |
+| `doctor-sandbox.ts`          | 沙箱镜像修复      |
+| `doctor-gateway-health.ts`   | 网关健康检查      |
+| `doctor-gateway-services.ts` | 网关服务管理      |
+| `doctor-auth.ts`             | 认证 profile 管理 |
+| `doctor-ui.ts`               | UI 协议检查       |
+| `doctor-update.ts`           | Git 安装更新      |

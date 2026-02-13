@@ -26,13 +26,14 @@
 
 OpenClaw 中有三个关键概念需要区分：
 
-| 概念 | 说明 | 示例 |
-|------|------|------|
-| **Provider** | AI 模型的来源/提供商 | `anthropic`, `openai`, `openai-codex` |
-| **Model** | 具体的 AI 模型 | `claude-opus-4-5`, `gpt-5.2` |
-| **Agent** | OpenClaw 的 AI 助手实例 | 包含工作空间、会话、认证的完整实体 |
+| 概念         | 说明                    | 示例                                  |
+| ------------ | ----------------------- | ------------------------------------- |
+| **Provider** | AI 模型的来源/提供商    | `anthropic`, `openai`, `openai-codex` |
+| **Model**    | 具体的 AI 模型          | `claude-opus-4-5`, `gpt-5.2`          |
+| **Agent**    | OpenClaw 的 AI 助手实例 | 包含工作空间、会话、认证的完整实体    |
 
 **重要区分**：
+
 - **Claude Code CLI** 不是一个 agent 类型，而是一种**认证方式**（通过 `setup-token` 使用 Claude 订阅）
 - **OpenAI Codex** (`openai-codex`) 是一个 provider，使用 ChatGPT Plus/Pro 订阅的 OAuth 认证
 - OpenClaw 本身运行一个基于 p-mono 的嵌入式 agent 运行时
@@ -45,45 +46,45 @@ OpenClaw 中有三个关键概念需要区分：
 
 这些提供商开箱即用，只需设置 API 密钥：
 
-| 提供商 | Provider ID | 认证环境变量 | 示例模型 |
-|--------|-------------|--------------|----------|
-| **Anthropic** | `anthropic` | `ANTHROPIC_API_KEY` | `anthropic/claude-opus-4-5` |
-| **OpenAI** | `openai` | `OPENAI_API_KEY` | `openai/gpt-5.2` |
-| **OpenAI Code** | `openai-codex` | OAuth | `openai-codex/gpt-5.2` |
-| **OpenCode Zen** | `opencode` | `OPENCODE_API_KEY` | `opencode/claude-opus-4-5` |
-| **Google Gemini** | `google` | `GEMINI_API_KEY` | `google/gemini-3-pro-preview` |
-| **Z.AI (GLM)** | `zai` | `ZAI_API_KEY` | `zai/glm-4.7` |
-| **OpenRouter** | `openrouter` | `OPENROUTER_API_KEY` | `openrouter/anthropic/claude-sonnet-4-5` |
+| 提供商                | Provider ID         | 认证环境变量         | 示例模型                                      |
+| --------------------- | ------------------- | -------------------- | --------------------------------------------- |
+| **Anthropic**         | `anthropic`         | `ANTHROPIC_API_KEY`  | `anthropic/claude-opus-4-5`                   |
+| **OpenAI**            | `openai`            | `OPENAI_API_KEY`     | `openai/gpt-5.2`                              |
+| **OpenAI Code**       | `openai-codex`      | OAuth                | `openai-codex/gpt-5.2`                        |
+| **OpenCode Zen**      | `opencode`          | `OPENCODE_API_KEY`   | `opencode/claude-opus-4-5`                    |
+| **Google Gemini**     | `google`            | `GEMINI_API_KEY`     | `google/gemini-3-pro-preview`                 |
+| **Z.AI (GLM)**        | `zai`               | `ZAI_API_KEY`        | `zai/glm-4.7`                                 |
+| **OpenRouter**        | `openrouter`        | `OPENROUTER_API_KEY` | `openrouter/anthropic/claude-sonnet-4-5`      |
 | **Vercel AI Gateway** | `vercel-ai-gateway` | `AI_GATEWAY_API_KEY` | `vercel-ai-gateway/anthropic/claude-opus-4.5` |
-| **xAI** | `xai` | `XAI_API_KEY` | - |
-| **Groq** | `groq` | `GROQ_API_KEY` | - |
-| **Cerebras** | `cerebras` | `CEREBRAS_API_KEY` | - |
-| **Mistral** | `mistral` | `MISTRAL_API_KEY` | - |
-| **GitHub Copilot** | `github-copilot` | `GH_TOKEN` | - |
+| **xAI**               | `xai`               | `XAI_API_KEY`        | -                                             |
+| **Groq**              | `groq`              | `GROQ_API_KEY`       | -                                             |
+| **Cerebras**          | `cerebras`          | `CEREBRAS_API_KEY`   | -                                             |
+| **Mistral**           | `mistral`           | `MISTRAL_API_KEY`    | -                                             |
+| **GitHub Copilot**    | `github-copilot`    | `GH_TOKEN`           | -                                             |
 
 ### 2.2 自定义配置提供商
 
 以下提供商需要在配置中添加 `models.providers`：
 
-| 提供商 | Provider ID | 认证环境变量 | 示例模型 |
-|--------|-------------|--------------|----------|
-| **Moonshot (Kimi)** | `moonshot` | `MOONSHOT_API_KEY` | `moonshot/kimi-k2.5` |
-| **Kimi Code** | `kimi-code` | `KIMICODE_API_KEY` | `kimi-code/kimi-for-coding` |
-| **Qwen Portal** | `qwen-portal` | OAuth 插件 | `qwen-portal/coder-model` |
-| **Synthetic** | `synthetic` | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` |
-| **MiniMax** | `minimax` | `MINIMAX_API_KEY` | - |
-| **Venice AI** | `venice` | - | `venice/llama-3.3-70b` |
-| **Ollama** | `ollama` | 无需（本地） | `ollama/llama3.3` |
+| 提供商              | Provider ID   | 认证环境变量        | 示例模型                              |
+| ------------------- | ------------- | ------------------- | ------------------------------------- |
+| **Moonshot (Kimi)** | `moonshot`    | `MOONSHOT_API_KEY`  | `moonshot/kimi-k2.5`                  |
+| **Kimi Code**       | `kimi-code`   | `KIMICODE_API_KEY`  | `kimi-code/kimi-for-coding`           |
+| **Qwen Portal**     | `qwen-portal` | OAuth 插件          | `qwen-portal/coder-model`             |
+| **Synthetic**       | `synthetic`   | `SYNTHETIC_API_KEY` | `synthetic/hf:MiniMaxAI/MiniMax-M2.1` |
+| **MiniMax**         | `minimax`     | `MINIMAX_API_KEY`   | -                                     |
+| **Venice AI**       | `venice`      | -                   | `venice/llama-3.3-70b`                |
+| **Ollama**          | `ollama`      | 无需（本地）        | `ollama/llama3.3`                     |
 
 ### 2.3 场景推荐
 
-| 使用场景 | 推荐配置 | 说明 |
-|----------|----------|------|
-| 最强能力 | `anthropic/claude-opus-4-5` | Anthropic 旗舰模型 |
-| 性价比 | `anthropic/claude-sonnet-4-5` | 能力与成本平衡 |
-| 免费试用 | OpenRouter free tier | 多种免费模型可选 |
-| 本地运行 | `ollama/llama3.3` | 无需网络，隐私保护 |
-| 中国访问 | `moonshot/kimi-k2.5` 或 `zai/glm-4.7` | 国内直连 |
+| 使用场景 | 推荐配置                              | 说明               |
+| -------- | ------------------------------------- | ------------------ |
+| 最强能力 | `anthropic/claude-opus-4-5`           | Anthropic 旗舰模型 |
+| 性价比   | `anthropic/claude-sonnet-4-5`         | 能力与成本平衡     |
+| 免费试用 | OpenRouter free tier                  | 多种免费模型可选   |
+| 本地运行 | `ollama/llama3.3`                     | 无需网络，隐私保护 |
+| 中国访问 | `moonshot/kimi-k2.5` 或 `zai/glm-4.7` | 国内直连           |
 
 ---
 
@@ -93,20 +94,20 @@ OpenClaw 中有三个关键概念需要区分：
 
 OpenClaw 支持两种主要认证方式：
 
-| 认证类型 | 说明 | 优点 | 缺点 |
-|----------|------|------|------|
-| **API Key** | 直接使用提供商的 API 密钥 | 简单稳定，无需刷新 | 按量付费 |
+| 认证类型     | 说明                       | 优点                        | 缺点                     |
+| ------------ | -------------------------- | --------------------------- | ------------------------ |
+| **API Key**  | 直接使用提供商的 API 密钥  | 简单稳定，无需刷新          | 按量付费                 |
 | **订阅认证** | 使用订阅账号的 OAuth/Token | 免 API 费用（使用订阅额度） | Token 可能过期，需要刷新 |
 
 ### 3.2 支持的订阅认证
 
-| Provider | 订阅类型 | 认证方式 | 配置命令 |
-|----------|----------|----------|----------|
-| `anthropic` | Claude Pro/Max 订阅 | setup-token | `claude setup-token` + `models auth setup-token` |
-| `openai-codex` | ChatGPT Plus/Pro 订阅 | OAuth | `models auth login --provider openai-codex` |
-| `google-antigravity` | Google AI 订阅 | OAuth 插件 | `plugins enable` + `models auth login` |
-| `google-gemini-cli` | Gemini CLI 订阅 | OAuth 插件 | `plugins enable` + `models auth login` |
-| `qwen-portal` | Qwen 免费额度 | OAuth 插件 | `plugins enable` + `models auth login` |
+| Provider             | 订阅类型              | 认证方式    | 配置命令                                         |
+| -------------------- | --------------------- | ----------- | ------------------------------------------------ |
+| `anthropic`          | Claude Pro/Max 订阅   | setup-token | `claude setup-token` + `models auth setup-token` |
+| `openai-codex`       | ChatGPT Plus/Pro 订阅 | OAuth       | `models auth login --provider openai-codex`      |
+| `google-antigravity` | Google AI 订阅        | OAuth 插件  | `plugins enable` + `models auth login`           |
+| `google-gemini-cli`  | Gemini CLI 订阅       | OAuth 插件  | `plugins enable` + `models auth login`           |
+| `qwen-portal`        | Qwen 免费额度         | OAuth 插件  | `plugins enable` + `models auth login`           |
 
 ### 3.3 订阅认证配置示例
 
@@ -177,15 +178,16 @@ ANTHROPIC_API_KEY=sk-ant-你的密钥
   models: {
     providers: {
       moonshot: {
-        apiKey: "${MOONSHOT_API_KEY}",  // 引用 .env 中的变量
+        apiKey: "${MOONSHOT_API_KEY}", // 引用 .env 中的变量
         // ...
-      }
-    }
-  }
+      },
+    },
+  },
 }
 ```
 
 **注意事项**：
+
 - `.env` 文件不会覆盖已存在的环境变量（不覆盖原则）
 - API 密钥建议放在 `.env` 文件中，不要直接写在配置文件中
 - 如果 Gateway 作为服务运行，可能不会继承 shell 环境变量，此时 `.env` 文件特别有用
@@ -250,24 +252,24 @@ MOONSHOT_API_KEY=sk-你的API密钥
 {
   // 环境变量配置（可选，如果已在 .env 中配置则无需重复）
   env: {
-    MOONSHOT_API_KEY: "sk-你的API密钥"
+    MOONSHOT_API_KEY: "sk-你的API密钥",
   },
-  
+
   // Agent 配置
   agents: {
     defaults: {
-      model: { 
-        primary: "moonshot/kimi-k2.5"  // 设置默认模型
+      model: {
+        primary: "moonshot/kimi-k2.5", // 设置默认模型
       },
       models: {
-        "moonshot/kimi-k2.5": { alias: "Kimi K2.5" }
-      }
-    }
+        "moonshot/kimi-k2.5": { alias: "Kimi K2.5" },
+      },
+    },
   },
-  
+
   // 模型提供商配置
   models: {
-    mode: "merge",  // 合并模式，不会覆盖已有配置
+    mode: "merge", // 合并模式，不会覆盖已有配置
     providers: {
       moonshot: {
         baseUrl: "https://api.moonshot.ai/v1",
@@ -282,12 +284,12 @@ MOONSHOT_API_KEY=sk-你的API密钥
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
             contextWindow: 256000,
-            maxTokens: 8192
-          }
-        ]
-      }
-    }
-  }
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
 }
 ```
 
@@ -296,6 +298,7 @@ MOONSHOT_API_KEY=sk-你的API密钥
 **步骤 3：如果在中国，使用国内端点**
 
 将 `baseUrl` 改为：
+
 ```json5
 baseUrl: "https://api.moonshot.cn/v1"
 ```
@@ -314,6 +317,7 @@ pnpm openclaw config get agents.defaults.model.primary
 ```
 
 **验证输出示例**：
+
 - `models status` 会显示当前默认模型为 `moonshot/kimi-k2.5`
 - 如果配置正确，会显示模型状态和认证信息
 
@@ -337,20 +341,20 @@ KIMICODE_API_KEY=sk-你的API密钥
 ```json5
 {
   env: {
-    KIMICODE_API_KEY: "sk-你的API密钥"
+    KIMICODE_API_KEY: "sk-你的API密钥",
   },
-  
+
   agents: {
     defaults: {
-      model: { 
-        primary: "kimi-code/kimi-for-coding"  // 设置默认模型
+      model: {
+        primary: "kimi-code/kimi-for-coding", // 设置默认模型
       },
       models: {
-        "kimi-code/kimi-for-coding": { alias: "Kimi Code" }
-      }
-    }
+        "kimi-code/kimi-for-coding": { alias: "Kimi Code" },
+      },
+    },
   },
-  
+
   models: {
     mode: "merge",
     providers: {
@@ -368,12 +372,12 @@ KIMICODE_API_KEY=sk-你的API密钥
             contextWindow: 262144,
             maxTokens: 32768,
             headers: { "User-Agent": "KimiCLI/0.77" },
-            compat: { supportsDeveloperRole: false }
-          }
-        ]
-      }
-    }
-  }
+            compat: { supportsDeveloperRole: false },
+          },
+        ],
+      },
+    },
+  },
 }
 ```
 
@@ -391,10 +395,12 @@ pnpm openclaw config get agents.defaults.model.primary
 ```
 
 **验证输出示例**：
+
 - `models status` 会显示当前默认模型为 `kimi-code/kimi-for-coding`
 - 如果配置正确，会显示模型状态和认证信息
 
 **重要提示**：
+
 - Moonshot 和 Kimi Code 是两个独立的提供商，API Key 不能互换
 - Moonshot 模型引用使用 `moonshot/<modelId>` 格式
 - Kimi Code 模型引用使用 `kimi-code/<modelId>` 格式
@@ -430,6 +436,7 @@ pnpm openclaw send "Hello, can you hear me?"
 ```
 
 **验证要点**：
+
 - `models status` 命令会显示：
   - **Default model**：当前默认模型（应该是你配置的 kimi 模型）
   - **Provider auth**：API 密钥认证状态
@@ -443,6 +450,7 @@ pnpm openclaw send "Hello, can you hear me?"
 ### 5.1 什么是 Agent
 
 Agent 是 OpenClaw 中的一个完整 AI 助手实例，包含：
+
 - **Workspace**：工作空间目录（AGENTS.md, SOUL.md 等文件）
 - **Sessions**：会话历史
 - **Auth Profiles**：认证信息（API 密钥、OAuth tokens）
@@ -468,6 +476,7 @@ pnpm openclaw agents list
 ### 6.1 多 Agent 的用途
 
 多 Agent 允许：
+
 - 不同渠道使用不同的 AI 模型
 - 不同联系人路由到不同的 Agent
 - 隔离的工作空间和会话历史
@@ -483,20 +492,20 @@ pnpm openclaw agents list
         id: "chat",
         name: "Everyday",
         workspace: "~/.openclaw/workspace-chat",
-        model: { primary: "anthropic/claude-sonnet-4-5" }
+        model: { primary: "anthropic/claude-sonnet-4-5" },
       },
       {
         id: "opus",
         name: "Deep Work",
         workspace: "~/.openclaw/workspace-opus",
-        model: { primary: "anthropic/claude-opus-4-5" }
-      }
-    ]
+        model: { primary: "anthropic/claude-opus-4-5" },
+      },
+    ],
   },
   bindings: [
     { agentId: "chat", match: { channel: "whatsapp" } },
-    { agentId: "opus", match: { channel: "telegram" } }
-  ]
+    { agentId: "opus", match: { channel: "telegram" } },
+  ],
 }
 ```
 
@@ -544,4 +553,4 @@ pnpm openclaw agents list --bindings
 
 ---
 
-*文档编写：2026-01-31*
+_文档编写：2026-01-31_

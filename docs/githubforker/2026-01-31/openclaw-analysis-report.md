@@ -47,12 +47,12 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 
 项目支持多个部署渠道：
 
-| 渠道 | 目标 | 触发方式 |
-|------|------|----------|
-| NPM 包 | CLI 工具 | 手动发布 |
-| macOS 应用 | Sparkle 自动更新 | 手动发布 |
-| Docker 镜像 | GitHub Container Registry | 自动（push/tag）|
-| 移动应用 | iOS/Android | CI 测试 |
+| 渠道        | 目标                      | 触发方式         |
+| ----------- | ------------------------- | ---------------- |
+| NPM 包      | CLI 工具                  | 手动发布         |
+| macOS 应用  | Sparkle 自动更新          | 手动发布         |
+| Docker 镜像 | GitHub Container Registry | 自动（push/tag） |
+| 移动应用    | iOS/Android               | CI 测试          |
 
 ### 2.2 NPM 包发布流程
 
@@ -61,6 +61,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 ```
 
 **关键步骤**：
+
 1. 更新 `package.json` 版本号
 2. 运行 `pnpm plugins:sync` 同步扩展包版本
 3. 构建：`pnpm build`
@@ -68,6 +69,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 5. 发布：`npm publish --access public`
 
 **包内容控制**（`package.json` files 字段）：
+
 - `dist/**` - 编译输出
 - `docs/**` - 文档
 - `extensions/**` - 插件
@@ -81,11 +83,13 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 ```
 
 **关键脚本**：
+
 - `scripts/package-mac-app.sh` - 构建应用包
 - `scripts/package-mac-dist.sh` - 创建发布用 zip/DMG
 - `scripts/make_appcast.sh` - 生成 Sparkle 更新清单
 
 **必要条件**：
+
 - Developer ID Application 证书
 - Sparkle 私钥（`SPARKLE_PRIVATE_KEY_FILE`）
 - App Store Connect API 密钥（公证）
@@ -94,15 +98,18 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 ### 2.4 Docker 镜像发布流程
 
 **触发条件**：
+
 - 推送到 `main` 分支
 - 创建 `v*` 标签
 
 **构建流程**：
+
 1. 并行构建 `linux/amd64` 和 `linux/arm64`
 2. 推送到 GitHub Container Registry
 3. 创建多平台 manifest
 
 **Dockerfile 特点**：
+
 - 基于 `node:22-bookworm`
 - 安装 Bun（用于构建脚本）
 - 以非 root 用户运行（安全加固）
@@ -117,6 +124,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 ```
 
 **CI 检查矩阵**：
+
 - Node + Bun 双运行时测试
 - Ubuntu + Windows + macOS 多平台
 - lint、test、build、protocol、format
@@ -127,44 +135,46 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 
 ### 3.1 核心运行时要求
 
-| 组件 | 要求 | 说明 |
-|------|------|------|
-| Node.js | ≥ 22 | 必需 |
-| 架构 | 64 位 | ARM64 或 x86_64 |
-| 包管理器 | npm/pnpm/bun | 推荐 pnpm |
+| 组件     | 要求         | 说明            |
+| -------- | ------------ | --------------- |
+| Node.js  | ≥ 22         | 必需            |
+| 架构     | 64 位        | ARM64 或 x86_64 |
+| 包管理器 | npm/pnpm/bun | 推荐 pnpm       |
 
 ### 3.2 硬件要求
 
 #### 最小配置（基础 Gateway + 单通道）
+
 - CPU：1 vCPU
 - 内存：1GB RAM
 - 存储：~500MB 磁盘空间
 
 #### 推荐配置（多通道 + 浏览器自动化）
+
 - CPU：1-2 vCPU
 - 内存：2GB+ RAM
 - 存储：16GB+
 
 ### 3.3 操作系统支持
 
-| 平台 | 支持级别 | 说明 |
-|------|----------|------|
-| macOS | 完全支持 | Gateway + 原生菜单栏应用 |
-| Linux | 完全支持 | 推荐 Ubuntu LTS |
-| Windows | WSL2 | 推荐 Ubuntu-24.04 |
-| iOS | 节点模式 | 配对设备 |
-| Android | 节点模式 | 配对设备 |
+| 平台    | 支持级别 | 说明                     |
+| ------- | -------- | ------------------------ |
+| macOS   | 完全支持 | Gateway + 原生菜单栏应用 |
+| Linux   | 完全支持 | 推荐 Ubuntu LTS          |
+| Windows | WSL2     | 推荐 Ubuntu-24.04        |
+| iOS     | 节点模式 | 配对设备                 |
+| Android | 节点模式 | 配对设备                 |
 
 ### 3.4 Raspberry Pi 支持
 
-| Pi 型号 | RAM | 状态 | 备注 |
-|---------|-----|------|------|
-| Pi 5 | 4GB/8GB | ✅ 最佳 | 推荐 |
-| Pi 4 | 4GB | ✅ 良好 | 大多数用户首选 |
-| Pi 4 | 2GB | ✅ 可用 | 需要 swap |
-| Pi 4 | 1GB | ⚠️ 紧张 | 最小配置 |
-| Pi 3B+ | 1GB | ⚠️ 慢 | 可用但性能差 |
-| Pi Zero 2 W | 512MB | ❌ | 不推荐 |
+| Pi 型号     | RAM     | 状态    | 备注           |
+| ----------- | ------- | ------- | -------------- |
+| Pi 5        | 4GB/8GB | ✅ 最佳 | 推荐           |
+| Pi 4        | 4GB     | ✅ 良好 | 大多数用户首选 |
+| Pi 4        | 2GB     | ✅ 可用 | 需要 swap      |
+| Pi 4        | 1GB     | ⚠️ 紧张 | 最小配置       |
+| Pi 3B+      | 1GB     | ⚠️ 慢   | 可用但性能差   |
+| Pi Zero 2 W | 512MB   | ❌      | 不推荐         |
 
 ---
 
@@ -209,6 +219,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 **位置**：`src/gateway/`
 
 **职责**：
+
 - WebSocket 服务器（默认端口 18789）
 - 消息通道管理
 - 请求路由和事件广播
@@ -216,6 +227,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 - HTTP 服务（Control UI、WebChat、Canvas Host）
 
 **关键文件**：
+
 - `server.impl.ts` - 主实现
 - `server-runtime-state.ts` - 运行时状态
 - `server-methods.ts` - RPC 方法处理
@@ -226,31 +238,33 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 
 **支持的通道**：
 
-| 通道 | 技术实现 | 类型 |
-|------|----------|------|
-| WhatsApp | Baileys | 内置 |
-| Telegram | grammY | 内置 |
-| Slack | Bolt | 内置 |
-| Discord | @buape/carbon | 内置 |
-| Signal | signal-cli | 内置 |
-| iMessage | imsg CLI | 内置 |
-| Google Chat | Chat API | 内置 |
+| 通道            | 技术实现      | 类型 |
+| --------------- | ------------- | ---- |
+| WhatsApp        | Baileys       | 内置 |
+| Telegram        | grammY        | 内置 |
+| Slack           | Bolt          | 内置 |
+| Discord         | @buape/carbon | 内置 |
+| Signal          | signal-cli    | 内置 |
+| iMessage        | imsg CLI      | 内置 |
+| Google Chat     | Chat API      | 内置 |
 | Microsoft Teams | Bot Framework | 扩展 |
-| Matrix | matrix-sdk | 扩展 |
-| Zalo | zalo-api | 扩展 |
-| BlueBubbles | - | 扩展 |
+| Matrix          | matrix-sdk    | 扩展 |
+| Zalo            | zalo-api      | 扩展 |
+| BlueBubbles     | -             | 扩展 |
 
 #### 4.2.3 Sessions（会话管理系统）
 
 **位置**：`src/sessions/`
 
 **会话键类型**：
+
 - `main`：所有直接聊天共享（默认）
 - `per-peer`：按发送者隔离
 - `per-channel-peer`：按通道 + 发送者隔离
 - `per-account-channel-peer`：按账户 + 通道 + 发送者隔离
 
 **存储位置**：
+
 - 会话状态：`~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - 转录记录：`~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
 
@@ -260,20 +274,21 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 
 **节点能力**：
 
-| 能力 | macOS | iOS | Android |
-|------|-------|-----|---------|
-| Canvas | ✅ | ✅ | ✅ |
-| Camera | ✅ | ✅ | ✅ |
-| Screen Record | ✅ | ✅ | ✅ |
-| Voice Wake | ✅ | ✅ | - |
-| Talk Mode | ✅ | ✅ | ✅ |
-| system.run | ✅ | - | - |
-| system.notify | ✅ | - | - |
-| Location | ✅ | ✅ | ✅ |
+| 能力          | macOS | iOS | Android |
+| ------------- | ----- | --- | ------- |
+| Canvas        | ✅    | ✅  | ✅      |
+| Camera        | ✅    | ✅  | ✅      |
+| Screen Record | ✅    | ✅  | ✅      |
+| Voice Wake    | ✅    | ✅  | -       |
+| Talk Mode     | ✅    | ✅  | ✅      |
+| system.run    | ✅    | -   | -       |
+| system.notify | ✅    | -   | -       |
+| Location      | ✅    | ✅  | ✅      |
 
 #### 4.2.5 Tools（工具系统）
 
 **工具组**：
+
 - `group:runtime`：exec、bash、process
 - `group:fs`：read、write、edit、apply_patch
 - `group:sessions`：sessions_list、sessions_history、sessions_send、sessions_spawn
@@ -289,6 +304,7 @@ OpenClaw 是一个**个人 AI 助手平台**，可以在用户自己的设备上
 **位置**：`src/cli/`, `src/commands/`
 
 **主要命令**：
+
 ```bash
 openclaw gateway      # Gateway 管理
 openclaw agent        # 代理交互
@@ -306,6 +322,7 @@ openclaw models       # 模型管理
 **位置**：`src/web/`, `ui/`
 
 **组件**：
+
 - Control UI：Gateway 控制面板
 - WebChat：聊天界面
 - Dashboard：仪表板
@@ -316,6 +333,7 @@ openclaw models       # 模型管理
 **位置**：`src/media/`, `src/media-understanding/`
 
 **功能**：
+
 - 媒体获取和托管
 - 图片/音频/视频处理
 - 音频转录钩子
@@ -382,58 +400,60 @@ OpenClaw 使用单个代理工作区目录作为代理的唯一工作目录。
 
 工作区中的用户可编辑文件：
 
-| 文件 | 用途 |
-|------|------|
-| `AGENTS.md` | 操作指令 + "记忆" |
-| `SOUL.md` | 人格、边界、语气 |
-| `TOOLS.md` | 工具使用说明 |
-| `BOOTSTRAP.md` | 首次运行仪式（完成后删除）|
-| `IDENTITY.md` | 代理名称/风格/表情符号 |
-| `USER.md` | 用户档案 + 偏好称呼 |
+| 文件           | 用途                       |
+| -------------- | -------------------------- |
+| `AGENTS.md`    | 操作指令 + "记忆"          |
+| `SOUL.md`      | 人格、边界、语气           |
+| `TOOLS.md`     | 工具使用说明               |
+| `BOOTSTRAP.md` | 首次运行仪式（完成后删除） |
+| `IDENTITY.md`  | 代理名称/风格/表情符号     |
+| `USER.md`      | 用户档案 + 偏好称呼        |
 
 ### 5.5 内置工具
 
 #### 5.5.1 核心工具列表
 
-| 工具 | 描述 |
-|------|------|
-| `read` | 读取文件内容 |
-| `write` | 创建或覆盖文件 |
-| `edit` | 精确编辑文件 |
-| `apply_patch` | 应用多文件补丁 |
-| `grep` | 搜索文件内容 |
-| `find` | 按 glob 模式查找文件 |
-| `ls` | 列出目录内容 |
-| `exec` | 运行 shell 命令 |
-| `process` | 管理后台 exec 会话 |
-| `web_search` | Web 搜索（Brave API）|
-| `web_fetch` | 获取 URL 内容 |
-| `browser` | 控制 Web 浏览器 |
-| `canvas` | Canvas 展示/评估/快照 |
-| `nodes` | 节点列表/描述/通知/相机/屏幕 |
-| `cron` | 管理定时任务 |
-| `message` | 发送消息和通道操作 |
-| `gateway` | 重启/配置/更新 Gateway |
-| `sessions_list` | 列出其他会话 |
-| `sessions_history` | 获取会话历史 |
-| `sessions_send` | 发送消息到其他会话 |
-| `sessions_spawn` | 生成子代理会话 |
-| `session_status` | 显示会话状态 |
-| `image` | 使用图像模型分析图像 |
+| 工具               | 描述                         |
+| ------------------ | ---------------------------- |
+| `read`             | 读取文件内容                 |
+| `write`            | 创建或覆盖文件               |
+| `edit`             | 精确编辑文件                 |
+| `apply_patch`      | 应用多文件补丁               |
+| `grep`             | 搜索文件内容                 |
+| `find`             | 按 glob 模式查找文件         |
+| `ls`               | 列出目录内容                 |
+| `exec`             | 运行 shell 命令              |
+| `process`          | 管理后台 exec 会话           |
+| `web_search`       | Web 搜索（Brave API）        |
+| `web_fetch`        | 获取 URL 内容                |
+| `browser`          | 控制 Web 浏览器              |
+| `canvas`           | Canvas 展示/评估/快照        |
+| `nodes`            | 节点列表/描述/通知/相机/屏幕 |
+| `cron`             | 管理定时任务                 |
+| `message`          | 发送消息和通道操作           |
+| `gateway`          | 重启/配置/更新 Gateway       |
+| `sessions_list`    | 列出其他会话                 |
+| `sessions_history` | 获取会话历史                 |
+| `sessions_send`    | 发送消息到其他会话           |
+| `sessions_spawn`   | 生成子代理会话               |
+| `session_status`   | 显示会话状态                 |
+| `image`            | 使用图像模型分析图像         |
 
 #### 5.5.2 工具配置
 
 **全局允许/拒绝**：
+
 ```json5
 {
   tools: {
     allow: ["group:fs", "browser"],
-    deny: ["exec"]
-  }
+    deny: ["exec"],
+  },
 }
 ```
 
 **工具配置文件**：
+
 - `minimal`：仅 `session_status`
 - `coding`：`group:fs`、`group:runtime`、`group:sessions`、`group:memory`、`image`
 - `messaging`：`group:messaging`、会话工具
@@ -453,8 +473,9 @@ OpenClaw 使用单个代理工作区目录作为代理的唯一工作目录。
 ---
 name: skill-name
 description: Skill description
-metadata: {"openclaw":{"requires":{"bins":["uv"],"env":["API_KEY"]}}}
+metadata: { "openclaw": { "requires": { "bins": ["uv"], "env": ["API_KEY"] } } }
 ---
+
 <!-- 技能指令内容 -->
 ```
 
@@ -484,6 +505,7 @@ clawdhub sync --all             # 同步技能
 #### 5.7.2 认证配置文件
 
 **类型**：
+
 - `type: "api_key"` → `{ provider, key }`
 - `type: "oauth"` → `{ provider, access, refresh, expires, email? }`
 
@@ -492,14 +514,17 @@ clawdhub sync --all             # 同步技能
 #### 5.7.3 模型故障转移
 
 **Auth Profile 轮换**：
+
 - 显式配置：`auth.order[provider]`
 - 配置的配置文件：`auth.profiles`
 - 存储的配置文件
 
 **冷却时间（Cooldowns）**：
+
 - 1 分钟 → 5 分钟 → 25 分钟 → 1 小时（上限）
 
 **计费禁用**：
+
 - 起始：5 小时
 - 上限：24 小时
 
@@ -507,12 +532,12 @@ clawdhub sync --all             # 同步技能
 
 #### 5.8.1 会话键映射
 
-| 场景 | 会话键格式 |
-|------|-----------|
-| 直接聊天（main）| `agent:<agentId>:<mainKey>` |
-| per-peer | `agent:<agentId>:dm:<peerId>` |
+| 场景             | 会话键格式                              |
+| ---------------- | --------------------------------------- |
+| 直接聊天（main） | `agent:<agentId>:<mainKey>`             |
+| per-peer         | `agent:<agentId>:dm:<peerId>`           |
 | per-channel-peer | `agent:<agentId>:<channel>:dm:<peerId>` |
-| 群组聊天 | `agent:<agentId>:<channel>:group:<id>` |
+| 群组聊天         | `agent:<agentId>:<channel>:group:<id>`  |
 
 #### 5.8.2 会话修剪（Pruning）
 
@@ -534,6 +559,7 @@ clawdhub sync --all             # 同步技能
 - 保持会话历史一致
 
 **队列模式**：
+
 - `steer`：入站消息注入当前运行
 - `followup`：消息保留直到当前回合结束
 - `collect`：收集消息直到当前回合结束
@@ -561,16 +587,16 @@ clawdhub sync --all             # 同步技能
 
 #### 5.11.2 插件钩子
 
-| 钩子 | 描述 |
-|------|------|
-| `before_agent_start` | 运行开始前注入上下文 |
-| `agent_end` | 完成后检查最终消息列表 |
-| `before_compaction` / `after_compaction` | 观察压缩周期 |
-| `before_tool_call` / `after_tool_call` | 拦截工具参数/结果 |
-| `tool_result_persist` | 转换工具结果 |
-| `message_received` / `message_sending` / `message_sent` | 消息钩子 |
-| `session_start` / `session_end` | 会话生命周期 |
-| `gateway_start` / `gateway_stop` | Gateway 生命周期 |
+| 钩子                                                    | 描述                   |
+| ------------------------------------------------------- | ---------------------- |
+| `before_agent_start`                                    | 运行开始前注入上下文   |
+| `agent_end`                                             | 完成后检查最终消息列表 |
+| `before_compaction` / `after_compaction`                | 观察压缩周期           |
+| `before_tool_call` / `after_tool_call`                  | 拦截工具参数/结果      |
+| `tool_result_persist`                                   | 转换工具结果           |
+| `message_received` / `message_sending` / `message_sent` | 消息钩子               |
+| `session_start` / `session_end`                         | 会话生命周期           |
+| `gateway_start` / `gateway_stop`                        | Gateway 生命周期       |
 
 ### 5.12 沙箱模式
 
@@ -581,28 +607,28 @@ clawdhub sync --all             # 同步技能
   agents: {
     defaults: {
       sandbox: {
-        mode: "non-main",  // 仅非主会话
+        mode: "non-main", // 仅非主会话
         docker: {
           image: "node:22-bookworm",
-          setupCommand: "apt-get update && apt-get install -y <pkg>"
-        }
-      }
-    }
-  }
+          setupCommand: "apt-get update && apt-get install -y <pkg>",
+        },
+      },
+    },
+  },
 }
 ```
 
 #### 5.12.2 沙箱工具策略
 
-- **允许列表**：bash、process、read、write、edit、sessions_*
+- **允许列表**：bash、process、read、write、edit、sessions\_\*
 - **拒绝列表**：browser、canvas、nodes、cron、discord、gateway
 
 ### 5.13 超时设置
 
-| 超时类型 | 默认值 | 配置 |
-|----------|--------|------|
-| agent.wait | 30s | `timeoutMs` 参数 |
-| Agent 运行时 | 600s | `agents.defaults.timeoutSeconds` |
+| 超时类型     | 默认值 | 配置                             |
+| ------------ | ------ | -------------------------------- |
+| agent.wait   | 30s    | `timeoutMs` 参数                 |
+| Agent 运行时 | 600s   | `agents.defaults.timeoutSeconds` |
 
 ---
 
@@ -618,25 +644,25 @@ clawdhub sync --all             # 同步技能
 
 ### 6.2 部署建议
 
-| 场景 | 推荐配置 |
-|------|---------|
-| 个人使用（本地）| 2GB RAM，现代 CPU |
-| 24/7 运行 | VPS 或专用设备 |
-| 低成本自托管 | Raspberry Pi 4/5 (2GB+) |
-| 云部署 | 1-2 vCPU，2GB RAM |
+| 场景             | 推荐配置                |
+| ---------------- | ----------------------- |
+| 个人使用（本地） | 2GB RAM，现代 CPU       |
+| 24/7 运行        | VPS 或专用设备          |
+| 低成本自托管     | Raspberry Pi 4/5 (2GB+) |
+| 云部署           | 1-2 vCPU，2GB RAM       |
 
 ### 6.3 核心组件总结
 
-| 组件 | 职责 |
-|------|------|
-| Gateway | WebSocket 控制平面 |
-| Channels | 消息通道集成 |
-| Agents | AI 代理运行时 |
-| Sessions | 会话管理 |
-| Nodes | 设备节点 |
-| Tools | 工具和自动化 |
-| Skills | 技能平台 |
-| CLI/Web UI | 用户界面 |
+| 组件       | 职责               |
+| ---------- | ------------------ |
+| Gateway    | WebSocket 控制平面 |
+| Channels   | 消息通道集成       |
+| Agents     | AI 代理运行时      |
+| Sessions   | 会话管理           |
+| Nodes      | 设备节点           |
+| Tools      | 工具和自动化       |
+| Skills     | 技能平台           |
+| CLI/Web UI | 用户界面           |
 
 ### 6.4 关键文档链接
 
@@ -649,4 +675,4 @@ clawdhub sync --all             # 同步技能
 
 ---
 
-*报告生成日期：2026-01-31*
+_报告生成日期：2026-01-31_

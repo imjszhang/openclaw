@@ -33,7 +33,7 @@ skill-name/
 ---
 name: skill-name
 description: 技能描述，说明何时使用此技能
-metadata: {"openclaw":{"emoji":"🔧","requires":{"bins":["tool"]}}}
+metadata: { "openclaw": { "emoji": "🔧", "requires": { "bins": ["tool"] } } }
 homepage: https://example.com
 ---
 
@@ -44,38 +44,39 @@ homepage: https://example.com
 
 **前置元数据（Frontmatter）字段：**
 
-| 字段 | 必需 | 说明 |
-|------|------|------|
-| `name` | ✓ | 技能名称（小写，使用连字符） |
-| `description` | ✓ | 技能描述，触发条件说明 |
-| `metadata` | 否 | OpenClaw 扩展元数据（见下方） |
-| `homepage` | 否 | 技能相关工具/服务的主页 |
+| 字段          | 必需 | 说明                          |
+| ------------- | ---- | ----------------------------- |
+| `name`        | ✓    | 技能名称（小写，使用连字符）  |
+| `description` | ✓    | 技能描述，触发条件说明        |
+| `metadata`    | 否   | OpenClaw 扩展元数据（见下方） |
+| `homepage`    | 否   | 技能相关工具/服务的主页       |
 
 **metadata.openclaw 字段：**
 
 ```json5
 {
-  "openclaw": {
-    "emoji": "🔧",              // 技能图标
-    "always": false,            // 是否总是加载（跳过过滤）
-    "primaryEnv": "API_KEY",    // 主要环境变量名
-    "os": ["darwin", "linux"],  // 支持的操作系统
-    "requires": {
-      "bins": ["gh"],           // 必需的二进制（全部满足）
-      "anyBins": ["npm", "pnpm"], // 必需的二进制（任一满足）
-      "env": ["GITHUB_TOKEN"],  // 必需的环境变量
-      "config": ["browser.enabled"] // 必需的配置项
+  openclaw: {
+    emoji: "🔧", // 技能图标
+    always: false, // 是否总是加载（跳过过滤）
+    primaryEnv: "API_KEY", // 主要环境变量名
+    os: ["darwin", "linux"], // 支持的操作系统
+    requires: {
+      bins: ["gh"], // 必需的二进制（全部满足）
+      anyBins: ["npm", "pnpm"], // 必需的二进制（任一满足）
+      env: ["GITHUB_TOKEN"], // 必需的环境变量
+      config: ["browser.enabled"], // 必需的配置项
     },
-    "install": [                // 安装选项
+    install: [
+      // 安装选项
       {
-        "id": "brew",
-        "kind": "brew",
-        "formula": "gh",
-        "bins": ["gh"],
-        "label": "Install GitHub CLI (brew)"
-      }
-    ]
-  }
+        id: "brew",
+        kind: "brew",
+        formula: "gh",
+        bins: ["gh"],
+        label: "Install GitHub CLI (brew)",
+      },
+    ],
+  },
 }
 ```
 
@@ -87,84 +88,84 @@ OpenClaw 在 `skills/` 目录下提供了约 60+ 个内置技能，按类别分�
 
 ### 开发工具类
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `github` | 使用 `gh` CLI 与 GitHub 交互 | gh |
-| `coding-agent` | 代码编写辅助 | - |
-| `canvas` | Canvas 画布操作 | - |
-| `tmux` | Tmux 终端会话管理 | tmux |
+| 技能           | 描述                         | 依赖 |
+| -------------- | ---------------------------- | ---- |
+| `github`       | 使用 `gh` CLI 与 GitHub 交互 | gh   |
+| `coding-agent` | 代码编写辅助                 | -    |
+| `canvas`       | Canvas 画布操作              | -    |
+| `tmux`         | Tmux 终端会话管理            | tmux |
 
 ### 笔记和文档
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `apple-notes` | Apple 备忘录操作 | macOS |
-| `bear-notes` | Bear 笔记应用集成 | bear |
-| `obsidian` | Obsidian 知识库管理 | obsidian |
-| `notion` | Notion 文档操作 | - |
-| `nano-pdf` | PDF 处理 | - |
+| 技能          | 描述                | 依赖     |
+| ------------- | ------------------- | -------- |
+| `apple-notes` | Apple 备忘录操作    | macOS    |
+| `bear-notes`  | Bear 笔记应用集成   | bear     |
+| `obsidian`    | Obsidian 知识库管理 | obsidian |
+| `notion`      | Notion 文档操作     | -        |
+| `nano-pdf`    | PDF 处理            | -        |
 
 ### 通信和消息
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `discord` | Discord 消息发送 | 配置 |
-| `slack` | Slack 工作区集成 | 配置 |
-| `imsg` | iMessage 消息发送 | macOS |
+| 技能          | 描述                      | 依赖        |
+| ------------- | ------------------------- | ----------- |
+| `discord`     | Discord 消息发送          | 配置        |
+| `slack`       | Slack 工作区集成          | 配置        |
+| `imsg`        | iMessage 消息发送         | macOS       |
 | `bluebubbles` | BlueBubbles iMessage 桥接 | bluebubbles |
-| `wacli` | WhatsApp CLI 工具 | wacli |
+| `wacli`       | WhatsApp CLI 工具         | wacli       |
 
 ### 媒体处理
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `openai-image-gen` | OpenAI DALL-E 图像生成 | API Key |
-| `nano-banana-pro` | Banana Pro 图像生成 | API Key |
-| `video-frames` | 视频帧提取 | ffmpeg |
-| `openai-whisper` | 本地 Whisper 语音转文字 | whisper |
-| `openai-whisper-api` | Whisper API 语音转文字 | API Key |
-| `sherpa-onnx-tts` | Sherpa ONNX 文字转语音 | sherpa-onnx |
+| 技能                 | 描述                    | 依赖        |
+| -------------------- | ----------------------- | ----------- |
+| `openai-image-gen`   | OpenAI DALL-E 图像生成  | API Key     |
+| `nano-banana-pro`    | Banana Pro 图像生成     | API Key     |
+| `video-frames`       | 视频帧提取              | ffmpeg      |
+| `openai-whisper`     | 本地 Whisper 语音转文字 | whisper     |
+| `openai-whisper-api` | Whisper API 语音转文字  | API Key     |
+| `sherpa-onnx-tts`    | Sherpa ONNX 文字转语音  | sherpa-onnx |
 
 ### 系统集成
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `1password` | 1Password 密码管理 | op |
-| `peekaboo` | macOS UI 自动化 | peekaboo |
-| `session-logs` | 会话日志查看 | - |
+| 技能           | 描述               | 依赖     |
+| -------------- | ------------------ | -------- |
+| `1password`    | 1Password 密码管理 | op       |
+| `peekaboo`     | macOS UI 自动化    | peekaboo |
+| `session-logs` | 会话日志查看       | -        |
 
 ### 生活服务
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `weather` | 天气查询 | - |
-| `food-order` | 外卖订餐 | - |
-| `goplaces` | 地点搜索 | - |
+| 技能           | 描述         | 依赖   |
+| -------------- | ------------ | ------ |
+| `weather`      | 天气查询     | -      |
+| `food-order`   | 外卖订餐     | -      |
+| `goplaces`     | 地点搜索     | -      |
 | `local-places` | 本地商家搜索 | Python |
 
 ### 智能家居
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `openhue` | Philips Hue 灯光控制 | openhue |
-| `sonoscli` | Sonos 音响控制 | sonoscli |
-| `spotify-player` | Spotify 播放控制 | spotify_player |
+| 技能             | 描述                 | 依赖           |
+| ---------------- | -------------------- | -------------- |
+| `openhue`        | Philips Hue 灯光控制 | openhue        |
+| `sonoscli`       | Sonos 音响控制       | sonoscli       |
+| `spotify-player` | Spotify 播放控制     | spotify_player |
 
 ### 任务管理
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `apple-reminders` | Apple 提醒事项 | macOS |
-| `things-mac` | Things 任务管理 | things |
-| `trello` | Trello 看板管理 | - |
+| 技能              | 描述            | 依赖   |
+| ----------------- | --------------- | ------ |
+| `apple-reminders` | Apple 提醒事项  | macOS  |
+| `things-mac`      | Things 任务管理 | things |
+| `trello`          | Trello 看板管理 | -      |
 
 ### AI 服务
 
-| 技能 | 描述 | 依赖 |
-|------|------|------|
-| `gemini` | Gemini CLI 一次性问答 | gemini |
-| `summarize` | 文本总结 | - |
-| `oracle` | Oracle 预测 | - |
+| 技能        | 描述                  | 依赖   |
+| ----------- | --------------------- | ------ |
+| `gemini`    | Gemini CLI 一次性问答 | gemini |
+| `summarize` | 文本总结              | -      |
+| `oracle`    | Oracle 预测           | -      |
 
 ---
 
@@ -176,40 +177,40 @@ OpenClaw 在 `skills/` 目录下提供了约 60+ 个内置技能，按类别分�
 
 ```json5
 {
-  "skills": {
+  skills: {
     // Bundled 技能白名单（仅影响内置技能）
-    "allowBundled": ["gemini", "peekaboo", "github"],
-    
+    allowBundled: ["gemini", "peekaboo", "github"],
+
     // 加载配置
-    "load": {
-      "extraDirs": ["~/my-skills"],  // 额外技能目录
-      "watch": true,                  // 监听文件变化
-      "watchDebounceMs": 250          // 防抖延迟
+    load: {
+      extraDirs: ["~/my-skills"], // 额外技能目录
+      watch: true, // 监听文件变化
+      watchDebounceMs: 250, // 防抖延迟
     },
-    
+
     // 安装偏好
-    "install": {
-      "preferBrew": true,             // 优先使用 Homebrew
-      "nodeManager": "pnpm"           // npm | pnpm | yarn | bun
+    install: {
+      preferBrew: true, // 优先使用 Homebrew
+      nodeManager: "pnpm", // npm | pnpm | yarn | bun
     },
-    
+
     // 各技能的单独配置
-    "entries": {
-      "gemini": {
-        "enabled": true,
-        "apiKey": "YOUR_API_KEY"
+    entries: {
+      gemini: {
+        enabled: true,
+        apiKey: "YOUR_API_KEY",
       },
       "openai-image-gen": {
-        "enabled": true,
-        "env": {
-          "OPENAI_API_KEY": "sk-xxx"
-        }
+        enabled: true,
+        env: {
+          OPENAI_API_KEY: "sk-xxx",
+        },
       },
       "custom-skill": {
-        "enabled": false  // 禁用此技能
-      }
-    }
-  }
+        enabled: false, // 禁用此技能
+      },
+    },
+  },
 }
 ```
 
@@ -286,11 +287,11 @@ mkdir -p skills/my-skill
 
 编写 `skills/my-skill/SKILL.md`：
 
-```markdown
+````markdown
 ---
 name: my-skill
 description: 我的自定义技能，用于执行特定任务。当用户需要 XXX 时使用此技能。
-metadata: {"openclaw":{"emoji":"🎯","requires":{"bins":["my-tool"]}}}
+metadata: { "openclaw": { "emoji": "🎯", "requires": { "bins": ["my-tool"] } } }
 ---
 
 # 我的技能
@@ -298,9 +299,11 @@ metadata: {"openclaw":{"emoji":"🎯","requires":{"bins":["my-tool"]}}}
 ## 快速开始
 
 使用示例：
+
 ```bash
 my-tool --action do-something
 ```
+````
 
 ## 常用命令
 
@@ -312,7 +315,8 @@ my-tool --action do-something
 
 - 确保已安装 my-tool
 - 需要配置环境变量 MY_API_KEY
-```
+
+````
 
 ### 4.3 技能编写最佳实践
 
@@ -339,45 +343,27 @@ my-tool --action do-something
 ## 高级功能
 - **表单填充**: 参见 [references/forms.md](references/forms.md)
 - **API 参考**: 参见 [references/api.md](references/api.md)
-```
+````
 
 #### 设置合适的自由度
 
-| 自由度 | 使用场景 | 实现方式 |
-|--------|----------|----------|
-| 高 | 多种方法有效，依赖上下文 | 文本指导 |
-| 中 | 存在首选模式，允许变化 | 伪代码/带参数脚本 |
-| 低 | 操作脆弱，一致性关键 | 具体脚本，少量参数 |
+| 自由度 | 使用场景                 | 实现方式           |
+| ------ | ------------------------ | ------------------ |
+| 高     | 多种方法有效，依赖上下文 | 文本指导           |
+| 中     | 存在首选模式，允许变化   | 伪代码/带参数脚本  |
+| 低     | 操作脆弱，一致性关键     | 具体脚本，少量参数 |
 
 ### 4.4 添加依赖检查
 
 如果技能依赖外部工具，配置 metadata：
 
 ```yaml
-metadata: {"openclaw":{
-  "requires": {
-    "bins": ["required-tool"],      # 全部必需
-    "anyBins": ["npm", "pnpm"],     # 任一满足
-    "env": ["API_KEY"],             # 必需环境变量
-    "config": ["feature.enabled"]   # 必需配置项
-  },
-  "install": [
-    {
-      "id": "brew",
-      "kind": "brew",
-      "formula": "my-tool",
-      "bins": ["my-tool"],
-      "label": "Install my-tool (brew)"
-    },
-    {
-      "id": "npm",
-      "kind": "node",
-      "package": "my-tool",
-      "bins": ["my-tool"],
-      "label": "Install my-tool (npm)"
-    }
-  ]
-}}
+metadata: { "openclaw": { "requires": { "bins": ["required-tool"], "anyBins": [ # 全部必需
+                "npm",
+                "pnpm",
+              ], "env": ["API_KEY"], "config": [ # 任一满足 # 必需环境变量
+                "feature.enabled",
+              ] }, "install": [{ "id": "brew", "kind": "brew", "formula": "my-tool", "bins": ["my-tool"], "label": "Install my-tool (brew)" }, { "id": "npm", "kind": "node", "package": "my-tool", "bins": ["my-tool"], "label": "Install my-tool (npm)" }] } } # 必需配置项
 ```
 
 ### 4.5 打包和分发
@@ -392,6 +378,7 @@ python3 skills/skill-creator/scripts/package_skill.py skills/my-skill ./dist
 ```
 
 打包脚本会自动验证：
+
 - YAML frontmatter 格式
 - 技能命名规范
 - 描述完整性
@@ -401,13 +388,13 @@ python3 skills/skill-creator/scripts/package_skill.py skills/my-skill ./dist
 
 ## 五、技能位置总结
 
-| 位置 | 路径 | 说明 | 优先级 |
-|------|------|------|--------|
-| Bundled | `skills/` | 内置技能（随安装包） | 低 |
-| Managed | `~/.openclaw/skills/` | 用户共享技能 | 中 |
-| Workspace | `<workspace>/skills/` | 工作区技能 | 高 |
-| Extra | 配置的 `extraDirs` | 额外技能目录 | 最低 |
-| Plugin | 插件目录 | 插件提供的技能 | 依赖声明 |
+| 位置      | 路径                  | 说明                 | 优先级   |
+| --------- | --------------------- | -------------------- | -------- |
+| Bundled   | `skills/`             | 内置技能（随安装包） | 低       |
+| Managed   | `~/.openclaw/skills/` | 用户共享技能         | 中       |
+| Workspace | `<workspace>/skills/` | 工作区技能           | 高       |
+| Extra     | 配置的 `extraDirs`    | 额外技能目录         | 最低     |
+| Plugin    | 插件目录              | 插件提供的技能       | 依赖声明 |
 
 ---
 
@@ -416,6 +403,7 @@ python3 skills/skill-creator/scripts/package_skill.py skills/my-skill ./dist
 ### Q: 如何禁用某个内置技能？
 
 在配置中设置：
+
 ```json
 {
   "skills": {
@@ -429,6 +417,7 @@ python3 skills/skill-creator/scripts/package_skill.py skills/my-skill ./dist
 ### Q: 如何只启用特定的内置技能？
 
 使用白名单：
+
 ```json
 {
   "skills": {
@@ -440,16 +429,17 @@ python3 skills/skill-creator/scripts/package_skill.py skills/my-skill ./dist
 ### Q: 如何为技能设置 API Key？
 
 两种方式：
+
 ```json
 {
   "skills": {
     "entries": {
       "gemini": {
-        "apiKey": "your-key"  // 使用 primaryEnv 映射
+        "apiKey": "your-key" // 使用 primaryEnv 映射
       },
       "other-skill": {
         "env": {
-          "CUSTOM_API_KEY": "your-key"  // 直接设置环境变量
+          "CUSTOM_API_KEY": "your-key" // 直接设置环境变量
         }
       }
     }

@@ -10,14 +10,14 @@
 
 ### PowerShell 常见的命令兼容性问题
 
-| 场景 | Bash 命令 | PowerShell 行为 |
-|------|-----------|----------------|
-| 删除目录 | `rm -rf dist/` | `rm` 是 `Remove-Item` 的别名，不支持 `-rf` 参数 |
-| 环境变量 | `export NODE_ENV=production` | 不支持 `export`，需使用 `$env:NODE_ENV="production"` |
-| 链式命令 | `command1 && command2` | PowerShell 5.x 不支持 `&&` 运算符 |
-| 文本搜索 | `grep "pattern" file` | `grep` 不存在，需用 `Select-String` |
-| 查看文件 | `cat file \| head -20` | `head` 不存在，需用 `Get-Content -TotalCount` |
-| 路径分隔符 | `/path/to/file` | Windows 默认使用 `\`，部分工具不兼容 |
+| 场景       | Bash 命令                    | PowerShell 行为                                      |
+| ---------- | ---------------------------- | ---------------------------------------------------- |
+| 删除目录   | `rm -rf dist/`               | `rm` 是 `Remove-Item` 的别名，不支持 `-rf` 参数      |
+| 环境变量   | `export NODE_ENV=production` | 不支持 `export`，需使用 `$env:NODE_ENV="production"` |
+| 链式命令   | `command1 && command2`       | PowerShell 5.x 不支持 `&&` 运算符                    |
+| 文本搜索   | `grep "pattern" file`        | `grep` 不存在，需用 `Select-String`                  |
+| 查看文件   | `cat file \| head -20`       | `head` 不存在，需用 `Get-Content -TotalCount`        |
+| 路径分隔符 | `/path/to/file`              | Windows 默认使用 `\`，部分工具不兼容                 |
 
 这些差异在 AI Agent 执行命令时尤为明显——Agent 默认生成的是 Bash 风格命令，在 PowerShell 中直接运行会频繁失败。
 
@@ -50,13 +50,13 @@ Git Bash 的 `bash.exe` 通常位于以下路径之一：
 
 ```json
 {
-    "terminal.integrated.profiles.windows": {
-        "Git Bash": {
-            "path": "D:\\Program Files\\Git\\bin\\bash.exe",
-            "icon": "terminal-bash"
-        }
-    },
-    "terminal.integrated.defaultProfile.windows": "Git Bash"
+  "terminal.integrated.profiles.windows": {
+    "Git Bash": {
+      "path": "D:\\Program Files\\Git\\bin\\bash.exe",
+      "icon": "terminal-bash"
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "Git Bash"
 }
 ```
 
@@ -78,24 +78,24 @@ Git Bash 的 `bash.exe` 通常位于以下路径之一：
 
 ```json
 {
-    "window.commandCenter": true,
-    "git.autofetch": true,
-    "git.enableSmartCommit": true,
-    "terminal.integrated.profiles.windows": {
-        "PowerShell": {
-            "source": "PowerShell",
-            "icon": "terminal-powershell"
-        },
-        "Git Bash": {
-            "path": "D:\\Program Files\\Git\\bin\\bash.exe",
-            "icon": "terminal-bash"
-        },
-        "Command Prompt": {
-            "path": "C:\\Windows\\System32\\cmd.exe",
-            "icon": "terminal-cmd"
-        }
+  "window.commandCenter": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
     },
-    "terminal.integrated.defaultProfile.windows": "Git Bash"
+    "Git Bash": {
+      "path": "D:\\Program Files\\Git\\bin\\bash.exe",
+      "icon": "terminal-bash"
+    },
+    "Command Prompt": {
+      "path": "C:\\Windows\\System32\\cmd.exe",
+      "icon": "terminal-cmd"
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "Git Bash"
 }
 ```
 
@@ -137,11 +137,11 @@ git branch -a
 
 ## 五、settings.json 文件位置
 
-| 操作系统 | 路径 |
-|----------|------|
-| Windows | `%APPDATA%\Cursor\User\settings.json` |
-| macOS | `~/Library/Application Support/Cursor/User/settings.json` |
-| Linux | `~/.config/Cursor/User/settings.json` |
+| 操作系统 | 路径                                                      |
+| -------- | --------------------------------------------------------- |
+| Windows  | `%APPDATA%\Cursor\User\settings.json`                     |
+| macOS    | `~/Library/Application Support/Cursor/User/settings.json` |
+| Linux    | `~/.config/Cursor/User/settings.json`                     |
 
 在 Windows 上，`%APPDATA%` 通常展开为 `C:\Users\<用户名>\AppData\Roaming`。
 
@@ -167,9 +167,9 @@ cmd //c ipconfig
 
 Git Bash 使用 Unix 风格路径，Windows 盘符映射规则为：
 
-| Windows 路径 | Git Bash 路径 |
-|-------------|--------------|
-| `C:\Users\Admin` | `/c/Users/Admin` |
+| Windows 路径        | Git Bash 路径       |
+| ------------------- | ------------------- |
+| `C:\Users\Admin`    | `/c/Users/Admin`    |
 | `D:\github\project` | `/d/github/project` |
 
 ### Q4: 如何临时使用 PowerShell
@@ -197,7 +197,7 @@ Cursor 中 AI Agent 使用的 Shell 可能独立于集成终端设置。如果 A
 
 ```json
 {
-    "terminal.integrated.defaultProfile.windows": "PowerShell"
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
 }
 ```
 
