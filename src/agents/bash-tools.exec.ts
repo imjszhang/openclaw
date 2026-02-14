@@ -1,8 +1,5 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
-import type { ChildProcessWithoutNullStreams } from "node:child_process";
-import { Type } from "@sinclair/typebox";
 import crypto from "node:crypto";
-import path from "node:path";
 import type { BashSandboxConfig } from "./bash-tools.shared.js";
 import {
   type ExecAsk,
@@ -19,40 +16,46 @@ import {
   resolveExecApprovals,
   resolveExecApprovalsFromFile,
 } from "../infra/exec-approvals.js";
-import { requestHeartbeatNow } from "../infra/heartbeat-wake.js";
 import { buildNodeShellCommand } from "../infra/node-shell.js";
 import {
   getShellPathFromLoginShell,
   resolveShellEnvFallbackTimeoutMs,
 } from "../infra/shell-env.js";
-import { enqueueSystemEvent } from "../infra/system-events.js";
-import { logInfo, logWarn } from "../logger.js";
-import { formatSpawnError, spawnWithFallback } from "../process/spawn-utils.js";
+import { logInfo } from "../logger.js";
 import { parseAgentSessionKey, resolveAgentIdFromSessionKey } from "../routing/session-key.js";
+import { markBackgrounded, tail } from "./bash-process-registry.js";
 import {
-  type ProcessSession,
-  type SessionStdin,
-  addSession,
-  appendOutput,
-  createSessionSlug,
-  markBackgrounded,
-  markExited,
-  tail,
-} from "./bash-process-registry.js";
+  DEFAULT_APPROVAL_REQUEST_TIMEOUT_MS,
+  DEFAULT_APPROVAL_TIMEOUT_MS,
+  DEFAULT_MAX_OUTPUT,
+  DEFAULT_NOTIFY_TAIL_CHARS,
+  DEFAULT_PATH,
+  DEFAULT_PENDING_MAX_OUTPUT,
+  applyPathPrepend,
+  applyShellPath,
+  createApprovalSlug,
+  emitExecSystemEvent,
+  normalizeExecAsk,
+  normalizeExecHost,
+  normalizeExecSecurity,
+  normalizeNotifyOutput,
+  normalizePathPrepend,
+  renderExecHostLabel,
+  resolveApprovalRunningNoticeMs,
+  runExecProcess,
+  execSchema,
+  type ExecProcessHandle,
+  validateHostEnv,
+} from "./bash-tools.exec-runtime.js";
 import {
-  buildDockerExecArgs,
   buildSandboxEnv,
-  chunkString,
   clampWithDefault,
   coerceEnv,
-  killSession,
   readEnvInt,
   resolveSandboxWorkdir,
   resolveWorkdir,
   truncateMiddle,
 } from "./bash-tools.shared.js";
-import { buildCursorPositionResponse, stripDsrRequests } from "./pty-dsr.js";
-import { getShellConfig, sanitizeBinaryOutput } from "./shell-utils.js";
 import { callGatewayTool } from "./tools/gateway.js";
 import { listNodes, resolveNodeIdFromList } from "./tools/nodes-utils.js";
 
@@ -192,54 +195,6 @@ export type ExecElevatedDefaults = {
   allowed: boolean;
   defaultLevel: "on" | "off" | "ask" | "full";
 };
-
-const execSchema = Type.Object({
-  command: Type.String({ description: "Shell command to execute" }),
-  workdir: Type.Optional(Type.String({ description: "Working directory (defaults to cwd)" })),
-  env: Type.Optional(Type.Record(Type.String(), Type.String())),
-  yieldMs: Type.Optional(
-    Type.Number({
-      description: "Milliseconds to wait before backgrounding (default 10000)",
-    }),
-  ),
-  background: Type.Optional(Type.Boolean({ description: "Run in background immediately" })),
-  timeout: Type.Optional(
-    Type.Number({
-      description: "Timeout in seconds (optional, kills process on expiry)",
-    }),
-  ),
-  pty: Type.Optional(
-    Type.Boolean({
-      description:
-        "Run in a pseudo-terminal (PTY) when available (TTY-required CLIs, coding agents)",
-    }),
-  ),
-  elevated: Type.Optional(
-    Type.Boolean({
-      description: "Run on the host with elevated permissions (if allowed)",
-    }),
-  ),
-  host: Type.Optional(
-    Type.String({
-      description: "Exec host (sandbox|gateway|node).",
-    }),
-  ),
-  security: Type.Optional(
-    Type.String({
-      description: "Exec security mode (deny|allowlist|full).",
-    }),
-  ),
-  ask: Type.Optional(
-    Type.String({
-      description: "Exec ask mode (off|on-miss|always).",
-    }),
-  ),
-  node: Type.Optional(
-    Type.String({
-      description: "Node id/name for host=node.",
-    }),
-  ),
-});
 
 export type ExecToolDetails =
   | {
