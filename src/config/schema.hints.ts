@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { FIELD_HELP } from "./schema.help.js";
+import { IRC_FIELD_HELP, IRC_FIELD_LABELS } from "./schema.irc.js";
 import { FIELD_LABELS } from "./schema.labels.js";
 import { sensitive } from "./zod-schema.sensitive.js";
 

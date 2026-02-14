@@ -342,6 +342,8 @@ export async function runExecProcess(opts: {
   env: Record<string, string>;
   sandbox?: BashSandboxConfig;
   containerWorkdir?: string | null;
+  shell?: string;
+  shellArgs?: string[];
   usePty: boolean;
   warnings: string[];
   maxOutput: number;
@@ -393,7 +395,10 @@ export async function runExecProcess(opts: {
     child = spawned as ChildProcessWithoutNullStreams;
     stdin = child.stdin;
   } else if (opts.usePty) {
-    const { shell, args: shellArgs } = getShellConfig();
+    const { shell, args: shellArgs } = getShellConfig({
+      shell: opts.shell,
+      shellArgs: opts.shellArgs,
+    });
     try {
       const ptyModule = (await import("@lydell/node-pty")) as unknown as {
         spawn?: PtySpawn;
@@ -460,7 +465,10 @@ export async function runExecProcess(opts: {
       stdin = child.stdin;
     }
   } else {
-    const { shell, args: shellArgs } = getShellConfig();
+    const { shell, args: shellArgs } = getShellConfig({
+      shell: opts.shell,
+      shellArgs: opts.shellArgs,
+    });
     const { child: spawned } = await spawnWithFallback({
       argv: [shell, ...shellArgs, opts.command],
       options: {
