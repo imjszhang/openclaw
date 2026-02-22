@@ -93,7 +93,7 @@ export function getShellConfig(overrides?: { shell?: string; shellArgs?: string[
   return { shell, args };
 }
 
-function resolveShellFromPath(name: string): string | undefined {
+export function resolveShellFromPath(name: string): string | undefined {
   const envPath = process.env.PATH ?? "";
   if (!envPath) {
     return undefined;

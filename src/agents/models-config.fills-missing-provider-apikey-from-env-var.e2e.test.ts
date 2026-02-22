@@ -1,48 +1,48 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { OpenClawConfig } from "../config/config.js";
-import { withTempHome as withTempHomeBase } from "../../test/helpers/temp-home.js";
+import { validateConfigObject } from "../config/validation.js";
 import { resolveOpenClawAgentDir } from "./agent-paths.js";
+import {
+  CUSTOM_PROXY_MODELS_CONFIG,
+  installModelsConfigTestHooks,
+  withModelsTempHome as withTempHome,
+} from "./models-config.e2e-harness.js";
 import { ensureOpenClawModelsJson } from "./models-config.js";
 
-async function withTempHome<T>(fn: (home: string) => Promise<T>): Promise<T> {
-  return withTempHomeBase(fn, { prefix: "openclaw-models-" });
-}
-
-const MODELS_CONFIG: OpenClawConfig = {
-  models: {
-    providers: {
-      "custom-proxy": {
-        baseUrl: "http://localhost:4000/v1",
-        apiKey: "TEST_KEY",
-        api: "openai-completions",
-        models: [
-          {
-            id: "llama-3.1-8b",
-            name: "Llama 3.1 8B (Proxy)",
-            api: "openai-completions",
-            reasoning: false,
-            input: ["text"],
-            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-            contextWindow: 128000,
-            maxTokens: 32000,
-          },
-        ],
-      },
-    },
-  },
-};
+installModelsConfigTestHooks();
 
 describe("models-config", () => {
-  let previousHome: string | undefined;
+  it("keeps anthropic api defaults when model entries omit api", async () => {
+    await withTempHome(async () => {
+      const validated = validateConfigObject({
+        models: {
+          providers: {
+            anthropic: {
+              baseUrl: "https://relay.example.com/api",
+              apiKey: "cr_xxxx",
+              models: [{ id: "claude-opus-4-6", name: "Claude Opus 4.6" }],
+            },
+          },
+        },
+      });
+      expect(validated.ok).toBe(true);
+      if (!validated.ok) {
+        throw new Error("expected config to validate");
+      }
 
-  beforeEach(() => {
-    previousHome = process.env.HOME;
-  });
+      await ensureOpenClawModelsJson(validated.config);
 
-  afterEach(() => {
-    process.env.HOME = previousHome;
+      const modelPath = path.join(resolveOpenClawAgentDir(), "models.json");
+      const raw = await fs.readFile(modelPath, "utf8");
+      const parsed = JSON.parse(raw) as {
+        providers: Record<string, { api?: string; models?: Array<{ id: string; api?: string }> }>;
+      };
+
+      expect(parsed.providers.anthropic?.api).toBe("anthropic-messages");
+      expect(parsed.providers.anthropic?.models?.[0]?.api).toBe("anthropic-messages");
+    });
   });
 
   it("fills missing provider.apiKey from env var name when models exist", async () => {
@@ -125,7 +125,7 @@ describe("models-config", () => {
         "utf8",
       );
 
-      await ensureOpenClawModelsJson(MODELS_CONFIG);
+      await ensureOpenClawModelsJson(CUSTOM_PROXY_MODELS_CONFIG);
 
       const raw = await fs.readFile(path.join(agentDir, "models.json"), "utf8");
       const parsed = JSON.parse(raw) as {

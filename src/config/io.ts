@@ -1,10 +1,9 @@
-import JSON5 from "json5";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import type { OpenClawConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
+import JSON5 from "json5";
 import { loadDotEnv } from "../infra/dotenv.js";
 import { resolveRequiredHomeDir } from "../infra/home-dir.js";
 import {
@@ -15,6 +14,7 @@ import {
 } from "../infra/shell-env.js";
 import { VERSION } from "../version.js";
 import { DuplicateAgentDirError, findDuplicateAgentDirs } from "./agent-dirs.js";
+import { rotateConfigBackups } from "./backup-rotation.js";
 import {
   applyCompactionDefaults,
   applyContextPruningDefaults,
@@ -31,13 +31,14 @@ import {
   containsEnvVarReference,
   resolveConfigEnvVars,
 } from "./env-substitution.js";
-import { collectConfigEnvVars } from "./env-vars.js";
+import { applyConfigEnvVars } from "./env-vars.js";
 import { ConfigIncludeError, resolveConfigIncludes } from "./includes.js";
 import { findLegacyConfigIssues } from "./legacy.js";
 import { applyMergePatch } from "./merge-patch.js";
 import { normalizeConfigPaths } from "./normalize-paths.js";
 import { resolveConfigPath, resolveDefaultConfigCandidates, resolveStateDir } from "./paths.js";
 import { applyConfigOverrides } from "./runtime-overrides.js";
+import type { OpenClawConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
 import {
   validateConfigObjectRawWithPlugins,
   validateConfigObjectWithPlugins,
@@ -67,7 +68,6 @@ const SHELL_ENV_EXPECTED_KEYS = [
   "OPENCLAW_GATEWAY_PASSWORD",
 ];
 
-const CONFIG_BACKUP_COUNT = 5;
 const CONFIG_AUDIT_LOG_FILENAME = "config-audit.jsonl";
 const loggedInvalidConfigs = new Set<string>();
 
@@ -114,6 +114,11 @@ export type ConfigWriteOptions = {
    * same config file path that produced the snapshot.
    */
   expectedConfigPath?: string;
+  /**
+   * Paths that must be explicitly removed from the persisted file payload,
+   * even if schema/default normalization reintroduces them.
+   */
+  unsetPaths?: string[][];
 };
 
 export type ReadConfigFileSnapshotForWriteResult = {
@@ -126,6 +131,86 @@ function hashConfigRaw(raw: string | null): string {
     .createHash("sha256")
     .update(raw ?? "")
     .digest("hex");
+}
+
+function isNumericPathSegment(raw: string): boolean {
+  return /^[0-9]+$/.test(raw);
+}
+
+function isWritePlainObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function unsetPathForWrite(root: Record<string, unknown>, pathSegments: string[]): boolean {
+  if (pathSegments.length === 0) {
+    return false;
+  }
+
+  const traversal: Array<{ container: unknown; key: string | number }> = [];
+  let cursor: unknown = root;
+
+  for (let i = 0; i < pathSegments.length - 1; i += 1) {
+    const segment = pathSegments[i];
+    if (Array.isArray(cursor)) {
+      if (!isNumericPathSegment(segment)) {
+        return false;
+      }
+      const index = Number.parseInt(segment, 10);
+      if (!Number.isFinite(index) || index < 0 || index >= cursor.length) {
+        return false;
+      }
+      traversal.push({ container: cursor, key: index });
+      cursor = cursor[index];
+      continue;
+    }
+    if (!isWritePlainObject(cursor) || !(segment in cursor)) {
+      return false;
+    }
+    traversal.push({ container: cursor, key: segment });
+    cursor = cursor[segment];
+  }
+
+  const leaf = pathSegments[pathSegments.length - 1];
+  if (Array.isArray(cursor)) {
+    if (!isNumericPathSegment(leaf)) {
+      return false;
+    }
+    const index = Number.parseInt(leaf, 10);
+    if (!Number.isFinite(index) || index < 0 || index >= cursor.length) {
+      return false;
+    }
+    cursor.splice(index, 1);
+  } else {
+    if (!isWritePlainObject(cursor) || !(leaf in cursor)) {
+      return false;
+    }
+    delete cursor[leaf];
+  }
+
+  // Prune now-empty object branches after unsetting to avoid dead config scaffolding.
+  for (let i = traversal.length - 1; i >= 0; i -= 1) {
+    const { container, key } = traversal[i];
+    let child: unknown;
+    if (Array.isArray(container)) {
+      child = typeof key === "number" ? container[key] : undefined;
+    } else if (isWritePlainObject(container)) {
+      child = container[String(key)];
+    } else {
+      break;
+    }
+    if (!isWritePlainObject(child) || Object.keys(child).length > 0) {
+      break;
+    }
+    if (Array.isArray(container) && typeof key === "number") {
+      if (key >= 0 && key < container.length) {
+        container.splice(key, 1);
+      }
+    } else if (isWritePlainObject(container)) {
+      delete container[String(key)];
+    }
+  }
+
+  return true;
 }
 
 export function resolveConfigSnapshotHash(snapshot: {
@@ -340,25 +425,6 @@ function restoreEnvRefsFromMap(
   return value;
 }
 
-async function rotateConfigBackups(configPath: string, ioFs: typeof fs.promises): Promise<void> {
-  if (CONFIG_BACKUP_COUNT <= 1) {
-    return;
-  }
-  const backupBase = `${configPath}.bak`;
-  const maxIndex = CONFIG_BACKUP_COUNT - 1;
-  await ioFs.unlink(`${backupBase}.${maxIndex}`).catch(() => {
-    // best-effort
-  });
-  for (let index = maxIndex - 1; index >= 1; index -= 1) {
-    await ioFs.rename(`${backupBase}.${index}`, `${backupBase}.${index + 1}`).catch(() => {
-      // best-effort
-    });
-  }
-  await ioFs.rename(backupBase, `${backupBase}.1`).catch(() => {
-    // best-effort
-  });
-}
-
 function resolveConfigAuditLogPath(env: NodeJS.ProcessEnv, homedir: () => string): string {
   return path.join(resolveStateDir(env, homedir), "logs", CONFIG_AUDIT_LOG_FILENAME);
 }
@@ -460,16 +526,6 @@ function warnIfConfigFromFuture(cfg: OpenClawConfig, logger: Pick<typeof console
   }
 }
 
-function applyConfigEnv(cfg: OpenClawConfig, env: NodeJS.ProcessEnv): void {
-  const entries = collectConfigEnvVars(cfg);
-  for (const [key, value] of Object.entries(entries)) {
-    if (env[key]?.trim()) {
-      continue;
-    }
-    env[key] = value;
-  }
-}
-
 function resolveConfigPathForDeps(deps: Required<ConfigIoDeps>): string {
   if (deps.configPath) {
     return deps.configPath;
@@ -531,7 +587,7 @@ function resolveConfigForRead(
 ): ConfigReadResolution {
   // Apply config.env to process.env BEFORE substitution so ${VAR} can reference config-defined vars.
   if (resolvedIncludes && typeof resolvedIncludes === "object" && "env" in resolvedIncludes) {
-    applyConfigEnv(resolvedIncludes as OpenClawConfig, env);
+    applyConfigEnvVars(resolvedIncludes as OpenClawConfig, env);
   }
 
   return {
@@ -627,7 +683,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
         throw new DuplicateAgentDirError(duplicates);
       }
 
-      applyConfigEnv(cfg, deps.env);
+      applyConfigEnvVars(cfg, deps.env);
 
       const enabled = shouldEnableShellEnvFallback(deps.env) || cfg.env?.shellEnv?.enabled === true;
       if (enabled && !shouldDeferShellEnvFallback(deps.env)) {
@@ -921,6 +977,14 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       envRefMap && changedPaths
         ? (restoreEnvRefsFromMap(cfgToWrite, "", envRefMap, changedPaths) as OpenClawConfig)
         : cfgToWrite;
+    if (options.unsetPaths?.length) {
+      for (const unsetPath of options.unsetPaths) {
+        if (!Array.isArray(unsetPath) || unsetPath.length === 0) {
+          continue;
+        }
+        unsetPathForWrite(outputConfig as Record<string, unknown>, unsetPath);
+      }
+    }
     // Do NOT apply runtime defaults when writing — user config should only contain
     // explicitly set values. Runtime defaults are applied when loading (issue #6070).
     const stampedOutputConfig = stampConfigVersion(outputConfig);
@@ -960,6 +1024,12 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
     };
     const logConfigWriteAnomalies = () => {
       if (suspiciousReasons.length === 0) {
+        return;
+      }
+      // Tests often write minimal configs (missing meta, etc); keep output quiet unless requested.
+      const isVitest = deps.env.VITEST === "true";
+      const shouldLogInVitest = deps.env.OPENCLAW_TEST_CONFIG_WRITE_ANOMALY_LOG === "1";
+      if (isVitest && !shouldLogInVitest) {
         return;
       }
       deps.logger.warn(`Config write anomaly: ${configPath} (${suspiciousReasons.join(", ")})`);
@@ -1152,5 +1222,6 @@ export async function writeConfigFile(
     options.expectedConfigPath === undefined || options.expectedConfigPath === io.configPath;
   await io.writeConfigFile(cfg, {
     envSnapshotForRestore: sameConfigPath ? options.envSnapshotForRestore : undefined,
+    unsetPaths: options.unsetPaths,
   });
 }

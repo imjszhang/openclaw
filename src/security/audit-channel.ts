@@ -1,17 +1,61 @@
+import { resolveChannelDefaultAccountId } from "../channels/plugins/helpers.js";
 import type { listChannelPlugins } from "../channels/plugins/index.js";
 import type { ChannelId } from "../channels/plugins/types.js";
-import type { OpenClawConfig } from "../config/config.js";
-import type { SecurityAuditFinding, SecurityAuditSeverity } from "./audit.js";
-import { resolveChannelDefaultAccountId } from "../channels/plugins/helpers.js";
+import {
+  isNumericTelegramUserId,
+  normalizeTelegramAllowFromEntry,
+} from "../channels/telegram/allow-from.js";
 import { formatCliCommand } from "../cli/command-format.js";
 import { resolveNativeCommandsEnabled, resolveNativeSkillsEnabled } from "../config/commands.js";
+import type { OpenClawConfig } from "../config/config.js";
 import { readChannelAllowFromStore } from "../pairing/pairing-store.js";
+import { normalizeStringEntries } from "../shared/string-normalization.js";
+import type { SecurityAuditFinding, SecurityAuditSeverity } from "./audit.js";
+import { resolveDmAllowState } from "./dm-policy-shared.js";
 
 function normalizeAllowFromList(list: Array<string | number> | undefined | null): string[] {
-  if (!Array.isArray(list)) {
-    return [];
+  return normalizeStringEntries(Array.isArray(list) ? list : undefined);
+}
+
+const DISCORD_ALLOWLIST_ID_PREFIXES = ["discord:", "user:", "pk:"] as const;
+
+function isDiscordNameBasedAllowEntry(raw: string | number): boolean {
+  const text = String(raw).trim();
+  if (!text || text === "*") {
+    return false;
   }
-  return list.map((v) => String(v).trim()).filter(Boolean);
+  const maybeId = text.replace(/^<@!?/, "").replace(/>$/, "");
+  if (/^\d+$/.test(maybeId)) {
+    return false;
+  }
+  const prefixed = DISCORD_ALLOWLIST_ID_PREFIXES.find((prefix) => text.startsWith(prefix));
+  if (prefixed) {
+    const candidate = text.slice(prefixed.length);
+    if (candidate) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function addDiscordNameBasedEntries(params: {
+  target: Set<string>;
+  values: unknown;
+  source: string;
+}): void {
+  if (!Array.isArray(params.values)) {
+    return;
+  }
+  for (const value of params.values) {
+    if (!isDiscordNameBasedAllowEntry(value as string | number)) {
+      continue;
+    }
+    const text = String(value).trim();
+    if (!text) {
+      continue;
+    }
+    params.target.add(`${params.source}:${text}`);
+  }
 }
 
 function classifyChannelWarningSeverity(message: string): SecurityAuditSeverity {
@@ -61,22 +105,12 @@ export async function collectChannelSecurityFindings(params: {
     normalizeEntry?: (raw: string) => string;
   }) => {
     const policyPath = input.policyPath ?? `${input.allowFromPath}policy`;
-    const configAllowFrom = normalizeAllowFromList(input.allowFrom);
-    const hasWildcard = configAllowFrom.includes("*");
+    const { hasWildcard, isMultiUserDm } = await resolveDmAllowState({
+      provider: input.provider,
+      allowFrom: input.allowFrom,
+      normalizeEntry: input.normalizeEntry,
+    });
     const dmScope = params.cfg.session?.dmScope ?? "main";
-    const storeAllowFrom = await readChannelAllowFromStore(input.provider).catch(() => []);
-    const normalizeEntry = input.normalizeEntry ?? ((value: string) => value);
-    const normalizedCfg = configAllowFrom
-      .filter((value) => value !== "*")
-      .map((value) => normalizeEntry(value))
-      .map((value) => value.trim())
-      .filter(Boolean);
-    const normalizedStore = storeAllowFrom
-      .map((value) => normalizeEntry(value))
-      .map((value) => value.trim())
-      .filter(Boolean);
-    const allowCount = Array.from(new Set([...normalizedCfg, ...normalizedStore])).length;
-    const isMultiUserDm = hasWildcard || allowCount > 1;
 
     if (input.dmPolicy === "open") {
       const allowFromKey = `${input.allowFromPath}allowFrom`;
@@ -148,6 +182,69 @@ export async function collectChannelSecurityFindings(params: {
       const discordCfg =
         (account as { config?: Record<string, unknown> } | null)?.config ??
         ({} as Record<string, unknown>);
+      const storeAllowFrom = await readChannelAllowFromStore("discord").catch(() => []);
+      const discordNameBasedAllowEntries = new Set<string>();
+      addDiscordNameBasedEntries({
+        target: discordNameBasedAllowEntries,
+        values: discordCfg.allowFrom,
+        source: "channels.discord.allowFrom",
+      });
+      addDiscordNameBasedEntries({
+        target: discordNameBasedAllowEntries,
+        values: (discordCfg.dm as { allowFrom?: unknown } | undefined)?.allowFrom,
+        source: "channels.discord.dm.allowFrom",
+      });
+      addDiscordNameBasedEntries({
+        target: discordNameBasedAllowEntries,
+        values: storeAllowFrom,
+        source: "~/.openclaw/credentials/discord-allowFrom.json",
+      });
+      const discordGuildEntries = (discordCfg.guilds as Record<string, unknown> | undefined) ?? {};
+      for (const [guildKey, guildValue] of Object.entries(discordGuildEntries)) {
+        if (!guildValue || typeof guildValue !== "object") {
+          continue;
+        }
+        const guild = guildValue as Record<string, unknown>;
+        addDiscordNameBasedEntries({
+          target: discordNameBasedAllowEntries,
+          values: guild.users,
+          source: `channels.discord.guilds.${guildKey}.users`,
+        });
+        const channels = guild.channels;
+        if (!channels || typeof channels !== "object") {
+          continue;
+        }
+        for (const [channelKey, channelValue] of Object.entries(
+          channels as Record<string, unknown>,
+        )) {
+          if (!channelValue || typeof channelValue !== "object") {
+            continue;
+          }
+          const channel = channelValue as Record<string, unknown>;
+          addDiscordNameBasedEntries({
+            target: discordNameBasedAllowEntries,
+            values: channel.users,
+            source: `channels.discord.guilds.${guildKey}.channels.${channelKey}.users`,
+          });
+        }
+      }
+      if (discordNameBasedAllowEntries.size > 0) {
+        const examples = Array.from(discordNameBasedAllowEntries).slice(0, 5);
+        const more =
+          discordNameBasedAllowEntries.size > examples.length
+            ? ` (+${discordNameBasedAllowEntries.size - examples.length} more)`
+            : "";
+        findings.push({
+          checkId: "channels.discord.allowFrom.name_based_entries",
+          severity: "warn",
+          title: "Discord allowlist contains name or tag entries",
+          detail:
+            "Discord name/tag allowlist matching uses normalized slugs and can collide across users. " +
+            `Found: ${examples.join(", ")}${more}.`,
+          remediation:
+            "Prefer stable Discord IDs (or <@id>/user:<id>/pk:<id>) in channels.discord.allowFrom and channels.discord.guilds.*.users.",
+        });
+      }
       const nativeEnabled = resolveNativeCommandsEnabled({
         providerId: "discord",
         providerSetting: coerceNativeSetting(
@@ -167,7 +264,7 @@ export async function collectChannelSecurityFindings(params: {
         const defaultGroupPolicy = params.cfg.channels?.defaults?.groupPolicy;
         const groupPolicy =
           (discordCfg.groupPolicy as string | undefined) ?? defaultGroupPolicy ?? "allowlist";
-        const guildEntries = (discordCfg.guilds as Record<string, unknown> | undefined) ?? {};
+        const guildEntries = discordGuildEntries;
         const guildsConfigured = Object.keys(guildEntries).length > 0;
         const hasAnyUserAllowlist = Object.values(guildEntries).some((guild) => {
           if (!guild || typeof guild !== "object") {
@@ -191,7 +288,6 @@ export async function collectChannelSecurityFindings(params: {
         });
         const dmAllowFromRaw = (discordCfg.dm as { allowFrom?: unknown } | undefined)?.allowFrom;
         const dmAllowFrom = Array.isArray(dmAllowFromRaw) ? dmAllowFromRaw : [];
-        const storeAllowFrom = await readChannelAllowFromStore("discord").catch(() => []);
         const ownerAllowFromConfigured =
           normalizeAllowFromList([...dmAllowFrom, ...storeAllowFrom]).length > 0;
 
@@ -225,7 +321,7 @@ export async function collectChannelSecurityFindings(params: {
             detail:
               "Discord slash commands are enabled, but neither an owner allowFrom list nor any per-guild/channel users allowlist is configured; /… commands will be rejected for everyone.",
             remediation:
-              "Add your user id to channels.discord.dm.allowFrom (or approve yourself via pairing), or configure channels.discord.guilds.<id>.users.",
+              "Add your user id to channels.discord.allowFrom (or approve yourself via pairing), or configure channels.discord.guilds.<id>.users.",
           });
         }
       }
@@ -265,12 +361,23 @@ export async function collectChannelSecurityFindings(params: {
             remediation: "Set commands.useAccessGroups=true (recommended).",
           });
         } else {
-          const dmAllowFromRaw = (account as { dm?: { allowFrom?: unknown } } | null)?.dm
-            ?.allowFrom;
-          const dmAllowFrom = Array.isArray(dmAllowFromRaw) ? dmAllowFromRaw : [];
+          const allowFromRaw = (
+            account as
+              | { config?: { allowFrom?: unknown }; dm?: { allowFrom?: unknown } }
+              | null
+              | undefined
+          )?.config?.allowFrom;
+          const legacyAllowFromRaw = (
+            account as { dm?: { allowFrom?: unknown } } | null | undefined
+          )?.dm?.allowFrom;
+          const allowFrom = Array.isArray(allowFromRaw)
+            ? allowFromRaw
+            : Array.isArray(legacyAllowFromRaw)
+              ? legacyAllowFromRaw
+              : [];
           const storeAllowFrom = await readChannelAllowFromStore("slack").catch(() => []);
           const ownerAllowFromConfigured =
-            normalizeAllowFromList([...dmAllowFrom, ...storeAllowFrom]).length > 0;
+            normalizeAllowFromList([...allowFrom, ...storeAllowFrom]).length > 0;
           const channels = (slackCfg.channels as Record<string, unknown> | undefined) ?? {};
           const hasAnyChannelUsersAllowlist = Object.values(channels).some((value) => {
             if (!value || typeof value !== "object") {
@@ -287,7 +394,7 @@ export async function collectChannelSecurityFindings(params: {
               detail:
                 "Slack slash/native commands are enabled, but neither an owner allowFrom list nor any channels.<id>.users allowlist is configured; /… commands will be rejected for everyone.",
               remediation:
-                "Approve yourself via pairing (recommended), or set channels.slack.dm.allowFrom and/or channels.slack.channels.<id>.users.",
+                "Approve yourself via pairing (recommended), or set channels.slack.allowFrom and/or channels.slack.channels.<id>.users.",
             });
           }
         }
@@ -353,10 +460,39 @@ export async function collectChannelSecurityFindings(params: {
 
       const storeAllowFrom = await readChannelAllowFromStore("telegram").catch(() => []);
       const storeHasWildcard = storeAllowFrom.some((v) => String(v).trim() === "*");
+      const invalidTelegramAllowFromEntries = new Set<string>();
+      for (const entry of storeAllowFrom) {
+        const normalized = normalizeTelegramAllowFromEntry(entry);
+        if (!normalized || normalized === "*") {
+          continue;
+        }
+        if (!isNumericTelegramUserId(normalized)) {
+          invalidTelegramAllowFromEntries.add(normalized);
+        }
+      }
       const groupAllowFrom = Array.isArray(telegramCfg.groupAllowFrom)
         ? telegramCfg.groupAllowFrom
         : [];
       const groupAllowFromHasWildcard = groupAllowFrom.some((v) => String(v).trim() === "*");
+      for (const entry of groupAllowFrom) {
+        const normalized = normalizeTelegramAllowFromEntry(entry);
+        if (!normalized || normalized === "*") {
+          continue;
+        }
+        if (!isNumericTelegramUserId(normalized)) {
+          invalidTelegramAllowFromEntries.add(normalized);
+        }
+      }
+      const dmAllowFrom = Array.isArray(telegramCfg.allowFrom) ? telegramCfg.allowFrom : [];
+      for (const entry of dmAllowFrom) {
+        const normalized = normalizeTelegramAllowFromEntry(entry);
+        if (!normalized || normalized === "*") {
+          continue;
+        }
+        if (!isNumericTelegramUserId(normalized)) {
+          invalidTelegramAllowFromEntries.add(normalized);
+        }
+      }
       const anyGroupOverride = Boolean(
         groups &&
         Object.values(groups).some((value) => {
@@ -366,6 +502,15 @@ export async function collectChannelSecurityFindings(params: {
           const group = value as Record<string, unknown>;
           const allowFrom = Array.isArray(group.allowFrom) ? group.allowFrom : [];
           if (allowFrom.length > 0) {
+            for (const entry of allowFrom) {
+              const normalized = normalizeTelegramAllowFromEntry(entry);
+              if (!normalized || normalized === "*") {
+                continue;
+              }
+              if (!isNumericTelegramUserId(normalized)) {
+                invalidTelegramAllowFromEntries.add(normalized);
+              }
+            }
             return true;
           }
           const topics = group.topics;
@@ -378,6 +523,15 @@ export async function collectChannelSecurityFindings(params: {
             }
             const topic = topicValue as Record<string, unknown>;
             const topicAllow = Array.isArray(topic.allowFrom) ? topic.allowFrom : [];
+            for (const entry of topicAllow) {
+              const normalized = normalizeTelegramAllowFromEntry(entry);
+              if (!normalized || normalized === "*") {
+                continue;
+              }
+              if (!isNumericTelegramUserId(normalized)) {
+                invalidTelegramAllowFromEntries.add(normalized);
+              }
+            }
             return topicAllow.length > 0;
           });
         }),
@@ -385,6 +539,24 @@ export async function collectChannelSecurityFindings(params: {
 
       const hasAnySenderAllowlist =
         storeAllowFrom.length > 0 || groupAllowFrom.length > 0 || anyGroupOverride;
+
+      if (invalidTelegramAllowFromEntries.size > 0) {
+        const examples = Array.from(invalidTelegramAllowFromEntries).slice(0, 5);
+        const more =
+          invalidTelegramAllowFromEntries.size > examples.length
+            ? ` (+${invalidTelegramAllowFromEntries.size - examples.length} more)`
+            : "";
+        findings.push({
+          checkId: "channels.telegram.allowFrom.invalid_entries",
+          severity: "warn",
+          title: "Telegram allowlist contains non-numeric entries",
+          detail:
+            "Telegram sender authorization requires numeric Telegram user IDs. " +
+            `Found non-numeric allowFrom entries: ${examples.join(", ")}${more}.`,
+          remediation:
+            "Replace @username entries with numeric Telegram user IDs (use onboarding to resolve), then re-run the audit.",
+        });
+      }
 
       if (storeHasWildcard || groupAllowFromHasWildcard) {
         findings.push({
@@ -394,7 +566,7 @@ export async function collectChannelSecurityFindings(params: {
           detail:
             'Telegram group sender allowlist contains "*", which allows any group member to run /… commands and control directives.',
           remediation:
-            'Remove "*" from channels.telegram.groupAllowFrom and pairing store; prefer explicit user ids/usernames.',
+            'Remove "*" from channels.telegram.groupAllowFrom and pairing store; prefer explicit numeric Telegram user IDs.',
         });
         continue;
       }
