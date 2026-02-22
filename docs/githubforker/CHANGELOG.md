@@ -4,6 +4,25 @@
 
 版本规则见 [README — 版本管理](README.md#版本管理)。
 
+## V1.1.0 — 2026-02-22
+
+将 README 中的动态内容（索引表、变更日志）拆分到独立的 INDEX.md 文件，README 仅保留架构说明和模板等稳定内容。
+
+### 变更
+
+- 新增 `INDEX.md` 角色：各目录的内容注册表，随日常写入更新
+- `githubforker/README.md` → 移除 journal 条目列表和 outputs 状态表，新增 `INDEX.md`
+- `pyramid/analysis/groups/README.md` → 移除分组总览表和变更日志，新增 `INDEX.md`
+- `pyramid/structure/README.md` → 移除视角总览表和变更日志，新增 `INDEX.md`
+- README 定位明确为**架构文档**（仅在架构变更时修改），INDEX 定位为**内容注册表**（随内容写入更新）
+- 更新 `pyramid/README.md` 中对 groups 和 structure 的交叉引用
+
+### 设计依据
+
+遵循架构自身原则 G05：增长型产物（索引表、变更日志）与固定型产物（方法论、模板）应使用不同的组织方式。
+
+---
+
 ## V1.0.0 — 2026-02-22
 
 初始架构，确立三层知识体系和金字塔拆解方法论。

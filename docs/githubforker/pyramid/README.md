@@ -57,11 +57,11 @@ flowchart LR
 
 按视角独立组织，每个视角有自己的一套 SCQA + tree + validation。
 
-| 目录/文件                           | 说明                 |
-| ----------------------------------- | -------------------- |
-| [structure/](structure/)            | 视角总览 + 变更日志  |
-| [\_template/](structure/_template/) | 新建视角的模板文件   |
-| PXX-xxx/                            | 各视角目录（待创建） |
+| 目录/文件                           | 说明                    |
+| ----------------------------------- | ----------------------- |
+| [structure/](structure/)            | 视角架构说明 + 新建流程 |
+| [\_template/](structure/_template/) | 新建视角的模板文件      |
+| PXX-xxx/                            | 各视角目录（待创建）    |
 
 → [视角总览与新建流程](structure/README.md)
 
@@ -71,7 +71,7 @@ flowchart LR
 
 1. **提取 atoms** — 在 `analysis/atoms/YYYY-MM/` 下创建对应文件，提取信息单元
 2. **归入 groups** — 审视现有分组：新 atoms 归入已有分组？还是需要新建/拆分/合并？
-   - 如需调整，在 `analysis/groups/README.md` 变更日志里记录
+   - 如需调整，在 `analysis/groups/INDEX.md` 变更日志里记录
 3. **检查 synthesis** — 顶层观点候选是否需要更新？
 4. **检查各视角** — 每个视角的 scqa / tree / validation 是否需要修订？
 5. **追加修订记录** — 在受影响的文件底部记录变更
@@ -100,16 +100,3 @@ flowchart TD
 | 视角内 tree         | 是，跟金字塔层数和宽度成正比 | 目录，每个 Key Line 一个文件 |
 | 视角内 scqa         | 不会，固定结构               | 单文件                       |
 | 视角内 validation   | 缓慢增长                     | 单文件，带修订记录           |
-
-## 当前进度
-
-### 已拆解
-
-（暂无）
-
-### 待拆解
-
-| 月份    | 数量 | journal 文档                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-01 | 6    | openclaw-analysis-report, fork-management-guide, channel-deployment-guide, model-agent-config-guide, openclaw-doctor-guide, tinycore-feasibility-report                                                                                                                                                                                                                                                                             |
-| 2026-02 | 15   | custom-channel-guide, extension-development-guide, skills-guide, cron-config-guide, agent-evolution-guide, external-scripting-guide, cursor-terminal-config-guide, wecom-plugin-deployment-guide, browser-relay-guide, openclaw-core-concepts-pyramid, openclaw-core-concepts-qa-and-usage, independent-agent-creation-guide, agent-token-usage-monitoring-analysis, merge-main-upgrade-summary, knowledge-base-architecture-design |
