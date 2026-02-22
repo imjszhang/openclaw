@@ -4,6 +4,24 @@
 
 版本规则见 [README — 版本管理](README.md#版本管理)。
 
+## V1.2.0 — 2026-02-23
+
+完善 outputs 层架构：建立视角→产出的转化规约，分离 INDEX，产出首个基于 pyramid 视角的内容。
+
+### 变更
+
+- 新增 `outputs/INDEX.md`：产出层的内容注册表，与 structure/INDEX.md 风格一致
+- 重写 `outputs/README.md`：新增 mermaid 转化路径图、产出目录命名规则、新建产出流程；产出总览表移至 INDEX.md
+- 新增 `outputs/methodology/`：基于 P01-knowledge-org-methodology 视角的首个产出（引言 + 三章），每章/每节结论先行
+- 移除 `outputs/tutorial/`：无 pyramid 视角支撑，待将来有对应视角后重建
+- 更新 `INDEX.md`：产出条目从 tutorial（待关联）改为 methodology（首版完成）
+
+### 设计依据
+
+outputs 层是三层架构的最后一环。本次变更明确了从 pyramid/structure/ 视角到面向读者产出的完整转化路径（SCQA→引言、Key Line→章节、子论点→小节），使三层架构首次端到端贯通。
+
+---
+
 ## V1.1.0 — 2026-02-22
 
 将 README 中的动态内容（索引表、变更日志）拆分到独立的 INDEX.md 文件，README 仅保留架构说明和模板等稳定内容。
