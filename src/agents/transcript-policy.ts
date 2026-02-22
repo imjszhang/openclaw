@@ -1,6 +1,6 @@
+import type { ToolCallIdMode } from "./tool-call-id.js";
 import { normalizeProviderId } from "./model-selection.js";
 import { isAntigravityClaude, isGoogleModelApi } from "./pi-embedded-helpers/google.js";
-import type { ToolCallIdMode } from "./tool-call-id.js";
 
 export type TranscriptSanitizeMode = "full" | "images-only";
 
@@ -109,7 +109,6 @@ export function resolveTranscriptPolicy(params: {
     : sanitizeToolCallIds
       ? "strict"
       : undefined;
-  const repairToolUseResultPairing = isGoogle || isAnthropic;
   const sanitizeThoughtSignatures = isOpenRouterGemini
     ? { allowBase64Only: true, includeCamelCase: true }
     : undefined;
@@ -119,7 +118,9 @@ export function resolveTranscriptPolicy(params: {
     sanitizeMode: isOpenAi ? "images-only" : needsNonImageSanitize ? "full" : "images-only",
     sanitizeToolCallIds: !isOpenAi && sanitizeToolCallIds,
     toolCallIdMode,
-    repairToolUseResultPairing: !isOpenAi && repairToolUseResultPairing,
+    // Enable for all non-OpenAI providers: Moonshot, MiniMax, and other OpenAI-compatible
+    // APIs also reject orphaned tool_result messages after history truncation.
+    repairToolUseResultPairing: !isOpenAi,
     preserveSignatures: isAntigravityClaudeModel,
     sanitizeThoughtSignatures: isOpenAi ? undefined : sanitizeThoughtSignatures,
     sanitizeThinkingSignatures,
@@ -127,6 +128,6 @@ export function resolveTranscriptPolicy(params: {
     applyGoogleTurnOrdering: !isOpenAi && isGoogle,
     validateGeminiTurns: !isOpenAi && isGoogle,
     validateAnthropicTurns: !isOpenAi && isAnthropic,
-    allowSyntheticToolResults: !isOpenAi && (isGoogle || isAnthropic),
+    allowSyntheticToolResults: !isOpenAi,
   };
 }
