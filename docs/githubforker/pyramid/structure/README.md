@@ -21,6 +21,10 @@
 1. 在 `structure/` 下创建 `PXX-描述/` 目录
 2. 从 `_template/` 复制模板文件
 3. 填写 scqa.md（读者画像 + S-C-Q-A 四要素）
-4. 展开 tree/（从塔尖到 Key Line 到逐层论点）
-5. 完成 validation.md（MECE 检查 + 缺口标记）
-6. 更新 [INDEX.md](INDEX.md) 的视角总览表
+4. **审视 [synthesis.md](../analysis/synthesis.md) 的候选观点**——从读者视角重新判断：
+   - 哪些候选直接成为 Key Line？
+   - 哪些需要合并或降级？
+   - 是否有读者会追问但 synthesis 中缺失的观点？
+5. 展开 tree/（从塔尖到 Key Line 到逐层论点）
+6. 完成 validation.md（MECE 检查 + 缺口标记 + 与 synthesis 的差异记录）
+7. 更新 [INDEX.md](INDEX.md) 的视角总览表

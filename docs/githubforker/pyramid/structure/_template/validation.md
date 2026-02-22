@@ -34,6 +34,8 @@
 
 记录本视角的 tree 结构与 [synthesis.md](../../analysis/synthesis.md) 归纳结果之间的差异。
 
+逐项审视 synthesis 的每个候选观点：直接采纳为 Key Line？合并/降级？还是补充了 synthesis 中没有的观点？差异均在此记录，保持 synthesis 本身不被修改。
+
 | 差异点 | synthesis 中的观点 | tree 中的处理 | 调整原因 |
 | ------ | ------------------ | ------------- | -------- |
 |        | （待记录）         |               |          |

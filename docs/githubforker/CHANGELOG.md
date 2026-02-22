@@ -4,6 +4,22 @@
 
 版本规则见 [README — 版本管理](README.md#版本管理)。
 
+## V1.2.1 — 2026-02-23
+
+修正 synthesis 与 structure 之间的信息流向：共享层不再正向引用特定视角，审视 checklist 归位到流程文档。
+
+### 变更
+
+- `analysis/synthesis.md`：移除"与 structure/ 的衔接"段落（含对 P01 validation 的正向链接），替换为一行指向 `structure/INDEX.md` 的极简导航
+- `structure/README.md`：新建视角流程新增第 4 步"审视 synthesis 候选观点"，将 checklist 从 synthesis 移入此处
+- `structure/_template/validation.md`："与 synthesis 的差异记录"上方新增填写指引，明确差异追踪由视角侧完成
+
+### 设计依据
+
+遵循 pyramid/README.md 确立的架构原则：analysis 是共享层，structure 按视角独立。信息流向应为各视角的 validation 反向引用 synthesis，而非 synthesis 正向指向特定视角。此次调整消除了共享层对特定视角的耦合。
+
+---
+
 ## V1.2.0 — 2026-02-23
 
 完善 outputs 层架构：建立视角→产出的转化规约，分离 INDEX，产出首个基于 pyramid 视角的内容。
