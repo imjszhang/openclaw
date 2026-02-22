@@ -358,12 +358,37 @@ my-tool --action do-something
 如果技能依赖外部工具，配置 metadata：
 
 ```yaml
-metadata: { "openclaw": { "requires": { "bins": ["required-tool"], "anyBins": [ # 全部必需
-                "npm",
-                "pnpm",
-              ], "env": ["API_KEY"], "config": [ # 任一满足 # 必需环境变量
-                "feature.enabled",
-              ] }, "install": [{ "id": "brew", "kind": "brew", "formula": "my-tool", "bins": ["my-tool"], "label": "Install my-tool (brew)" }, { "id": "npm", "kind": "node", "package": "my-tool", "bins": ["my-tool"], "label": "Install my-tool (npm)" }] } } # 必需配置项
+metadata: {
+    "openclaw":
+      {
+        "requires":
+          {
+            "bins": ["required-tool"],
+            ? "anyBins" # 全部必需
+            : ["npm", "pnpm"],
+            "env": ["API_KEY"],
+            ? "config" # 任一满足 # 必需环境变量
+            : ["feature.enabled"],
+          },
+        "install":
+          [
+            {
+              "id": "brew",
+              "kind": "brew",
+              "formula": "my-tool",
+              "bins": ["my-tool"],
+              "label": "Install my-tool (brew)",
+            },
+            {
+              "id": "npm",
+              "kind": "node",
+              "package": "my-tool",
+              "bins": ["my-tool"],
+              "label": "Install my-tool (npm)",
+            },
+          ],
+      },
+  } # 必需配置项
 ```
 
 ### 4.5 打包和分发
