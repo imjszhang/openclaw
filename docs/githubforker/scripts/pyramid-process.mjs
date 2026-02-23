@@ -3,7 +3,7 @@
 // Pyramid incremental processor: journal -> atoms -> groups -> synthesis
 // Uses openclaw main agent with local model to extract knowledge atoms.
 
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -70,8 +70,7 @@ const ATOMS_README = join(ATOMS_DIR, "README.md");
 const GROUPS_DIR = join(BASE, "pyramid", "analysis", "groups");
 const GROUPS_INDEX = join(GROUPS_DIR, "INDEX.md");
 const SYNTHESIS_PATH = join(BASE, "pyramid", "analysis", "synthesis.md");
-const REPO_ROOT = resolve(BASE, "..", "..", "..");
-const TMP_PROMPT = join(SCRIPT_DIR, ".tmp-prompt.md");
+const REPO_ROOT = resolve(BASE, "..", "..");
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -277,31 +276,80 @@ ${journalContent}
 // Agent caller
 // ---------------------------------------------------------------------------
 
+const MAX_DIRECT_ARG_LEN = 28_000;
+const TMP_PROMPT = join(SCRIPT_DIR, ".tmp-prompt.md");
+
+// Each call gets a fresh session via unique --to value, preventing context accumulation.
+let callCounter = 0;
+
 function callAgent(prompt) {
-  writeFileSync(TMP_PROMPT, prompt, "utf-8");
+  callCounter++;
+  const sessionTo = `+1${String(Date.now()).slice(-9)}${String(callCounter).padStart(1, "0")}`;
 
-  try {
-    const shellCmd = `pnpm openclaw agent --agent main --local --thinking ${THINKING} --json --timeout 1200 --message "$(cat '${TMP_PROMPT.replace(/\\/g, "/")}')"`;
+  if (VERBOSE) {
+    log(
+      `调用 openclaw agent (prompt ${prompt.length} chars, session=${sessionTo}, method: ${prompt.length < MAX_DIRECT_ARG_LEN ? "direct" : "tmpfile"})`,
+    );
+  }
 
-    if (VERBOSE) {
-      log(`执行命令: ${shellCmd.slice(0, 120)}...`);
-    }
+  const baseFlags = [
+    "agent",
+    "--agent",
+    "main",
+    "--local",
+    "--thinking",
+    THINKING,
+    "--json",
+    "--timeout",
+    "1200",
+    "--to",
+    sessionTo,
+  ];
 
-    const result = execSync(shellCmd, {
+  // Short prompts: pass directly as argument (no shell needed).
+  // Long prompts: write to temp file + bash variable to bypass Windows arg length limit.
+  const useTmpFile = prompt.length >= MAX_DIRECT_ARG_LEN;
+  let proc;
+
+  if (useTmpFile) {
+    writeFileSync(TMP_PROMPT, prompt, "utf-8");
+    const tmpPath = TMP_PROMPT.replace(/\\/g, "/");
+    const repoPath = REPO_ROOT.replace(/\\/g, "/");
+    const flagsStr = baseFlags.map((f) => `'${f}'`).join(" ");
+    const bashScript = `msg=$(<'${tmpPath}') && exec node '${repoPath}/scripts/run-node.mjs' ${flagsStr} --message "$msg"`;
+    proc = spawnSync("bash", ["-c", bashScript], {
       cwd: REPO_ROOT,
       encoding: "utf-8",
       maxBuffer: 10 * 1024 * 1024,
       timeout: 1200_000,
-      shell: "bash",
     });
+  } else {
+    const args = [join(REPO_ROOT, "scripts", "run-node.mjs"), ...baseFlags, "--message", prompt];
+    proc = spawnSync("node", args, {
+      cwd: REPO_ROOT,
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+      timeout: 1200_000,
+    });
+  }
 
-    // openclaw --json wraps output; extract the text content
-    return parseAgentResponse(result);
-  } finally {
+  if (useTmpFile) {
     try {
       unlinkSync(TMP_PROMPT);
     } catch {}
   }
+
+  const output = (proc.stdout || "") + (proc.stderr || "");
+
+  if (proc.error) {
+    throw new Error(`spawn error: ${proc.error.message}`);
+  }
+
+  if (VERBOSE && proc.status !== 0) {
+    warn(`命令退出码: ${proc.status}`);
+  }
+
+  return parseAgentResponse(output);
 }
 
 /**
@@ -322,7 +370,9 @@ function parseAgentResponse(raw) {
     try {
       const json = JSON.parse(raw.slice(jsonStart));
       // The agent response shape varies; try common paths
+      // openclaw agent --json returns { payloads: [{ text }], meta }
       const text =
+        json.payloads?.[0]?.text ||
         json.reply?.text ||
         json.reply?.content ||
         json.content ||
