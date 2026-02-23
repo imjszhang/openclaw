@@ -4,6 +4,27 @@
 
 版本规则见 [README — 版本管理](README.md#版本管理)。
 
+## V1.3.0 — 2026-02-23
+
+新增自动化处理脚本，将原本手动的增量拆解工作流（journal → atoms → groups → synthesis）变为可一键执行的命令行流水线。
+
+### 变更
+
+- 新增 `scripts/pyramid-process.mjs`：金字塔增量处理脚本，调用 openclaw main agent + 本地模型自动完成三阶段处理
+  - 阶段 1：扫描未处理的 journal，逐篇提取 atoms 并写入文件、注册缩写
+  - 阶段 2：分析新 atoms 与现有 groups 的关系，建议或自动创建/更新 group 文件和 INDEX.md
+  - 阶段 3：评估 synthesis 候选观点，建议或自动更新 synthesis.md
+- 支持 `--auto-write` 模式：阶段 2/3 从"输出建议"升级为"直接写入文件"，实现全流程无人值守
+- 支持 `--dry-run`、`--stage`、`--file`、`--verbose` 等精细控制选项
+- 每次模型调用使用独立会话（`--to` 唯一值），避免上下文累积导致溢出
+- 长 prompt 通过临时文件 + bash 变量传递，绕过 Windows 32KB 命令行长度限制
+
+### 设计依据
+
+V1.0.0 定义的增量拆解工作流（新 journal → 提取 atoms → 审视 groups → 检查 synthesis）是正确的，但手动执行耗时且容易遗漏。引入自动化脚本不改变方法论本身，只是将人工执行变为机器执行，同时保留 `--dry-run` 和默认建议模式供人工审核。
+
+---
+
 ## V1.2.1 — 2026-02-23
 
 修正 synthesis 与 structure 之间的信息流向：共享层不再正向引用特定视角，审视 checklist 归位到流程文档。

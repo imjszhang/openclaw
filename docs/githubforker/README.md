@@ -1,6 +1,6 @@
 # OpenClaw 个人实践知识库
 
-> **架构版本：V1.2.1** · [变更日志](CHANGELOG.md)
+> **架构版本：V1.3.0** · [变更日志](CHANGELOG.md)
 
 个人在学习和使用 OpenClaw 过程中的完整知识体系，包含原始记录、结构化拆解和面向读者的产出三个层次。
 
@@ -19,6 +19,7 @@ outputs/  （面向读者的产出）
 | [journal/](journal/) | 原始素材       | 按日期记录的学习笔记，保留完整的探索过程，持续增长                |
 | [pyramid/](pyramid/) | 结构化拆解     | 基于《金字塔原理》对 journal 进行拆解和组织，是从素材到产出的桥梁 |
 | [outputs/](outputs/) | 面向读者的产出 | 基于 pyramid 视角产出的各类内容（教程、博客等）                   |
+| [scripts/](scripts/) | 自动化工具     | 金字塔增量处理脚本，调用本地模型自动执行 atoms→groups→synthesis   |
 
 → [内容索引](INDEX.md)（各层最新条目总览）
 
