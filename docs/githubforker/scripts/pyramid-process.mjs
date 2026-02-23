@@ -23,6 +23,7 @@ import { parseArgs } from "node:util";
 const { values: flags } = parseArgs({
   options: {
     "dry-run": { type: "boolean", default: false },
+    "auto-write": { type: "boolean", default: false },
     stage: { type: "string", default: "3" },
     file: { type: "string" },
     thinking: { type: "string", default: "low" },
@@ -36,14 +37,15 @@ if (flags.help) {
   console.log(`
 用法: node docs/githubforker/scripts/pyramid-process.mjs [选项]
 
-金字塔增量处理：自动从 journal 提取 atoms，建议 groups 和 synthesis 更新。
+金字塔增量处理：自动从 journal 提取 atoms，更新 groups 和 synthesis。
 
 选项:
   --dry-run            只显示待处理列表和 prompt 预览，不调用模型
+  --auto-write         阶段 2/3 自动写入文件（默认只输出建议到终端）
   --stage <1|2|3>      只执行到指定阶段（默认 3）
                          1 = 提取 atoms
-                         2 = + groups 建议
-                         3 = + synthesis 检查
+                         2 = + groups 更新
+                         3 = + synthesis 更新
   --file <filename>    只处理指定 journal（不含路径，如 skills-guide.md）
   --thinking <level>   传递给 openclaw 的思考级别（默认 low）
   --verbose            显示完整 prompt 和模型原始响应
@@ -53,6 +55,7 @@ if (flags.help) {
 }
 
 const DRY_RUN = flags["dry-run"];
+const AUTO_WRITE = flags["auto-write"];
 const MAX_STAGE = Number(flags.stage);
 const ONLY_FILE = flags.file;
 const THINKING = flags.thinking;
@@ -531,11 +534,23 @@ async function processAtom(entry, usedAbbrevs) {
 }
 
 // ---------------------------------------------------------------------------
-// Stage 2: Groups suggestions
+// Stage 2: Groups update
 // ---------------------------------------------------------------------------
 
-function buildGroupsPrompt(newAtomPaths) {
-  // Read all new atom files
+/** Find the highest existing group number (e.g. G11 -> 11). */
+function findMaxGroupNum() {
+  const groupFiles = listMdFiles(GROUPS_DIR).filter((f) => /^G\d+/.test(f));
+  let max = 0;
+  for (const f of groupFiles) {
+    const m = f.match(/^G(\d+)/);
+    if (m) {
+      max = Math.max(max, Number(m[1]));
+    }
+  }
+  return max;
+}
+
+function buildGroupsPrompt(newAtomPaths, autoWrite) {
   const newAtomsContent = newAtomPaths
     .map((p) => {
       const content = read(p);
@@ -543,26 +558,29 @@ function buildGroupsPrompt(newAtomPaths) {
     })
     .join("\n\n---\n\n");
 
-  // Read existing groups index
   const groupsIndex = read(GROUPS_INDEX);
 
-  // Read each group file for context
-  const groupFiles = listMdFiles(GROUPS_DIR).filter((f) => f.startsWith("G"));
+  const groupFiles = listMdFiles(GROUPS_DIR)
+    .filter((f) => f.startsWith("G"))
+    .toSorted((a, b) => a.localeCompare(b));
   const groupContents = groupFiles
     .map((f) => {
       const content = read(join(GROUPS_DIR, f));
-      const title = extractTitle(content);
-      return `- **${f}**: ${title}`;
+      return `#### ${f}\n\n${content}`;
     })
-    .join("\n");
+    .join("\n\n---\n\n");
 
-  return `你是一个知识库助手。以下是刚提取的新 atoms 文件，以及现有的分组（groups）结构。
+  const maxG = findMaxGroupNum();
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (!autoWrite) {
+    return `你是一个知识库助手。以下是刚提取的新 atoms 文件，以及现有的分组（groups）结构。
 
 ## 任务
 
 请分析新 atoms，给出分组建议：
 1. 哪些新 atoms 应归入哪些现有 group？（列出 atom 编号 → group 编号）
-2. 是否需要新建 group？如果需要，给出编号（接着 G11 继续）、观点句和包含的 atoms。
+2. 是否需要新建 group？如果需要，给出编号（接着 G${String(maxG).padStart(2, "0")} 继续）、观点句和包含的 atoms。
 3. 是否有现有 group 需要拆分或合并？
 
 请用中文回答，用表格或列表清晰列出建议。
@@ -571,7 +589,87 @@ function buildGroupsPrompt(newAtomPaths) {
 
 ${groupsIndex}
 
-### 各 group 标题一览
+### 各 group 现有内容
+
+${groupContents}
+
+## 新提取的 Atoms
+
+${newAtomsContent}
+`;
+  }
+
+  // auto-write mode: structured output
+  return `你是一个知识库助手。以下是刚提取的新 atoms，以及现有的全部分组（groups）文件内容。
+
+## 任务
+
+分析新 atoms，执行分组更新。输出必须使用下面的分隔符格式，脚本将自动解析并写入文件。
+
+### 操作类型
+
+1. **新建 group**：如果新 atoms 形成了与现有 group 都不匹配的新主题，创建新 group。编号从 G${String(maxG + 1).padStart(2, "0")} 开始。
+2. **更新现有 group**：如果新 atoms 应归入现有 group，输出该 group 的完整更新后内容（包含旧 atoms + 新 atoms）。
+3. **不归组的 atoms**：如果某些 atoms 暂时无法归组，在 CHANGELOG 中注明。
+
+### 输出格式（严格遵守，不要添加任何额外文字）
+
+对每个新建或更新的 group，输出一个块：
+
+\`\`\`
+=== GROUP: G12-topic-slug.md ===
+（完整的 group 文件内容，遵循下方模板）
+=== END ===
+\`\`\`
+
+所有 group 块输出完毕后，输出 INDEX 更新块：
+
+\`\`\`
+=== INDEX_ROWS ===
+（只输出新增或修改的行，每行格式与 INDEX.md 表格一致）
+| G12 | 观点句 | atom数量 | 来源月份跨度 |
+=== END ===
+\`\`\`
+
+最后输出 CHANGELOG 块：
+
+\`\`\`
+=== CHANGELOG ===
+| ${today} | 操作描述 | 原因说明 |
+=== END ===
+\`\`\`
+
+### Group 文件模板
+
+\`\`\`markdown
+# GXX: [一句有态度的观点句]
+
+> 一句有态度的判断句，概括这组信息单元说明了什么。
+
+## 包含的 Atoms
+
+| 编号  | 来源                     | 内容摘要 |
+| ----- | ------------------------ | -------- |
+| XX-01 | source-file-stem         | ...      |
+
+## 组内逻辑顺序
+
+说明 atoms 的排列逻辑（时间顺序 / 结构顺序 / 程度顺序）。
+\`\`\`
+
+### 规则
+
+- 每个 group 的观点句必须是一句有态度的判断句
+- "来源"列填 journal 文件名（不含 .md）
+- 更新现有 group 时，保留原有的所有 atoms，在表格末尾追加新 atoms
+- atom 数量统计必须准确
+- 来源月份跨度包括所有 atom 的来源月份
+
+## 现有分组 INDEX
+
+${groupsIndex}
+
+## 现有 Group 文件完整内容
 
 ${groupContents}
 
@@ -582,11 +680,130 @@ ${newAtomsContent}
 }
 
 // ---------------------------------------------------------------------------
-// Stage 3: Synthesis check
+// Stage 2: parse & write helpers
 // ---------------------------------------------------------------------------
 
-function buildSynthesisPrompt(newAtomPaths) {
+/** Parse structured group output with === delimiters. */
+function parseGroupsOutput(raw) {
+  const result = { groups: [], indexRows: [], changelog: [] };
+
+  // Parse GROUP blocks
+  const groupRegex = /=== GROUP: (\S+\.md) ===([\s\S]*?)(?:=== END ===)/g;
+  let m;
+  while ((m = groupRegex.exec(raw)) !== null) {
+    result.groups.push({ filename: m[1].trim(), content: m[2].trim() });
+  }
+
+  // Parse INDEX_ROWS block
+  const indexMatch = raw.match(/=== INDEX_ROWS ===([\s\S]*?)(?:=== END ===)/);
+  if (indexMatch) {
+    result.indexRows = indexMatch[1]
+      .trim()
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.includes("---"));
+  }
+
+  // Parse CHANGELOG block
+  const changelogMatch = raw.match(/=== CHANGELOG ===([\s\S]*?)(?:=== END ===)/);
+  if (changelogMatch) {
+    result.changelog = changelogMatch[1]
+      .trim()
+      .split("\n")
+      .filter((l) => l.startsWith("|") && !l.includes("---"));
+  }
+
+  return result;
+}
+
+/** Write group files and update INDEX.md. */
+function writeGroupsOutput(parsed) {
+  let written = 0;
+  let updated = 0;
+
+  for (const g of parsed.groups) {
+    const gPath = join(GROUPS_DIR, g.filename);
+    const isNew = !existsSync(gPath);
+    writeFileSync(gPath, g.content + "\n", "utf-8");
+    if (isNew) {
+      written++;
+      log(`✓ 新建 ${g.filename}`);
+    } else {
+      updated++;
+      log(`✓ 更新 ${g.filename}`);
+    }
+  }
+
+  // Update INDEX.md: add new rows to the table and append changelog entries
+  if (parsed.indexRows.length > 0 || parsed.changelog.length > 0) {
+    let index = read(GROUPS_INDEX);
+
+    // Insert new/updated INDEX rows before the changelog section
+    if (parsed.indexRows.length > 0) {
+      // Find the blank line before "## 变更日志"
+      const changelogHeadingIdx = index.indexOf("## 变更日志");
+      if (changelogHeadingIdx >= 0) {
+        // Find the last table row before the heading (look for last "|" line in the table section)
+        const tableSection = index.slice(0, changelogHeadingIdx);
+        const lastPipeIdx = tableSection.lastIndexOf("|");
+        if (lastPipeIdx >= 0) {
+          const insertAfterNewline = tableSection.indexOf("\n", lastPipeIdx);
+          const insertPos = insertAfterNewline >= 0 ? insertAfterNewline : tableSection.length;
+
+          // Check which rows are truly new (not already in the index)
+          const newRows = parsed.indexRows.filter((row) => {
+            const gNumMatch = row.match(/\|\s*(G\d+)\s*\|/);
+            if (!gNumMatch) {
+              return false;
+            }
+            return !index.includes(gNumMatch[1] + " ");
+          });
+
+          // For updated existing group rows, replace in-place
+          const updatedRows = parsed.indexRows.filter((row) => {
+            const gNumMatch = row.match(/\|\s*(G\d+)\s*\|/);
+            if (!gNumMatch) {
+              return false;
+            }
+            return index.includes(gNumMatch[1] + " ");
+          });
+
+          for (const uRow of updatedRows) {
+            const gNumMatch = uRow.match(/\|\s*(G\d+)\s*\|/);
+            if (gNumMatch) {
+              const oldRowRegex = new RegExp(`^\\|\\s*${gNumMatch[1]}\\s*\\|.*$`, "m");
+              index = index.replace(oldRowRegex, uRow.trim());
+            }
+          }
+
+          if (newRows.length > 0) {
+            index = index.slice(0, insertPos) + "\n" + newRows.join("\n") + index.slice(insertPos);
+          }
+        }
+      }
+    }
+
+    if (parsed.changelog.length > 0) {
+      // Append changelog entries at the end
+      const trimmed = index.trimEnd();
+      index = trimmed + "\n" + parsed.changelog.join("\n") + "\n";
+    }
+
+    writeFileSync(GROUPS_INDEX, index, "utf-8");
+    log(`✓ 已更新 INDEX.md (${parsed.indexRows.length} 行索引, ${parsed.changelog.length} 行日志)`);
+  }
+
+  return { written, updated };
+}
+
+// ---------------------------------------------------------------------------
+// Stage 3: Synthesis update
+// ---------------------------------------------------------------------------
+
+function buildSynthesisPrompt(newAtomPaths, autoWrite) {
   const synthesisContent = read(SYNTHESIS_PATH);
+
+  // Also read the latest groups INDEX for context
+  const groupsIndex = read(GROUPS_INDEX);
 
   const newAtomsContent = newAtomPaths
     .map((p) => {
@@ -595,12 +812,15 @@ function buildSynthesisPrompt(newAtomPaths) {
     })
     .join("\n\n---\n\n");
 
-  return `你是一个知识库助手。以下是当前的 synthesis（顶层观点候选列表）和新提取的 atoms。
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (!autoWrite) {
+    return `你是一个知识库助手。以下是当前的 synthesis（顶层观点候选列表）和新提取的 atoms。
 
 ## 任务
 
 请评估：
-1. 现有顶层观点候选（S1-S5, S6*）是否仍然准确？
+1. 现有顶层观点候选是否仍然准确？
 2. 新 atoms 是否支持现有候选，还是暗示需要新增/修改候选？
 3. 候选间的关系描述是否需要更新？
 
@@ -609,6 +829,55 @@ function buildSynthesisPrompt(newAtomPaths) {
 ## 当前 Synthesis
 
 ${synthesisContent}
+
+## 当前分组 INDEX（含最新 groups）
+
+${groupsIndex}
+
+## 新提取的 Atoms
+
+${newAtomsContent}
+`;
+  }
+
+  // auto-write mode: output complete updated file
+  return `你是一个知识库助手。请基于新 atoms 和当前 groups 更新 synthesis.md 文件。
+
+## 任务
+
+1. 评估现有顶层观点候选是否仍然准确
+2. 判断新 atoms 是否支持现有候选，或需要新增/修改/升级候选
+3. 更新候选间的关系描述
+4. 在修订记录表中追加今天（${today}）的变更条目
+
+## 输出要求
+
+直接输出完整的、更新后的 synthesis.md 文件内容（不要用代码块包裹）。
+
+保持文件的现有结构不变：
+- # 收敛（Synthesis）标题和说明
+- ## 顶层观点候选 表格
+- ### 待成熟候选 表格（如适用）
+- ## 候选间的关系
+- 视角索引链接
+- ## 修订记录 表格
+
+### 规则
+
+- 只在有充分证据时才新增/升级/修改候选
+- 保持 S1, S2, ... 编号连续
+- 待成熟候选用 S*（如 S7*）标记
+- 当待成熟候选获得第二个 group 支撑时，升级为正式候选
+- 如果没有需要修改的地方，输出原文即可（仍需追加修订记录说明"无变更"）
+- 修订记录的日期格式为 YYYY-MM-DD
+
+## 当前 synthesis.md 完整内容
+
+${synthesisContent}
+
+## 当前分组 INDEX（含最新 groups）
+
+${groupsIndex}
 
 ## 新提取的 Atoms
 
@@ -622,7 +891,9 @@ ${newAtomsContent}
 
 async function main() {
   heading("金字塔增量处理");
-  log(`配置: stage=${MAX_STAGE}, thinking=${THINKING}, dry-run=${DRY_RUN}`);
+  log(
+    `配置: stage=${MAX_STAGE}, thinking=${THINKING}, dry-run=${DRY_RUN}, auto-write=${AUTO_WRITE}`,
+  );
 
   // ── Stage 1: Discover & extract atoms ──
   heading("阶段 1: 发现未处理的 journal");
@@ -664,11 +935,11 @@ async function main() {
     log(`\n阶段 1 完成: ${newAtomPaths.length}/${results.length} 个 atom 文件已处理`);
   }
 
-  // ── Stage 2: Groups suggestions ──
+  // ── Stage 2: Groups update ──
   if (MAX_STAGE >= 2 && newAtomPaths.length > 0) {
-    heading("阶段 2: Groups 分组建议");
+    heading(AUTO_WRITE ? "阶段 2: Groups 分组自动更新" : "阶段 2: Groups 分组建议");
 
-    const prompt = buildGroupsPrompt(newAtomPaths);
+    const prompt = buildGroupsPrompt(newAtomPaths, AUTO_WRITE);
 
     if (VERBOSE) {
       log(`--- Groups prompt 预览 (${prompt.length} 字符) ---`);
@@ -676,15 +947,29 @@ async function main() {
     }
 
     if (DRY_RUN) {
-      log("[dry-run] 将调用 openclaw agent 生成分组建议");
+      log(`[dry-run] 将调用 openclaw agent ${AUTO_WRITE ? "自动更新" : "生成建议"}`);
       log(`[dry-run] Prompt 长度: ${prompt.length} 字符`);
     } else {
-      log("调用 openclaw agent 生成分组建议...");
+      log("调用 openclaw agent...");
       try {
-        const suggestion = callAgent(prompt);
-        log("\n--- 分组建议 ---\n");
-        console.log(suggestion);
-        log("\n--- 建议结束（请人工审核后手动更新 groups 文件）---");
+        const output = callAgent(prompt);
+
+        if (AUTO_WRITE) {
+          const cleaned = stripCodeFences(output.trim());
+          const parsed = parseGroupsOutput(cleaned);
+
+          if (parsed.groups.length === 0 && parsed.indexRows.length === 0) {
+            warn("模型未输出任何 group 块，打印原始输出供参考：");
+            console.log(cleaned.slice(0, 2000));
+          } else {
+            const { written, updated } = writeGroupsOutput(parsed);
+            log(`\n阶段 2 完成: ${written} 个新 group, ${updated} 个更新`);
+          }
+        } else {
+          log("\n--- 分组建议 ---\n");
+          console.log(output);
+          log("\n--- 建议结束（请人工审核后手动更新 groups 文件）---");
+        }
       } catch (err) {
         warn(`调用失败: ${err.message?.slice(0, 200)}`);
       }
@@ -693,22 +978,36 @@ async function main() {
     log("\n无新 atoms，跳过阶段 2");
   }
 
-  // ── Stage 3: Synthesis check ──
+  // ── Stage 3: Synthesis update ──
   if (MAX_STAGE >= 3 && newAtomPaths.length > 0) {
-    heading("阶段 3: Synthesis 检查建议");
+    heading(AUTO_WRITE ? "阶段 3: Synthesis 自动更新" : "阶段 3: Synthesis 检查建议");
 
-    const prompt = buildSynthesisPrompt(newAtomPaths);
+    const prompt = buildSynthesisPrompt(newAtomPaths, AUTO_WRITE);
 
     if (DRY_RUN) {
-      log("[dry-run] 将调用 openclaw agent 检查 synthesis");
+      log(`[dry-run] 将调用 openclaw agent ${AUTO_WRITE ? "自动更新" : "检查"} synthesis`);
       log(`[dry-run] Prompt 长度: ${prompt.length} 字符`);
     } else {
-      log("调用 openclaw agent 检查 synthesis...");
+      log("调用 openclaw agent...");
       try {
-        const suggestion = callAgent(prompt);
-        log("\n--- Synthesis 检查建议 ---\n");
-        console.log(suggestion);
-        log("\n--- 建议结束（请人工审核后手动更新 synthesis.md）---");
+        const output = callAgent(prompt);
+
+        if (AUTO_WRITE) {
+          const cleaned = stripCodeFences(output.trim());
+
+          // Validate: should start with "# 收敛" and contain key sections
+          if (!cleaned.includes("# 收敛") || !cleaned.includes("## 顶层观点候选")) {
+            warn("模型输出不像有效的 synthesis.md，打印原始输出供参考：");
+            console.log(cleaned.slice(0, 2000));
+          } else {
+            writeFileSync(SYNTHESIS_PATH, cleaned + "\n", "utf-8");
+            log(`✓ 已更新 ${relative(BASE, SYNTHESIS_PATH)}`);
+          }
+        } else {
+          log("\n--- Synthesis 检查建议 ---\n");
+          console.log(output);
+          log("\n--- 建议结束（请人工审核后手动更新 synthesis.md）---");
+        }
       } catch (err) {
         warn(`调用失败: ${err.message?.slice(0, 200)}`);
       }
