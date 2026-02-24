@@ -37,6 +37,8 @@
 | G29  | Agent 使用需严格区分“主 Agent 配置”与“子 Agent 衍生”，禁止跨 Agent 复用配置目录以确保人设与记忆的独立性        | 15        | 2026-02      |
 | G30  | OpenClaw 技能系统通过“元数据声明 + 三级加载 + 优先级覆盖”机制，实现 AI Agent 能力的灵活扩展与按需激活          | 20        | 2026-02      |
 | G31  | WeCom 插件部署需解决“公网 IP 可信校验”与"5 秒回调响应”两大核心挑战，采用先 ACK 后异步处理策略保障消息可靠送达  | 15        | 2026-02      |
+| G32  | OpenClaw 插件创建需遵循"SDK 隔离 + 清单驱动 + 安全加载”的全生命周期规范                                        | 36        | 2026-02      |
+| G33  | 知识棱镜的自动化落地需通过"OpenClaw 插件化”将繁琐的手动流程转化为 AI 可调用的标准工具                          | 39        | 2026-02      |
 
 ## 变更日志
 
@@ -50,3 +52,5 @@
 | 2026-02-23 | 创建 G17-G21                                      | 增量归组，基于 tinycore-feasibility-report, agent-evolution-guide, agent-token-usage-monitoring-analysis, browser-relay-guide, cron-config-guide 五份文档拆解；所有 atoms 均成功归组，无遗留              |
 | 2026-02-23 | 创建 G22-G26，归入 CT-01 至 IA-20 共 117 个 atoms | 增量归组，基于 cursor-terminal-config-guide, custom-channel-guide, extension-development-guide, external-scripting-guide, independent-agent-creation-guide 五份文档拆解；所有 atoms 均成功归组，无遗留    |
 | 2026-02-23 | 创建 G27-G31，归入 KP-01 至 WP-15 共 88 个 atoms  | 增量归组，基于 knowledge-prism-introduction, openclaw-core-concepts-pyramid, openclaw-core-concepts-qa-and-usage, skills-guide, wecom-plugin-deployment-guide 五份文档拆解；所有 atoms 均成功归组，无遗留 |
+| 2026-02-24 | 新建 G32                                          | 归入 plugin-creation-guide 拆解的 36 个 atoms (PC-01 至 PC-36)，形成完整的插件开发指引组                                                                                                                  |
+| 2026-02-24 | 新建 G33                                          | 归入 from-notes-to-plugin (FN-01~FN-20) 和 using-knowledge-prism-plugin (UP-01~UP-19) 共 39 个 atoms，形成完整的知识棱镜自动化与实操指南组                                                                |

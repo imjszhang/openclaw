@@ -37,6 +37,7 @@
 | TM   | agent-token-usage-monitoring-analysis | 2026-02 |
 | MU   | merge-main-upgrade-summary            | 2026-02 |
 | KA   | knowledge-base-architecture-design    | 2026-02 |
+| FN   | from-notes-to-plugin                  | 2026-02 |
 
 ## 按月分目录约定
 
@@ -74,4 +75,6 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | XX-01 | 事实/步骤/经验/判断          | 信息单元的简明描述 | 章节名或行号范围 |
 | XX-02 | ...                          | ...                | ...              |
 | KP    | knowledge-prism-introduction | 2026-02            |
+| PC    | plugin-creation-guide        | 2026-02            |
+| UP    | using-knowledge-prism-plugin | 2026-02            |
 ```
