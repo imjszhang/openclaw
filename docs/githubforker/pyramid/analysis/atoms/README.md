@@ -38,6 +38,7 @@
 | MU   | merge-main-upgrade-summary            | 2026-02 |
 | KA   | knowledge-base-architecture-design    | 2026-02 |
 | FN   | from-notes-to-plugin                  | 2026-02 |
+| JE   | js-eyes-openclaw-plugin-guide         | 2026-02 |
 
 ## 按月分目录约定
 

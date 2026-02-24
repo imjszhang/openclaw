@@ -39,6 +39,7 @@
 | G31  | WeCom 插件部署需解决“公网 IP 可信校验”与"5 秒回调响应”两大核心挑战，采用先 ACK 后异步处理策略保障消息可靠送达  | 15        | 2026-02      |
 | G32  | OpenClaw 插件创建需遵循"SDK 隔离 + 清单驱动 + 安全加载”的全生命周期规范                                        | 36        | 2026-02      |
 | G33  | 知识棱镜的自动化落地需通过"OpenClaw 插件化”将繁琐的手动流程转化为 AI 可调用的标准工具                          | 39        | 2026-02      |
+| G34  | JS-Eyes 通过 WebSocket 复用用户浏览器环境，填补了内置沙箱浏览器在“带登录态交互”场景的能力空白                  | 28        | 2026-02      |
 
 ## 变更日志
 
@@ -54,3 +55,4 @@
 | 2026-02-23 | 创建 G27-G31，归入 KP-01 至 WP-15 共 88 个 atoms  | 增量归组，基于 knowledge-prism-introduction, openclaw-core-concepts-pyramid, openclaw-core-concepts-qa-and-usage, skills-guide, wecom-plugin-deployment-guide 五份文档拆解；所有 atoms 均成功归组，无遗留 |
 | 2026-02-24 | 新建 G32                                          | 归入 plugin-creation-guide 拆解的 36 个 atoms (PC-01 至 PC-36)，形成完整的插件开发指引组                                                                                                                  |
 | 2026-02-24 | 新建 G33                                          | 归入 from-notes-to-plugin (FN-01~FN-20) 和 using-knowledge-prism-plugin (UP-01~UP-19) 共 39 个 atoms，形成完整的知识棱镜自动化与实操指南组                                                                |
+| 2026-02-24 | 新建 G34                                          | 归入 js-eyes-openclaw-plugin-guide 拆解的 28 个 atoms (JE-01 至 JE-28)，形成完整的 JS-Eyes 浏览器扩展集成指南组                                                                                           |
