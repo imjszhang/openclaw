@@ -358,6 +358,59 @@ JS-Eyes 直接控制用户正在使用的真实浏览器（Firefox/Chrome），
 - `D:/.openclaw/workspace/TOOLS.md`（main Agent）
 - `D:/.openclaw/workspace-xiaofei/TOOLS.md`（xiaofei Agent）
 
+### optional 工具被 allowlist 静默过滤（关键陷阱）
+
+**症状**：插件加载成功、服务正常启动、CLI 命令可用，但 Agent 的可用工具列表中**完全没有** `js_eyes_*` 工具。Agent 要么调用内置 `browser` 工具（返回空），要么试图用 `exec` 运行不存在的脚本文件报 `MODULE_NOT_FOUND` 错误。
+
+**根因**：JS-Eyes 插件注册工具时使用了 `{ optional: true }` 选项。OpenClaw 对 optional 工具有一个额外的 allowlist 过滤机制（源码位于 `resolvePluginTools` → `isOptionalToolAllowed`）：
+
+```javascript
+function isOptionalToolAllowed(params) {
+  if (params.allowlist.size === 0) return false; // allowlist 为空 → 直接拒绝
+  if (params.allowlist.has(toolName)) return true;
+  if (params.allowlist.has(pluginKey)) return true;
+  return params.allowlist.has("group:plugins");
+}
+```
+
+当配置中 `tools.allow` 未设置（即 allowlist 为空）时，**所有 `optional: true` 的插件工具都会被静默丢弃**——不报错、不告警、不出现在工具列表中。这是一个容易踩坑的隐含行为。
+
+**解决方案**：在 `openclaw.json` 中配置 `tools.allow`，加入 `group:plugins` 放行所有插件工具：
+
+```json5
+{
+  tools: {
+    allow: [
+      "group:openclaw", // 所有内置工具
+      "group:plugins", // 所有插件注册的工具（包括 optional）
+    ],
+  },
+}
+```
+
+也可以精确放行特定工具或插件：
+
+```json5
+{
+  tools: {
+    allow: [
+      "group:openclaw",
+      "js-eyes", // 按插件 ID 放行该插件的所有工具
+      "js_eyes_get_tabs", // 或按工具名逐个放行
+      "js_eyes_execute_script",
+    ],
+  },
+}
+```
+
+**验证方法**：通过 CLI 发送一条消息，检查返回的 `systemPromptReport.tools.entries` 中是否包含 `js_eyes_*` 工具：
+
+```bash
+openclaw agent --agent <agent-id> --message "列出你的工具" --json --timeout 120
+```
+
+在 JSON 输出的 `result.meta.agentMeta.systemPromptReport.tools.entries` 数组中查找。如果看到 `js_eyes_get_tabs` 等条目，说明工具已成功注册到 Agent。
+
 ### Windows 特有问题
 
 插件内置了 Windows 平台的 `windowsHide` 补丁——OpenClaw 在 Windows 上执行 `child_process.spawn` / `execFile` 时会弹出 CMD 窗口，插件通过猴子补丁将 `windowsHide` 默认设为 `true`，消除弹窗。这个补丁在非 Windows 平台上自动跳过。
