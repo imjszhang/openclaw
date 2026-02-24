@@ -1004,10 +1004,14 @@ async function main() {
   }
 
   // ── Stage 3: Synthesis update ──
-  if (MAX_STAGE >= 3 && atomPathsForGrouping.length > 0) {
+  // Synthesis works on ALL atoms (not just ungrouped), since it summarizes groups.
+  const allAtomPaths = collectAllAtomPaths();
+  const synthesisAtoms = allAtomPaths.length > 0 ? allAtomPaths : atomPathsForGrouping;
+
+  if (MAX_STAGE >= 3 && synthesisAtoms.length > 0) {
     heading(AUTO_WRITE ? "阶段 3: Synthesis 自动更新" : "阶段 3: Synthesis 检查建议");
 
-    const prompt = buildSynthesisPrompt(atomPathsForGrouping, AUTO_WRITE);
+    const prompt = buildSynthesisPrompt(synthesisAtoms, AUTO_WRITE);
 
     if (DRY_RUN) {
       log(`[dry-run] 将调用 openclaw agent ${AUTO_WRITE ? "自动更新" : "检查"} synthesis`);
@@ -1037,7 +1041,7 @@ async function main() {
         warn(`调用失败: ${err.message?.slice(0, 200)}`);
       }
     }
-  } else if (MAX_STAGE >= 3 && atomPathsForGrouping.length === 0) {
+  } else if (MAX_STAGE >= 3 && synthesisAtoms.length === 0) {
     log("\n无 atom 文件，跳过阶段 3");
   }
 
