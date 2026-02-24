@@ -1,20 +1,24 @@
 #!/usr/bin/env node
 
 // Pyramid incremental processor: journal -> atoms -> groups -> synthesis
-// Uses openclaw main agent with local model to extract knowledge atoms.
+// Calls local model API directly (OpenAI-compatible) to extract knowledge atoms.
 
-import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  statSync,
-  unlinkSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { parseArgs } from "node:util";
+
+// Load .env from OPENCLAW_STATE_DIR (e.g. D:/.openclaw/.env) if present
+const stateDir = process.env.OPENCLAW_STATE_DIR || join(homedir(), ".openclaw");
+const envPath = join(stateDir, ".env");
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, "utf-8").split("\n")) {
+    const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+    if (m && !process.env[m[1]]) {
+      process.env[m[1]] = m[2];
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // CLI
@@ -73,7 +77,6 @@ const ATOMS_README = join(ATOMS_DIR, "README.md");
 const GROUPS_DIR = join(BASE, "pyramid", "analysis", "groups");
 const GROUPS_INDEX = join(GROUPS_DIR, "INDEX.md");
 const SYNTHESIS_PATH = join(BASE, "pyramid", "analysis", "synthesis.md");
-const REPO_ROOT = resolve(BASE, "..", "..");
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -195,6 +198,54 @@ function discoverJournals() {
   return { results, fileToAbbrev, usedAbbrevs };
 }
 
+/** Collect all atom prefixes already referenced in group files. */
+function collectGroupedPrefixes() {
+  const prefixes = new Set();
+  if (!existsSync(GROUPS_DIR)) {
+    return prefixes;
+  }
+  const groupFiles = listMdFiles(GROUPS_DIR).filter((f) => f.startsWith("G"));
+  for (const f of groupFiles) {
+    const content = read(join(GROUPS_DIR, f));
+    const matches = content.matchAll(/\|\s*([A-Z]{2})-\d{2}\s*\|/g);
+    for (const m of matches) {
+      prefixes.add(m[1]);
+    }
+  }
+  return prefixes;
+}
+
+/** Collect all existing (non-placeholder) atom file paths. */
+function collectAllAtomPaths() {
+  const paths = [];
+  if (!existsSync(ATOMS_DIR)) {
+    return paths;
+  }
+  for (const sub of readdirSync(ATOMS_DIR)) {
+    const subDir = join(ATOMS_DIR, sub);
+    if (!statSync(subDir).isDirectory() || !/^\d{4}-\d{2}$/.test(sub)) {
+      continue;
+    }
+    for (const f of listMdFiles(subDir)) {
+      const p = join(subDir, f);
+      if (!isPlaceholder(p)) {
+        paths.push(p);
+      }
+    }
+  }
+  return paths.toSorted((a, b) => a.localeCompare(b));
+}
+
+/** Collect atom file paths whose prefix is NOT yet in any group. */
+function collectUngroupedAtomPaths() {
+  const grouped = collectGroupedPrefixes();
+  return collectAllAtomPaths().filter((p) => {
+    const content = read(p);
+    const m = content.match(/>\s*缩写[：:]\s*([A-Z]{2})/);
+    return m ? !grouped.has(m[1]) : true;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Stage 1: Atom extraction
 // ---------------------------------------------------------------------------
@@ -279,127 +330,79 @@ ${journalContent}
 // Agent caller
 // ---------------------------------------------------------------------------
 
-const MAX_DIRECT_ARG_LEN = 28_000;
-const TMP_PROMPT = join(SCRIPT_DIR, ".tmp-prompt.md");
+// Call the local model via OpenAI-compatible API directly (no openclaw agent overhead).
+// This avoids the ~27KB system prompt that openclaw injects (AGENTS.md, skills, etc.),
+// sending only our concise task prompt to the model.
+import http from "node:http";
+import https from "node:https";
 
-// Each call gets a fresh session via unique --to value, preventing context accumulation.
-let callCounter = 0;
+const API_BASE = process.env.LOCAL_LAN_BASE_URL || "http://localhost:8888/v1";
+const API_KEY = process.env.LOCAL_LAN_API_KEY || "not-needed";
+const API_MODEL = process.env.LOCAL_LAN_MODEL || "unsloth/Qwen3.5-397B-A17B";
+const API_TIMEOUT_MS = 1800_000;
 
-function callAgent(prompt) {
-  callCounter++;
-  const sessionTo = `+1${String(Date.now()).slice(-9)}${String(callCounter).padStart(1, "0")}`;
+const SYSTEM_PROMPT = `你是一个知识管理专家，擅长从技术文档中提取结构化知识。
+请严格按照用户指令的格式输出，不要添加多余的解释。`;
 
-  if (VERBOSE) {
-    log(
-      `调用 openclaw agent (prompt ${prompt.length} chars, session=${sessionTo}, method: ${prompt.length < MAX_DIRECT_ARG_LEN ? "direct" : "tmpfile"})`,
-    );
-  }
-
-  const baseFlags = [
-    "agent",
-    "--agent",
-    "main",
-    "--local",
-    "--thinking",
-    THINKING,
-    "--json",
-    "--timeout",
-    "1200",
-    "--to",
-    sessionTo,
-  ];
-
-  // Short prompts: pass directly as argument (no shell needed).
-  // Long prompts: write to temp file + bash variable to bypass Windows arg length limit.
-  const useTmpFile = prompt.length >= MAX_DIRECT_ARG_LEN;
-  let proc;
-
-  if (useTmpFile) {
-    writeFileSync(TMP_PROMPT, prompt, "utf-8");
-    const tmpPath = TMP_PROMPT.replace(/\\/g, "/");
-    const repoPath = REPO_ROOT.replace(/\\/g, "/");
-    const flagsStr = baseFlags.map((f) => `'${f}'`).join(" ");
-    const bashScript = `msg=$(<'${tmpPath}') && exec node '${repoPath}/scripts/run-node.mjs' ${flagsStr} --message "$msg"`;
-    proc = spawnSync("bash", ["-c", bashScript], {
-      cwd: REPO_ROOT,
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-      timeout: 1200_000,
+function httpRequest(url, options, body) {
+  return new Promise((resolve, reject) => {
+    const mod = url.startsWith("https") ? https : http;
+    const req = mod.request(url, options, (res) => {
+      const chunks = [];
+      res.on("data", (chunk) => chunks.push(chunk));
+      res.on("end", () =>
+        resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString() }),
+      );
     });
-  } else {
-    const args = [join(REPO_ROOT, "scripts", "run-node.mjs"), ...baseFlags, "--message", prompt];
-    proc = spawnSync("node", args, {
-      cwd: REPO_ROOT,
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-      timeout: 1200_000,
+    req.setTimeout(API_TIMEOUT_MS, () => {
+      req.destroy(new Error(`Request timed out after ${API_TIMEOUT_MS / 1000}s`));
     });
-  }
-
-  if (useTmpFile) {
-    try {
-      unlinkSync(TMP_PROMPT);
-    } catch {}
-  }
-
-  const output = (proc.stdout || "") + (proc.stderr || "");
-
-  if (proc.error) {
-    throw new Error(`spawn error: ${proc.error.message}`);
-  }
-
-  if (VERBOSE && proc.status !== 0) {
-    warn(`命令退出码: ${proc.status}`);
-  }
-
-  return parseAgentResponse(output);
+    req.on("error", reject);
+    if (body) {
+      req.write(body);
+    }
+    req.end();
+  });
 }
 
-/**
- * Parse the JSON response from `openclaw agent --json`.
- * The response may contain non-JSON preamble (pnpm banner etc.), so we find
- * the first { or [ and parse from there.
- */
-function parseAgentResponse(raw) {
-  if (VERBOSE) {
-    log("--- 原始响应 ---");
-    console.log(raw.slice(0, 2000));
-    log("--- 响应结束 ---");
-  }
+async function callAgent(prompt) {
+  log(`调用模型 (prompt ${prompt.length} chars, model=${API_MODEL})...`);
 
-  // Try to find JSON in the output
-  const jsonStart = raw.indexOf("{");
-  if (jsonStart >= 0) {
-    try {
-      const json = JSON.parse(raw.slice(jsonStart));
-      // The agent response shape varies; try common paths
-      // openclaw agent --json returns { payloads: [{ text }], meta }
-      const text =
-        json.payloads?.[0]?.text ||
-        json.reply?.text ||
-        json.reply?.content ||
-        json.content ||
-        json.text ||
-        json.message?.content ||
-        json.message?.text ||
-        json.result?.text ||
-        json.result?.content;
-      if (text) {
-        return text;
-      }
-      // Fallback: stringify for debugging
-      return JSON.stringify(json, null, 2);
-    } catch {
-      // Not valid JSON from that point
-    }
-  }
+  const url = `${API_BASE}/chat/completions`;
+  const payload = JSON.stringify({
+    model: API_MODEL,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: prompt },
+    ],
+    temperature: 0.3,
+    max_tokens: 8192,
+  });
 
-  // Fallback: strip pnpm banner lines (starting with >) and return the rest
-  const lines = raw.split("\n");
-  const contentLines = lines.filter(
-    (l) => !l.startsWith("> ") && !l.startsWith("openclaw@") && l.trim() !== "",
+  const resp = await httpRequest(
+    url,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Length": Buffer.byteLength(payload),
+      },
+    },
+    payload,
   );
-  return contentLines.join("\n").trim();
+
+  if (resp.status !== 200) {
+    throw new Error(`API error ${resp.status}: ${resp.body.slice(0, 500)}`);
+  }
+
+  const json = JSON.parse(resp.body);
+  const text = json.choices?.[0]?.message?.content;
+  if (!text) {
+    throw new Error(`Empty response: ${JSON.stringify(json).slice(0, 500)}`);
+  }
+  log(`模型返回 ${text.length} chars`);
+  return text;
 }
 
 // ---------------------------------------------------------------------------
@@ -483,10 +486,10 @@ async function processAtom(entry, usedAbbrevs) {
     return null;
   }
 
-  log("调用 openclaw agent...");
+  log("调用模型...");
   let output;
   try {
-    output = callAgent(prompt);
+    output = await callAgent(prompt);
   } catch (err) {
     warn(`调用失败: ${err.message?.slice(0, 200)}`);
     return null;
@@ -550,25 +553,26 @@ function findMaxGroupNum() {
   return max;
 }
 
+/** Extract condensed atom info: prefix, title, and simplified atom table (id + content only). */
+function condensedAtomSummary(atomPath) {
+  const content = read(atomPath);
+  const title = extractTitle(content);
+  const abbrevMatch = content.match(/>\s*缩写[：:]\s*([A-Z]{2})/);
+  const abbrev = abbrevMatch ? abbrevMatch[1] : "??";
+  const rows = [];
+  for (const line of content.split("\n")) {
+    const m = line.match(/^\|\s*([A-Z]{2}-\d{2})\s*\|[^|]*\|\s*([^|]+?)\s*\|/);
+    if (m) {
+      rows.push(`- ${m[1]}: ${m[2].trim()}`);
+    }
+  }
+  return `**${abbrev}** (${basename(atomPath, ".md")}) — ${title}\n${rows.join("\n")}`;
+}
+
 function buildGroupsPrompt(newAtomPaths, autoWrite) {
-  const newAtomsContent = newAtomPaths
-    .map((p) => {
-      const content = read(p);
-      return `### ${basename(p)}\n\n${content}`;
-    })
-    .join("\n\n---\n\n");
+  const newAtomsContent = newAtomPaths.map((p) => condensedAtomSummary(p)).join("\n\n");
 
   const groupsIndex = read(GROUPS_INDEX);
-
-  const groupFiles = listMdFiles(GROUPS_DIR)
-    .filter((f) => f.startsWith("G"))
-    .toSorted((a, b) => a.localeCompare(b));
-  const groupContents = groupFiles
-    .map((f) => {
-      const content = read(join(GROUPS_DIR, f));
-      return `#### ${f}\n\n${content}`;
-    })
-    .join("\n\n---\n\n");
 
   const maxG = findMaxGroupNum();
   const today = new Date().toISOString().slice(0, 10);
@@ -589,10 +593,6 @@ function buildGroupsPrompt(newAtomPaths, autoWrite) {
 
 ${groupsIndex}
 
-### 各 group 现有内容
-
-${groupContents}
-
 ## 新提取的 Atoms
 
 ${newAtomsContent}
@@ -600,7 +600,7 @@ ${newAtomsContent}
   }
 
   // auto-write mode: structured output
-  return `你是一个知识库助手。以下是刚提取的新 atoms，以及现有的全部分组（groups）文件内容。
+  return `你是一个知识库助手。以下是待归组的 atoms 和现有分组索引。
 
 ## 任务
 
@@ -669,11 +669,7 @@ ${newAtomsContent}
 
 ${groupsIndex}
 
-## 现有 Group 文件完整内容
-
-${groupContents}
-
-## 新提取的 Atoms
+## 待归组的 Atoms
 
 ${newAtomsContent}
 `;
@@ -805,12 +801,7 @@ function buildSynthesisPrompt(newAtomPaths, autoWrite) {
   // Also read the latest groups INDEX for context
   const groupsIndex = read(GROUPS_INDEX);
 
-  const newAtomsContent = newAtomPaths
-    .map((p) => {
-      const content = read(p);
-      return `### ${basename(p)}\n\n${content}`;
-    })
-    .join("\n\n---\n\n");
+  const newAtomsContent = newAtomPaths.map((p) => condensedAtomSummary(p)).join("\n\n");
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -935,24 +926,52 @@ async function main() {
     log(`\n阶段 1 完成: ${newAtomPaths.length}/${results.length} 个 atom 文件已处理`);
   }
 
-  // ── Stage 2: Groups update ──
-  if (MAX_STAGE >= 2 && newAtomPaths.length > 0) {
+  // When no new atoms were extracted but stages 2/3 are requested,
+  // fall back to ungrouped atoms (much smaller than all atoms).
+  let atomPathsForGrouping = newAtomPaths;
+  if (MAX_STAGE >= 2 && newAtomPaths.length === 0) {
+    atomPathsForGrouping = collectUngroupedAtomPaths();
+    if (atomPathsForGrouping.length > 0) {
+      log(`\n无新 atoms，使用 ${atomPathsForGrouping.length} 个未归组 atom 文件进行阶段 2/3`);
+    }
+  }
+
+  // ── Stage 2: Groups update (batched for large atom sets) ──
+  if (MAX_STAGE >= 2 && atomPathsForGrouping.length > 0) {
     heading(AUTO_WRITE ? "阶段 2: Groups 分组自动更新" : "阶段 2: Groups 分组建议");
 
-    const prompt = buildGroupsPrompt(newAtomPaths, AUTO_WRITE);
-
-    if (VERBOSE) {
-      log(`--- Groups prompt 预览 (${prompt.length} 字符) ---`);
-      console.log(prompt.slice(0, 500));
+    const BATCH_SIZE = 5;
+    const batches = [];
+    for (let i = 0; i < atomPathsForGrouping.length; i += BATCH_SIZE) {
+      batches.push(atomPathsForGrouping.slice(i, i + BATCH_SIZE));
     }
+    log(
+      `共 ${atomPathsForGrouping.length} 个 atom 文件，分 ${batches.length} 批处理（每批 ${BATCH_SIZE}）`,
+    );
 
-    if (DRY_RUN) {
-      log(`[dry-run] 将调用 openclaw agent ${AUTO_WRITE ? "自动更新" : "生成建议"}`);
-      log(`[dry-run] Prompt 长度: ${prompt.length} 字符`);
-    } else {
-      log("调用 openclaw agent...");
+    let totalWritten = 0;
+    let totalUpdated = 0;
+
+    for (let bi = 0; bi < batches.length; bi++) {
+      const batch = batches[bi];
+      log(
+        `\n--- 批次 ${bi + 1}/${batches.length} (${batch.map((p) => basename(p, ".md")).join(", ")}) ---`,
+      );
+
+      const prompt = buildGroupsPrompt(batch, AUTO_WRITE);
+
+      if (VERBOSE) {
+        log(`Prompt 长度: ${prompt.length} 字符`);
+      }
+
+      if (DRY_RUN) {
+        log(`[dry-run] Prompt 长度: ${prompt.length} 字符`);
+        continue;
+      }
+
+      log("调用模型...");
       try {
-        const output = callAgent(prompt);
+        const output = await callAgent(prompt);
 
         if (AUTO_WRITE) {
           const cleaned = stripCodeFences(output.trim());
@@ -963,34 +982,40 @@ async function main() {
             console.log(cleaned.slice(0, 2000));
           } else {
             const { written, updated } = writeGroupsOutput(parsed);
-            log(`\n阶段 2 完成: ${written} 个新 group, ${updated} 个更新`);
+            totalWritten += written;
+            totalUpdated += updated;
           }
         } else {
           log("\n--- 分组建议 ---\n");
           console.log(output);
-          log("\n--- 建议结束（请人工审核后手动更新 groups 文件）---");
         }
       } catch (err) {
-        warn(`调用失败: ${err.message?.slice(0, 200)}`);
+        warn(`批次 ${bi + 1} 调用失败: ${err.message?.slice(0, 200)}`);
       }
     }
-  } else if (MAX_STAGE >= 2 && newAtomPaths.length === 0) {
-    log("\n无新 atoms，跳过阶段 2");
+
+    if (AUTO_WRITE) {
+      log(`\n阶段 2 完成: ${totalWritten} 个新 group, ${totalUpdated} 个更新`);
+    } else if (!DRY_RUN) {
+      log("\n--- 建议结束（请人工审核后手动更新 groups 文件）---");
+    }
+  } else if (MAX_STAGE >= 2 && atomPathsForGrouping.length === 0) {
+    log("\n无 atom 文件，跳过阶段 2");
   }
 
   // ── Stage 3: Synthesis update ──
-  if (MAX_STAGE >= 3 && newAtomPaths.length > 0) {
+  if (MAX_STAGE >= 3 && atomPathsForGrouping.length > 0) {
     heading(AUTO_WRITE ? "阶段 3: Synthesis 自动更新" : "阶段 3: Synthesis 检查建议");
 
-    const prompt = buildSynthesisPrompt(newAtomPaths, AUTO_WRITE);
+    const prompt = buildSynthesisPrompt(atomPathsForGrouping, AUTO_WRITE);
 
     if (DRY_RUN) {
       log(`[dry-run] 将调用 openclaw agent ${AUTO_WRITE ? "自动更新" : "检查"} synthesis`);
       log(`[dry-run] Prompt 长度: ${prompt.length} 字符`);
     } else {
-      log("调用 openclaw agent...");
+      log("调用模型...");
       try {
-        const output = callAgent(prompt);
+        const output = await callAgent(prompt);
 
         if (AUTO_WRITE) {
           const cleaned = stripCodeFences(output.trim());
@@ -1012,8 +1037,8 @@ async function main() {
         warn(`调用失败: ${err.message?.slice(0, 200)}`);
       }
     }
-  } else if (MAX_STAGE >= 3 && newAtomPaths.length === 0) {
-    log("\n无新 atoms，跳过阶段 3");
+  } else if (MAX_STAGE >= 3 && atomPathsForGrouping.length === 0) {
+    log("\n无 atom 文件，跳过阶段 3");
   }
 
   heading("处理完毕");
