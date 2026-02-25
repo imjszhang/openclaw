@@ -217,8 +217,6 @@ js-eyes/
 
 在 `openclaw-plugin/` 目录中创建 `SKILL.md`。发布目录应该**只包含插件本身的文件**，而非整个项目——ClawHub 会把发布目录下的所有文件打包为技能包，如果从项目根目录发布会包含大量无关文件（浏览器扩展、网站代码、测试等）。
 
-> **踩坑记录**：我们最初将 `SKILL.md` 放在项目根目录并从根目录发布，导致整个项目（几十个文件）都被上传。正确做法是只发布 `openclaw-plugin/` 这个自包含目录。
-
 ```yaml
 ---
 name: js-eyes
@@ -464,20 +462,6 @@ npx clawhub sync --all --bump patch --changelog "Bug fixes and improvements"
 | `GitHub account too new`                         | GitHub 账号注册不满 7 天          | 等待后重试                          |
 | `Skill is hidden while security scan is pending` | 新发布或恢复后触发自动安全扫描    | 等待几分钟，扫描通过后自动恢复可见  |
 | 发布了错误内容想修正                             | `delete` 是软删除，版本号不可复用 | `undelete` 恢复后用新版本号重新发布 |
-
-### 踩坑实录：发布目录选错了
-
-在发布 JS-Eyes 时，我们最初犯了一个典型错误——从项目根目录 `.` 发布，导致整个项目（浏览器扩展、网站、测试、构建脚本等数十个文件）全部被打包上传到 ClawHub。
-
-修正过程：
-
-1. `clawhub delete js-eyes --yes` — 软删除错误的技能
-2. `clawhub undelete js-eyes --yes` — 恢复技能（因为软删除不释放 slug 和版本号）
-3. 将 `SKILL.md` 移到 `openclaw-plugin/` 目录
-4. 删除根目录的 `SKILL.md` 和 `.clawhubignore`
-5. 用 `1.4.1` 新版本号从 `openclaw-plugin/` 目录重新发布
-
-教训：**发布目录 = 技能包的全部内容**。ClawHub 会打包该目录下所有文本文件上传。务必确认发布路径只包含你想要上传的文件。
 
 ### 发布前检查清单
 
