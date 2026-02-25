@@ -215,7 +215,9 @@ js-eyes/
 
 ### 4.2 第一步：创建 SKILL.md
 
-在项目**根目录**创建 `SKILL.md`。之所以放在根目录而非 `openclaw-plugin/` 目录，是因为插件代码 `index.mjs` 通过相对路径引用了上层的 `clients/` 和 `server/`，放在根目录可以保留完整的目录结构。
+在 `openclaw-plugin/` 目录中创建 `SKILL.md`。发布目录应该**只包含插件本身的文件**，而非整个项目——ClawHub 会把发布目录下的所有文件打包为技能包，如果从项目根目录发布会包含大量无关文件（浏览器扩展、网站代码、测试等）。
+
+> **踩坑记录**：我们最初将 `SKILL.md` 放在项目根目录并从根目录发布，导致整个项目（几十个文件）都被上传。正确做法是只发布 `openclaw-plugin/` 这个自包含目录。
 
 ```yaml
 ---
@@ -265,51 +267,28 @@ Browser extension + WebSocket server that gives AI agents full browser automatio
 
 正文部分应当包含完整的安装指南、工具说明、配置参考和链接。
 
-### 4.3 第二步：创建 .clawhubignore
+### 4.3 第二步：（可选）创建 .clawhubignore
 
-在项目根目录创建 `.clawhubignore`，排除不需要发布的文件。该文件语法与 `.gitignore` 相同，ClawHub 同时也尊重 `.gitignore` 的规则。
+如果发布目录中有需要排除的文件，可以创建 `.clawhubignore`（语法同 `.gitignore`）。ClawHub 同时也尊重 `.gitignore` 的规则。
+
+对于 `openclaw-plugin/` 这种只有几个文件的目录，通常不需要 `.clawhubignore`。如果从更大的目录发布，示例：
 
 ```gitignore
 # 构建产物与依赖
 dist/
-build/
 node_modules/
-work_dir/
-signed-firefox-extensions/
-
-# 浏览器扩展图标（二进制图片）
-chrome-extension/icons/
-firefox-extension/icons/
-
-# 网站与文档静态文件
-src/
-docs/
-
-# 测试
-test/
-
-# CI / IDE
-.github/
-.git/
-.vscode/
-.cursor/
 
 # 敏感文件
 .env
 .env.*
-config.json
 
 # 二进制与归档
 *.zip
-*.xpi
-*.crx
 *.png
 *.ico
-*.log
 
 # 其他
-package-lock.json
-CHANGELOG.md
+*.log
 ```
 
 ### 4.4 第三步：安装 CLI 并登录
@@ -335,7 +314,7 @@ npx clawhub whoami
 ### 4.5 第四步：发布
 
 ```bash
-npx clawhub publish . \
+npx clawhub publish openclaw-plugin \
   --slug js-eyes \
   --name "JS Eyes" \
   --version 1.4.0 \
@@ -346,15 +325,15 @@ npx clawhub publish . \
 
 参数说明：
 
-| 参数          | 说明                                   |
-| ------------- | -------------------------------------- |
-| `.`           | 发布目录（包含 SKILL.md 的文件夹路径） |
-| `--slug`      | 唯一标识符，小写 + 连字符              |
-| `--name`      | 展示名称                               |
-| `--version`   | semver 版本号                          |
-| `--tags`      | 标签（通常为 `latest`）                |
-| `--changelog` | 本次发布的变更说明                     |
-| `--no-input`  | 跳过交互式确认                         |
+| 参数              | 说明                                   |
+| ----------------- | -------------------------------------- |
+| `openclaw-plugin` | 发布目录（包含 SKILL.md 的文件夹路径） |
+| `--slug`          | 唯一标识符，小写 + 连字符              |
+| `--name`          | 展示名称                               |
+| `--version`       | semver 版本号                          |
+| `--tags`          | 标签（通常为 `latest`）                |
+| `--changelog`     | 本次发布的变更说明                     |
+| `--no-input`      | 跳过交互式确认                         |
 
 发布成功后输出：
 
@@ -444,7 +423,7 @@ npx clawhub inspect js-eyes --versions
 
 ```bash
 # 更新 SKILL.md 中的 version 字段后
-npx clawhub publish . \
+npx clawhub publish openclaw-plugin \
   --slug js-eyes \
   --version 1.5.0 \
   --tags latest \
@@ -475,14 +454,30 @@ npx clawhub sync --all --bump patch --changelog "Bug fixes and improvements"
 
 ### 常见问题
 
-| 问题                     | 原因                          | 解决                           |
-| ------------------------ | ----------------------------- | ------------------------------ |
-| `Not logged in`          | 未登录或 token 过期           | 执行 `clawhub login`           |
-| `Version already exists` | 该版本号已被使用              | 增加版本号重新发布             |
-| `SKILL.md not found`     | 发布目录缺少 SKILL.md         | 确认路径正确，文件名区分大小写 |
-| 浏览器登录后无法跳回     | 防火墙拦截本地回调端口        | 使用 `--token` 方式登录        |
-| 文件上传失败             | 包含二进制文件或总大小超 50MB | 检查 `.clawhubignore` 排除规则 |
-| `GitHub account too new` | GitHub 账号注册不满 7 天      | 等待后重试                     |
+| 问题                                             | 原因                              | 解决                                |
+| ------------------------------------------------ | --------------------------------- | ----------------------------------- |
+| `Not logged in`                                  | 未登录或 token 过期               | 执行 `clawhub login`                |
+| `Version already exists`                         | 该版本号已被使用                  | 增加版本号重新发布                  |
+| `SKILL.md not found`                             | 发布目录缺少 SKILL.md             | 确认路径正确，文件名区分大小写      |
+| 浏览器登录后无法跳回                             | 防火墙拦截本地回调端口            | 使用 `--token` 方式登录             |
+| 文件上传失败                                     | 包含二进制文件或总大小超 50MB     | 检查 `.clawhubignore` 排除规则      |
+| `GitHub account too new`                         | GitHub 账号注册不满 7 天          | 等待后重试                          |
+| `Skill is hidden while security scan is pending` | 新发布或恢复后触发自动安全扫描    | 等待几分钟，扫描通过后自动恢复可见  |
+| 发布了错误内容想修正                             | `delete` 是软删除，版本号不可复用 | `undelete` 恢复后用新版本号重新发布 |
+
+### 踩坑实录：发布目录选错了
+
+在发布 JS-Eyes 时，我们最初犯了一个典型错误——从项目根目录 `.` 发布，导致整个项目（浏览器扩展、网站、测试、构建脚本等数十个文件）全部被打包上传到 ClawHub。
+
+修正过程：
+
+1. `clawhub delete js-eyes --yes` — 软删除错误的技能
+2. `clawhub undelete js-eyes --yes` — 恢复技能（因为软删除不释放 slug 和版本号）
+3. 将 `SKILL.md` 移到 `openclaw-plugin/` 目录
+4. 删除根目录的 `SKILL.md` 和 `.clawhubignore`
+5. 用 `1.4.1` 新版本号从 `openclaw-plugin/` 目录重新发布
+
+教训：**发布目录 = 技能包的全部内容**。ClawHub 会打包该目录下所有文本文件上传。务必确认发布路径只包含你想要上传的文件。
 
 ### 发布前检查清单
 
