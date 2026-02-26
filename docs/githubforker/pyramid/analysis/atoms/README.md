@@ -71,11 +71,15 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 
 ## Atoms
 
-| 编号  | 类型                         | 内容               | 原文定位         |
-| ----- | ---------------------------- | ------------------ | ---------------- |
-| XX-01 | 事实/步骤/经验/判断          | 信息单元的简明描述 | 章节名或行号范围 |
-| XX-02 | ...                          | ...                | ...              |
-| KP    | knowledge-prism-introduction | 2026-02            |
-| PC    | plugin-creation-guide        | 2026-02            |
-| UP    | using-knowledge-prism-plugin | 2026-02            |
+| 编号  | 类型                                             | 内容               | 原文定位         |
+| ----- | ------------------------------------------------ | ------------------ | ---------------- |
+| XX-01 | 事实/步骤/经验/判断                              | 信息单元的简明描述 | 章节名或行号范围 |
+| XX-02 | ...                                              | ...                | ...              |
+| KP    | knowledge-prism-introduction                     | 2026-02            |
+| PC    | plugin-creation-guide                            | 2026-02            |
+| UP    | using-knowledge-prism-plugin                     | 2026-02            |
+| CH    | clawhub-publish-guide                            | 2026-02            |
+| AF    | js-eyes-agent-first-transformation               | 2026-02            |
+| SD    | skill-discovery-system-design-and-implementation | 2026-02            |
+| OP    | workspace-path-openclaw-state-dir-mismatch       | 2026-02            |
 ```
