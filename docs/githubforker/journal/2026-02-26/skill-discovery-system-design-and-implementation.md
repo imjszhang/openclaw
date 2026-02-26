@@ -1,7 +1,7 @@
 # 日记：从「手动注册」到「Agent 自发现」— 为 js-eyes 构建技能发现与安装系统
 
 > 记录日期：2026-02-26
-> 背景：js-eyes 有了扩展技能 x-search（X.com 内容抓取），但安装过程完全依赖用户手动复制路径、编辑 openclaw.json。本次从问题分析到架构设计，再到完整落地，记录了如何让 Agent 自主发现和安装扩展技能。
+> 背景：js-eyes 有了扩展技能 js-search-x（X.com 内容抓取），但安装过程完全依赖用户手动复制路径、编辑 openclaw.json。本次从问题分析到架构设计，再到完整落地，记录了如何让 Agent 自主发现和安装扩展技能。
 
 ---
 
@@ -21,19 +21,19 @@
 
 ## 1. 起点：扩展技能的安装痛点
 
-js-eyes 的基础能力是 7 个浏览器自动化工具（标签页管理、内容提取、脚本执行等）。在此之上，`skills/x-search/` 是第一个扩展技能，提供 X.com (Twitter) 内容抓取能力，注册 4 个额外的 AI 工具。
+js-eyes 的基础能力是 7 个浏览器自动化工具（标签页管理、内容提取、脚本执行等）。在此之上，`skills/js-search-x/` 是第一个扩展技能，提供 X.com (Twitter) 内容抓取能力，注册 4 个额外的 AI 工具。
 
-问题在于，安装 x-search 的过程极其繁琐：
+问题在于，安装 js-search-x 的过程极其繁琐：
 
-1. 用户需要知道 x-search 的存在（靠文档或口口相传）
-2. 手动找到 `skills/x-search/openclaw-plugin` 的路径
+1. 用户需要知道 js-search-x 的存在（靠文档或口口相传）
+2. 手动找到 `skills/js-search-x/openclaw-plugin` 的路径
 3. 编辑 `~/.openclaw/openclaw.json`，添加路径到 `plugins.load.paths`
 4. 添加对应的 `plugins.entries`
 5. 重启 OpenClaw
 
 每一步都可能出错——路径写错、JSON 格式错误、忘记指向 `openclaw-plugin` 子目录而不是技能根目录。
 
-更根本的问题是：**Agent 完全不知道扩展技能的存在**。即使 Agent 有浏览器自动化能力，它也不知道还有个 x-search 可以更高效地抓取 X.com 内容。Agent 和扩展技能之间缺少一个「发现层」。
+更根本的问题是：**Agent 完全不知道扩展技能的存在**。即使 Agent 有浏览器自动化能力，它也不知道还有个 js-search-x 可以更高效地抓取 X.com 内容。Agent 和扩展技能之间缺少一个「发现层」。
 
 ---
 
@@ -108,7 +108,7 @@ js-eyes 的基础能力是 7 个浏览器自动化工具（标签页管理、内
 **需要新增的**：
 
 - `docs/skills.json` — 静态注册表
-- `docs/skills/x-search/x-search-skill.zip` — 子技能独立包
+- `docs/skills/js-search-x/js-search-x-skill.zip` — 子技能独立包
 - 网站上的 Extension Skills 展示区
 - 安装脚本的子技能支持
 - OpenClaw 插件的 `js_eyes_discover_skills` 和 `js_eyes_install_skill` 工具
@@ -132,7 +132,7 @@ https://js-eyes.com/skills.json
 ### 第二层：独立 zip 包
 
 ```
-https://js-eyes.com/skills/x-search/x-search-skill.zip
+https://js-eyes.com/skills/js-search-x/js-search-x-skill.zip
 ```
 
 每个子技能有自己的下载包，排除 node_modules 和 work_dir 等开发时产物。
@@ -140,7 +140,7 @@ https://js-eyes.com/skills/x-search/x-search-skill.zip
 ### 第三层：安装脚本
 
 ```bash
-curl -fsSL https://js-eyes.com/install.sh | bash -s -- x-search
+curl -fsSL https://js-eyes.com/install.sh | bash -s -- js-search-x
 ```
 
 人类用户可以一条命令安装子技能。脚本从 `skills.json` 查找下载地址，下载解压，运行 npm install，输出注册路径。
@@ -152,7 +152,7 @@ js_eyes_discover_skills  →  返回可用技能列表
 js_eyes_install_skill    →  下载 + 解压 + npm install + 写入 openclaw.json
 ```
 
-Agent 可以在运行时自主发现和安装技能。完整的自举流程：Agent 发现自己没有 X.com 相关工具 → 调用 discover 发现 x-search → 调用 install 安装 → 重启后工具可用。
+Agent 可以在运行时自主发现和安装技能。完整的自举流程：Agent 发现自己没有 X.com 相关工具 → 调用 discover 发现 js-search-x → 调用 install 安装 → 重启后工具可用。
 
 ---
 
@@ -182,7 +182,7 @@ Agent 可以在运行时自主发现和安装技能。完整的自举流程：Ag
 
 在 `src/index.html` 的 Compatible Frameworks 和 CTA 之间插入新板块。复用 brutal-card 风格，包含：
 
-- x-search 技能卡片（emoji、名称、4 个工具的网格、安装命令框）
+- js-search-x 技能卡片（emoji、名称、4 个工具的网格、安装命令框）
 - "More Coming Soon" 占位卡片（引导贡献）
 - Agent Auto-Discovery 提示条（说明 skills.json 端点和 discover_skills 工具）
 
@@ -211,10 +211,10 @@ Agent 可以在运行时自主发现和安装技能。完整的自举流程：Ag
 
 这个坑花了一些时间排查。第一版 YAML 解析器写完后，构建产出的 `skills.json` 里 emoji、requires、homepage 全部是空的。
 
-x-search 的 SKILL.md frontmatter 结构：
+js-search-x 的 SKILL.md frontmatter 结构：
 
 ```yaml
-name: x-search
+name: js-search-x
 description: ...
 version: 1.0.0
 metadata:
@@ -252,7 +252,7 @@ while (stack.length > 1 && indent < stack.top.indent) pop()
 
 ```
 ✓ Skill bundle: js-eyes-skill.zip (68.27 KB)
-✓ Sub-skill bundle: skills/x-search/x-search-skill.zip (69.72 KB)
+✓ Sub-skill bundle: skills/js-search-x/js-search-x-skill.zip (69.72 KB)
 ✓ Skills registry: skills.json (1 skill(s))
 ```
 
@@ -266,13 +266,13 @@ while (stack.length > 1 && indent < stack.top.indent) pop()
   "parentSkill": { "id": "js-eyes", "version": "1.4.3" },
   "skills": [
     {
-      "id": "x-search",
+      "id": "js-search-x",
       "name": "X Search",
       "description": "X.com (Twitter) content scraping skill...",
       "version": "1.0.0",
       "emoji": "🔍",
       "requires": { "skills": ["js-eyes"], "bins": ["node"] },
-      "downloadUrl": "https://js-eyes.com/skills/x-search/x-search-skill.zip",
+      "downloadUrl": "https://js-eyes.com/skills/js-search-x/js-search-x-skill.zip",
       "homepage": "https://github.com/imjszhang/js-eyes",
       "tools": ["x_search_tweets", "x_get_profile", "x_get_post", "x_get_home_feed"]
     }
@@ -289,7 +289,7 @@ OpenClaw 插件从 7 个 AI 工具增加到 9 个。README 中英文双语同步
 | 文件                                   | 改动                                                                                                 |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `cli/lib/builder.js`                   | +parseSkillFrontmatter, +discoverSubSkills, +buildSubSkillZips, +buildSkillsRegistry；修改 buildSite |
-| `install.sh`                           | 支持 `bash -s -- x-search` 参数安装子技能                                                            |
+| `install.sh`                           | 支持 `bash -s -- js-search-x` 参数安装子技能                                                         |
 | `install.ps1`                          | 新增 Install-JsEyesSkill 函数，支持 $env:JS_EYES_SKILL                                               |
 | `src/index.html`                       | 新增 Extension Skills section（技能卡片 + 安装命令 + Agent 发现提示）                                |
 | `src/i18n/locales/en-US.js`            | 新增 skills 板块翻译                                                                                 |
@@ -310,7 +310,7 @@ OpenClaw 插件从 7 个 AI 工具增加到 9 个。README 中英文双语同步
 从 GitHub Pages 网站入手的核心优势是**完全自主**——不依赖任何上游改动。skills.json 就是一个静态 JSON 文件，任何能发 HTTP 请求的程序都能消费。这也是为什么它能同时服务于三种消费者：
 
 - Agent 通过 `js_eyes_discover_skills` 工具
-- 人类通过 `install.sh | bash -s -- x-search`
+- 人类通过 `install.sh | bash -s -- js-search-x`
 - 网站访问者通过 Extension Skills 展示区
 
 ### SKILL.md 是唯一的真相来源
@@ -323,7 +323,7 @@ OpenClaw 插件从 7 个 AI 工具增加到 9 个。README 中英文双语同步
 
 ### Agent 自举的闭环
 
-最有意思的是自举场景：Agent 有了 js-eyes → 发现自己需要 X.com 抓取能力 → 调用 discover 发现 x-search → 调用 install 安装 → 重启后获得新工具 → 完成任务。整个过程中人类只需要在开始时安装 js-eyes，后续的能力扩展由 Agent 自主完成。
+最有意思的是自举场景：Agent 有了 js-eyes → 发现自己需要 X.com 抓取能力 → 调用 discover 发现 js-search-x → 调用 install 安装 → 重启后获得新工具 → 完成任务。整个过程中人类只需要在开始时安装 js-eyes，后续的能力扩展由 Agent 自主完成。
 
 这让我想到一个更远的可能：如果其他技能作者也采用类似的注册表格式，是否可以建立一个「去中心化的技能发现网络」？每个技能包在自己的网站上托管 skills.json，Agent 通过已知的种子 URL 逐步发现整个生态。但这是后话了。
 
