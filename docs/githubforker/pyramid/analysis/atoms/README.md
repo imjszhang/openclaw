@@ -82,4 +82,5 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | AF    | js-eyes-agent-first-transformation               | 2026-02            |
 | SD    | skill-discovery-system-design-and-implementation | 2026-02            |
 | OP    | workspace-path-openclaw-state-dir-mismatch       | 2026-02            |
+| EX    | exec-approvals-curl-pipe-bash-blocked            | 2026-02            |
 ```
