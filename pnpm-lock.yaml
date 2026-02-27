@@ -350,6 +350,16 @@ importers:
         specifier: workspace:*
         version: link:../..
 
+  extensions/js-knowledge-prism:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: 0.34.48
+        version: 0.34.48
+    devDependencies:
+      openclaw:
+        specifier: workspace:*
+        version: link:../..
+
   extensions/line:
     devDependencies:
       openclaw:

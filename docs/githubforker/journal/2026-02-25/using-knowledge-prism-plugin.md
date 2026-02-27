@@ -51,10 +51,13 @@
 
 ### AI 工具（Agent 在对话中调用）
 
-| 工具名                    | 功能                                           | 关键参数                                 |
-| ------------------------- | ---------------------------------------------- | ---------------------------------------- |
-| `knowledge_prism_process` | 执行增量处理管线（atoms → groups → synthesis） | `baseDir`、`stage`（1/2/3）、`autoWrite` |
-| `knowledge_prism_status`  | 查询知识库当前状态统计                         | `baseDir`                                |
+| 工具名                             | 功能                                           | 关键参数                                                          |
+| ---------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| `knowledge_prism_process`          | 执行增量处理管线（atoms → groups → synthesis） | `baseDir`、`stage`（1/2/3）、`autoWrite`                          |
+| `knowledge_prism_status`           | 查询知识库当前状态统计                         | `baseDir`                                                         |
+| `knowledge_prism_new_perspective`  | 创建新视角骨架（scqa、validation、tree）       | `baseDir`、`slug`、`name`                                         |
+| `knowledge_prism_fill_perspective` | 填充 SCQA 或 Key Line 表格（LLM 生成）         | `baseDir`、`perspectiveDir`、`stage`（scqa/keyline）、`autoWrite` |
+| `knowledge_prism_expand_kl`        | 展开 Key Line 为完整 KL 文件                   | `baseDir`、`perspectiveDir`、`klId`、`autoWrite`                  |
 
 ### CLI 命令（终端中调用）
 
@@ -116,6 +119,24 @@ Agent 会调用 `knowledge_prism_process` 工具，处理完成后返回摘要�
 > 对知识库执行增量处理，只到阶段 1
 
 Agent 调用时会传入 `stage: 1`，仅执行 atoms 提取。
+
+### 创建新视角
+
+> 在知识库根目录 D:/github/fork/openclaw/docs/githubforker 创建一个新视角，slug 为 deployment-guide，名称为「从零部署指南」
+
+Agent 调用 `knowledge_prism_new_perspective`，在 pyramid/structure/ 下创建 PXX-deployment-guide/ 骨架。
+
+### 填充视角内容（SCQA / Key Line）
+
+> 对 P01-knowledge-org-methodology 执行 fill_perspective，stage 为 scqa
+
+Agent 调用 `knowledge_prism_fill_perspective`，基于 synthesis 和 groups 用 LLM 生成 scqa.md 初稿并写入。stage=keyline 则生成 tree/README 的 Key Line 表格。
+
+### 展开 Key Line
+
+> 对 P01-knowledge-org-methodology 展开 KL01
+
+Agent 调用 `knowledge_prism_expand_kl`，根据 tree/README 中 KL01 的引用 Groups，用 LLM 生成 KL01-xxx.md 的支撑论点并写入。
 
 ### 参数说明
 
