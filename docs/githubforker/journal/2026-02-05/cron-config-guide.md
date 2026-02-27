@@ -421,6 +421,31 @@ Cron 运行环境的 `PATH` 可能很有限，导致找不到 `node`、`pnpm` �
 
 **解决**：在脚本中显式设置 PATH，或使用完整路径。
 
+### 9.5 Cron 隔离任务 + 沙箱 + 浏览器扩展无法连接
+
+**现象**：Cron 隔离任务（`sessionTarget: "isolated"`）需要操控 Chrome 扩展（profile="chrome"）时，报错 `Host browser control is disabled by sandbox policy.` 或无法连上扩展中继。
+
+**原因**：Cron 隔离任务的 session 为 `cron:<jobId>`，属于 non-main 会话。当 `agents.defaults.sandbox.mode` 为 `"non-main"` 或 `"all"` 时，这些任务在沙箱中运行；沙箱默认 `allowHostControl: false`，禁止访问主机上的 Chrome/扩展。
+
+**解决**：在 `~/.openclaw/openclaw.json` 中启用沙箱的主机浏览器控制：
+
+```json5
+{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: "non-main",
+        browser: {
+          allowHostControl: true,
+        },
+      },
+    },
+  },
+}
+```
+
+修改后需重启 Gateway 生效。注意：`allowHostControl: true` 会让沙箱内的任务能够操控主机上的浏览器，仅在信任该任务时使用。
+
 ---
 
 ## 10. CLI 命令速查
