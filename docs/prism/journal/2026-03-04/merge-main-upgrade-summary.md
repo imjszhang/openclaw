@@ -2,6 +2,8 @@
 
 > 文档日期：2026-03-04
 >
+> **版本跨度：`2026.2.24` → `2026.3.3`**（跨越 2026.3.2-beta.1、2026.3.2、2026.3.3 三个里程碑）
+>
 > 本次合并将 `origin/main`（最新提交 `a95a0be13`）合并到 `githubforker` 分支，合并提交为 `d2ac0b1cd`。
 > 本次升级从上次合并基准点 `9ef0fc2ff`（fix(sandbox): block @-prefixed workspace path bypass）起，涵盖约 **2184 个上游提交**，横跨新功能、安全加固、架构重构、Bug 修复等多个维度。
 
@@ -274,3 +276,87 @@ git commit --no-verify -m "Merge main into githubforker: upgrade to latest upstr
 - 合并来源：`origin/main` @ `a95a0be13` (`feat(slack): add typingReaction config for DM typing indicator fallback`)
 - 基准点：`9ef0fc2ff` (`fix(sandbox): block @-prefixed workspace path bypass`)
 - 上一轮合并记录：[docs/prism/journal/2026-02-22/merge-main-upgrade-summary.md](../2026-02-22/merge-main-upgrade-summary.md)
+
+---
+
+## 官方 CHANGELOG（`2026.3.3` 和 `2026.3.2` 完整内容）
+
+> 以下为 `CHANGELOG.md` 官方原文，供查阅具体 PR 编号和贡献者信息。
+
+### 2026.3.3
+
+#### Changes
+
+- **Discord/allowBots 消息门控**：新增 `allowBots: "mentions"` 仅接受 @mention 来自 bot 的消息。(Thanks @thewilloftheshadow)
+- **Web 搜索/Perplexity**：切换到原生 Search API，支持结构化结果及新的语言/地区/时间过滤器。(#33822 Thanks @kesku)
+- **工具/Diffs 引导加载**：将 diffs 使用指南从无条件 prompt-hook 注入迁移到 plugin companion skill 路径，减少无关 turn 的 prompt 噪音。(#32630 thanks @sircrumpet)
+- **Agent/工具结果截断**：对超大工具结果使用首尾截断策略，保留重要的尾部诊断信息。(#20076 thanks @jlwestsr)
+- **Telegram/topic agent 路由**：Forum 群组和 DM topic 支持 per-topic `agentId` 覆盖，每个 topic 可路由到独立 agent 并拥有隔离 session。(#33647 Thanks @kesor, @Sid-Qin)
+- **Slack/DM typing 反馈**：新增 `channels.slack.typingReaction`，Socket Mode DM 可用 reaction 展示处理状态（Slack native assistant typing 不可用时的 fallback）。(#19816 Thanks @dalefrieswthat)
+
+#### Fixes（2026.3.3）
+
+- Sessions/subagent attachments：移除 `sessions_spawn` schema 中 `attachments[].content.maxLength`，修复 llama.cpp GBNF 重复溢出。(#33648)
+- Runtime/tool-state 稳定性：修复 Anthropic compaction 后悬挂的 `tool_use`，序列化 Discord handler 长时运行，防止 busy snapshot 抑制卡住频道恢复。
+- Extensions/media local-root 传播：修复 `mediaLocalRoots` 未一致传递到 Google Chat、Slack、iMessage、Signal、WhatsApp 等 extension `sendMedia` 适配器的问题。
+- Gateway/安全默认响应头：新增 `Permissions-Policy: camera=(), microphone=(), geolocation=()` 到 gateway HTTP 安全头。(#30186)
+- Plugins/启动加载：plugin runtime 改为懒初始化，plugin SDK 启动导入拆分为 `core` 和 `telegram` 子路径。(#28620)
+- Build/lazy 运行时边界：修复多个无效动态 import 站点，替换为专用 lazy 运行时边界。(#33690)
+- Config/heartbeat 遗留路径处理：自动将顶层 `heartbeat` 迁移合并到 `agents.defaults.heartbeat`，保留启动失败语义。(#32706)
+- Plugins/SDK 子路径补全：为 Discord、Slack、Signal、iMessage、WhatsApp、LINE 新增 channel plugin SDK 子路径，bundled plugin 迁移到 scoped subpaths。(#33737)
+- Routing/session 重复抑制：对齐 session delivery-context 继承和 reply-surface target 匹配，修复 dmScope=main 跨 surface 重复回复。
+- Routing/legacy session route 继承：保留遗留 channel session key 的外部路由元数据继承，防止 `chat.send` 错误回退到 webchat。
+- Security/auth 标签：从 `/status` 和 `/models` 用户可见标签中移除 token/API-key 片段。(#33262)
+- iOS/语音时序安全：保护系统语音 start/finish 回调绑定到当前活跃 utterance。(#33304)
+- iOS/Watch 回复可靠性：修复并发 watch session 激活等待挂起问题。(#33306)
+- Telegram/设备配对通知：`/pair qr` 后自动单次通知，支持 `/pair approve latest` 手动 fallback。(#33299)
+- Exec heartbeat 路由：将 exec 触发的 heartbeat wake 限定到 agent session key，不再唤醒无关 agent。(#32724)
+- macOS/Tailscale 远程网关发现：当 Bonjour 和 DNS-SD 无结果时，新增 Tailscale Serve fallback 探测路径。(#32860)
+- LINE/auth 边界加固、media 下载、上下文路由合成：修复多个长期 LINE 回归问题。
+
+---
+
+### 2026.3.2
+
+#### Changes（新功能）
+
+- **Secrets/SecretRef 覆盖范围扩大**：64 个用户凭据目标全面支持 SecretRef，含 runtime collectors、onboarding UX、审计流程。(#29580 Thanks @joshavant)
+- **工具/PDF 分析**：新增 `pdf` 一级工具，原生支持 Anthropic/Google PDF provider，非原生模型提供提取 fallback，可配置 `pdfModel`/`pdfMaxBytesMb`/`pdfMaxPages`。(#31319 Thanks @tyler6204)
+- **Outbound adapters/plugins**：Discord、Slack、WhatsApp、Zalo、Zalouser 等共享 `sendPayload` 支持，支持多 media 迭代和文本分块 fallback。(#30144 Thanks @nohat)
+- **Models/MiniMax**：新增 `MiniMax-M2.5-highspeed` 全面支持，兼容遗留 `MiniMax-M2.5-Lightning` 配置。
+- **Sessions/Attachments**：`sessions_spawn` 新增内联文件附件支持（base64/utf8 编码、内容脱敏、生命周期清理）。(#16761 Thanks @napetrov)
+- **Telegram/Streaming 默认值**：`channels.telegram.streaming` 默认值从 `off` 改为 `partial`，新部署开箱即用流式预览。
+- **Telegram/DM 流式**：私聊使用 `sendMessageDraft` 进行 preview streaming，推理/回答 preview 通道分离。(#31824 Thanks @obviyus)
+- **Telegram/语音 mention 门控**：新增 `disableAudioPreflight`，群组/topic 可跳过 mention 检测的语音预转录。
+- **CLI/Config 验证**：新增 `openclaw config validate`（支持 `--json`），在 gateway 启动前验证配置文件。(#31220)
+- **工具/Diffs**：新增 PDF 文件输出支持，可配置 `fileQuality`/`fileScale`/`fileMaxWidth`。(#31342)
+- **Memory/Ollama embeddings**：新增 `memorySearch.provider = "ollama"`，支持本地 Ollama 向量嵌入。(#26349 Thanks @nico-hoff)
+- **Zalo Personal plugin**：重构为原生 `zca-js` in-process 集成，移除外部 CLI 传输依赖。
+- **Plugin SDK/channel 可扩展性**：在 `ChannelGatewayContext` 上暴露 `channelRuntime`，外部渠道插件可访问共享 runtime helper。(#25462)
+- **Plugin runtime/STT**：新增 `api.runtime.stt.transcribeAudioFile(...)` 供扩展调用音频转录。(#22402)
+- **Plugin hooks/session lifecycle**：`session_start`/`session_end` hook 事件新增 `sessionKey` 字段。(#26394)
+- **Hooks/message lifecycle**：新增内部 hook 事件 `message:transcribed` 和 `message:preprocessed`，`message:sent` 新增 `isGroup`/`groupId` 上下文。(#9859)
+- **Media understanding/audio echo**：新增 `tools.media.audio.echoTranscript` + `echoFormat` 可选项，转录后发送确认消息。(#32150)
+- **Plugin runtime/system**：暴露 `runtime.system.requestHeartbeatNow(...)` 供扩展立即唤醒目标 session。(#19464)
+- **Plugin runtime/events**：暴露 `runtime.events.onAgentEvent` 和 `runtime.events.onSessionTranscriptUpdate`，隔离 listener 故障。(#16044)
+- **CLI/Banner taglines**：新增 `cli.banner.taglineMode`（`random`|`default`|`off`）控制启动横幅 tagline 行为。
+
+#### Breaking Changes（2026.3.2）
+
+- **BREAKING**：Onboarding 新本地安装默认 `tools.profile = "messaging"`，不再默认开启 coding/system 工具。
+- **BREAKING**：ACP dispatch 默认启用，如需禁用设置 `acp.dispatch.enabled=false`。
+- **BREAKING**：Plugin SDK 移除 `api.registerHttpHandler(...)`，必须使用 `api.registerHttpRoute(...)` 注册 HTTP 路由。
+- **BREAKING**：Zalo Personal plugin 不再依赖外部 `zca`-compatible CLI，升级后需执行 `openclaw channels login --channel zalouser` 刷新 session。
+
+#### Fixes（2026.3.2，重要摘录）
+
+- Feishu/Outbound render mode：修复 Feishu account `renderMode` 未在 outbound sends 中生效。(#31562)
+- Gateway/Subagent TLS 配对：允许认证本地 `gateway-client` 后端自连接跳过设备配对，恢复 Docker/LAN 环境的 `sessions_spawn` 与 TLS。
+- Gateway/Security 加固：Loopback origin 检测绑定实际 socket 客户端（非 Host header）；加固 safe-regex 检测；绑定大型 regex 输入评估。
+- Security/ACP sandbox 继承：沙箱请求发起的 `sessions_spawn(runtime="acp")` 强制 fail-closed，防止 sandbox 边界绕过。
+- Slack/Bolt 启动兼容性：移除无效 `message.channels`/`message.groups` 事件注册，兼容 Bolt 4.6+。(#32033)
+- Slack/socket 认证失败快速退出：遇到不可恢复认证错误时立即失败，不再无限重试。(#32377)
+- Gateway/Control UI basePath webhook passthrough：修复 basePath 下 plugin webhook handler 不可达问题。(#32311)
+- 节点版本检查强制 Node v22.12+（install 和 runtime 均增加 preflight 检查）。(#32356)
+- Webchat/NO_REPLY 流式：过滤 `NO_REPLY` 前缀 assistant delta，防止 `NO` 短暂泄漏。(#32073)
+- Control UI/旧版浏览器兼容：用兼容 helper 替换 `toSorted`，修复旧浏览器白屏。(#31775)
