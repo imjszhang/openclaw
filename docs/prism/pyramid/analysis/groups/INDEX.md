@@ -45,6 +45,9 @@
 | G37  | 技能发现系统应从“手动注册”演进为"GitHub Pages 静态注册表 + AI 工具链”的自动化架构以实现 Agent 友好                | 14        | 2026-02      |
 | G38  | OpenClaw 路径解析存在 State 目录与 Workspace 目录的分离机制，需通过环境变量或配置文件显式对齐以避免 ENOENT 错误   | 8         | 2026-02      |
 | G39  | OpenClaw 的 exec 安全机制通过“分段解析 + 白名单校验 + 动态审批”三重防线，强制阻断高风险的 curl\|bash 管道执行模式 | 16        | 2026-02      |
+| G40  | JS-Eyes 子技能安装必须强制执行权限收紧，以规避 OpenClaw 安全机制对 world-writable 文件的拦截                      | 10        | 2026-03      |
+| G41  | 长期记忆体系必须剥离 Heartbeat 的写入职责，构建“独立 Digest 任务 + 周治理复盘”的闭环以确保记忆质量                | 23        | 2026-03      |
+| G42  | OpenClaw 的全开放配置必须通过 JSON5 精细化控制与网关重启生效，且仅限可信环境使用                                  | 17        | 2026-03      |
 
 ## 变更日志
 
@@ -63,3 +66,5 @@
 | 2026-02-24 | 新建 G34                                          | 归入 js-eyes-openclaw-plugin-guide 拆解的 28 个 atoms (JE-01 至 JE-28)，形成完整的 JS-Eyes 浏览器扩展集成指南组                                                                                                                                                                   |
 | 2026-02-26 | 新建 G35-G38                                      | 归入 clawhub-publish-guide (CH-01~21), js-eyes-agent-first-transformation (AF-01~20), skill-discovery-system-design-and-implementation (SD-01~14), workspace-path-openclaw-state-dir-mismatch (OP-01~08) 共 62 个 atoms；形成技能发布、独立分发、自动化发现及路径配置四个新主题组 |
 | 2026-02-26 | 新建 G39                                          | 归入 exec-approvals-curl-pipe-bash-blocked 拆解的 16 个 atoms (EX-01~EX-16)，形成完整的执行审批与安全机制主题组                                                                                                                                                                   |
+| 2026-03-04 | 新建 G40, G41, G42                                | 归入 permission-settings-guide (PS-01~17), js-eyes-install-script-fix (JS-01~10), memory-core-research-and-implementation-log (MC-01~23) 共 50 个 atoms；形成权限配置、插件安装修复、记忆架构重构三个新主题组                                                                     |
+| 2026-03-04 | 新建 G40, G41, G42                                | 归入 js-eyes-install-script-fix (JS-01~10), memory-core-research-and-implementation-log (MC-01~23), permission-settings-guide (PS-01~17) 共 50 个 atoms；形成安装权限修复、记忆架构治理、权限配置指南三个新主题组                                                                 |

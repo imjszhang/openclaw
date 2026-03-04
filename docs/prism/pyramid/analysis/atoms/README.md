@@ -83,4 +83,7 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | SD    | skill-discovery-system-design-and-implementation | 2026-02            |
 | OP    | workspace-path-openclaw-state-dir-mismatch       | 2026-02            |
 | EX    | exec-approvals-curl-pipe-bash-blocked            | 2026-02            |
+| PS    | permission-settings-guide                        | 2026-02            |
+| JS    | js-eyes-install-script-fix                       | 2026-02            |
+| MC    | memory-core-research-and-implementation-log      | 2026-02            |
 ```
