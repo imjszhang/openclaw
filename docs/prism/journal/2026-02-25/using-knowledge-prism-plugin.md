@@ -20,9 +20,9 @@
       "enabled": true,
       "config": {
         "api": {
-          "baseUrl": "${LOCAL_LAN_BASE_URL}",
-          "model": "${LOCAL_LAN_MODEL}",
-          "apiKey": "${LOCAL_LAN_API_KEY}"
+          "baseUrl": "${KNOWLEDGE_PRISM_API_BASE_URL}",
+          "model": "${KNOWLEDGE_PRISM_API_MODEL}",
+          "apiKey": "${KNOWLEDGE_PRISM_API_KEY}"
         }
       }
     }
@@ -43,7 +43,7 @@
 
 - **加载方式**：`plugins.load.paths` 指定了本地路径，属于最高优先级的 config 来源（优先级 1）
 - **安装方式**：`source: "path"` 表示使用 `--link` 模式安装，插件代码仍在原项目目录中，修改即时生效
-- **API 配置**：使用环境变量引用（`${LOCAL_LAN_BASE_URL}` 等），实际值在 `.env` 中定义，指向局域网内的本地模型服务
+- **API 配置**：使用环境变量引用（`${KNOWLEDGE_PRISM_API_BASE_URL}` 等），实际值在 `.env` 中定义，指向局域网内的本地模型服务
 
 ---
 
@@ -343,12 +343,12 @@ docs/githubforker/
 }
 ```
 
-或者修改 `.env` 中的环境变量（当前使用 `${LOCAL_LAN_BASE_URL}` 等引用）：
+或者修改 `.env` 中的环境变量（当前使用 `${KNOWLEDGE_PRISM_API_BASE_URL}` 等引用）：
 
 ```
-LOCAL_LAN_BASE_URL=http://192.168.31.135:8888/v1
-LOCAL_LAN_MODEL=unsloth/Qwen3.5-397B-A17B
-LOCAL_LAN_API_KEY=sk-...
+KNOWLEDGE_PRISM_API_BASE_URL=http://192.168.31.135:8888/v1
+KNOWLEDGE_PRISM_API_MODEL=unsloth/Qwen3.5-397B-A17B
+KNOWLEDGE_PRISM_API_KEY=sk-...
 ```
 
 ### 调整处理参数
@@ -445,7 +445,7 @@ openclaw plugins list
 
 原因通常是模型服务不可达或响应过慢。检查：
 
-1. `.env` 中的 `LOCAL_LAN_BASE_URL` 是否可访问
+1. `.env` 中的 `KNOWLEDGE_PRISM_API_BASE_URL` 是否可访问
 2. 模型是否已启动
 3. 如果 journal 特别长，考虑增大 `timeoutMs`
 
