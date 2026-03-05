@@ -26,6 +26,12 @@
 5. [配置示例：本地最大权限（快速上手）](#5-配置示例本地最大权限快速上手)
 6. [配置示例：生产安全模式](#6-配置示例生产安全模式)
 7. [常见问题排查](#7-常见问题排查)
+   - [AI 说"没有 exec 工具"](#-ai-说没有-exec-工具或exec-工具不可用)
+   - [子代理无法执行命令](#-子代理无法执行命令exec-denied)
+   - [配置了 full 但还是被审批](#-配置了-securityfull-但命令还是被审批)
+   - [allowlist 模式链式命令被拒](#-allowlist-模式下链式命令-被拒绝)
+   - [Windows 上 `&&` 报错](#-windows-上--命令报错)
+   - [Windows 上 safeBins 不生效](#-windows-上-safebins-不生效)
 8. [配置字段速查表](#8-配置字段速查表)
 
 ---
@@ -39,10 +45,11 @@ OpenClaw 的权限系统分两个完全独立的维度：
 | **工具可见性**    | AI 能"看到"哪些工具，能调用哪些工具名       | `openclaw.json` → `tools.allow/deny`                               |
 | **exec 执行权限** | AI 调用 exec 工具时，哪些命令实际被允许运行 | `openclaw.json` → `tools.exec` + `~/.openclaw/exec-approvals.json` |
 
-两个维度**各自独立**，必须同时配置正确。最常见的陷阱：
+两个维度**各自独立**，必须同时配置正确。经实测最常见的三个陷阱：
 
-- 只配了 `tools.exec.security=full`，但忘了配 `exec-approvals.json` 的 `defaults`，导致子代理无法执行命令
-- 只配了 `tools.allow`，但没给工具配 exec 权限，AI "看到"了 exec 工具但每次都被拒绝
+1. **`tools.allow` 里没有 `group:fs` 和 `group:runtime`**：`group:openclaw` 不含 `exec`/`read`/`write`/`edit`，漏加这两个组 AI 就"看不到"这些工具，直接说"没有 exec 工具"
+2. **`exec-approvals.json` 的 `defaults` 留空 `{}`**：子代理 fallback 到硬编码默认 `security="deny"`，`minSecurity("full", "deny") = "deny"`，子代理一律无法执行命令
+3. **只配了 `tools.exec.security=full`，忘了同步 `exec-approvals.json`**：AI "看到"了 exec 工具，但运行时被 exec-approvals 拒绝
 
 ---
 
@@ -299,19 +306,25 @@ minSecurity("full", "deny") = "deny"
 
 ### 工具组（group:）
 
-| 组名               | 包含工具                                                                                                                                                          | 说明                                               |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `group:openclaw`   | web*search, web_fetch, memory_search, memory_get, sessions*\*, subagents, session_status, browser, canvas, message, cron, gateway, nodes, agents_list, image, tts | OpenClaw 特有工具（**不含** read/write/edit/exec） |
-| `group:fs`         | read, write, edit, apply_patch                                                                                                                                    | 文件系统工具                                       |
-| `group:runtime`    | exec, process                                                                                                                                                     | 执行时工具                                         |
-| `group:web`        | web_search, web_fetch                                                                                                                                             | 网络工具                                           |
-| `group:memory`     | memory_search, memory_get                                                                                                                                         | 记忆工具                                           |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, subagents, session_status                                                                         | 会话工具                                           |
-| `group:ui`         | browser, canvas                                                                                                                                                   | UI 工具                                            |
-| `group:messaging`  | message                                                                                                                                                           | 消息工具                                           |
-| `group:automation` | cron, gateway                                                                                                                                                     | 自动化工具                                         |
-| `group:media`      | image, tts                                                                                                                                                        | 媒体工具                                           |
-| `group:plugins`    | （动态，所有已加载插件工具）                                                                                                                                      | 插件工具                                           |
+| 组名               | 包含工具                                                                                                                                                          | 说明                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `group:openclaw`   | web*search, web_fetch, memory_search, memory_get, sessions*\*, subagents, session_status, browser, canvas, message, cron, gateway, nodes, agents_list, image, tts | OpenClaw 特有工具。**⚠️ 不含 read/write/edit/exec**，文件和执行类工具需单独加 |
+| `group:fs`         | read, write, edit, apply_patch                                                                                                                                    | 文件系统工具（读写编辑文件）                                                  |
+| `group:runtime`    | exec, process                                                                                                                                                     | 执行时工具（运行命令、管理后台进程）                                          |
+| `group:web`        | web_search, web_fetch                                                                                                                                             | 网络工具                                                                      |
+| `group:memory`     | memory_search, memory_get                                                                                                                                         | 记忆工具                                                                      |
+| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, subagents, session_status                                                                         | 会话工具                                                                      |
+| `group:ui`         | browser, canvas                                                                                                                                                   | UI 工具                                                                       |
+| `group:messaging`  | message                                                                                                                                                           | 消息工具                                                                      |
+| `group:automation` | cron, gateway                                                                                                                                                     | 自动化工具                                                                    |
+| `group:media`      | image, tts                                                                                                                                                        | 媒体工具                                                                      |
+| `group:plugins`    | （动态，所有已加载插件工具）                                                                                                                                      | 插件工具                                                                      |
+
+> **最常用的完整组合（覆盖所有常用功能）：**
+>
+> ```json
+> "allow": ["group:openclaw", "group:plugins", "group:fs", "group:runtime"]
+> ```
 
 ---
 
@@ -418,6 +431,8 @@ minSecurity("full", "deny") = "deny"
 
 ### `~/.openclaw/openclaw.json` 关键段
 
+> **`group:openclaw` 不含 `exec`/`read`/`write`/`edit`。** 必须显式加 `group:fs`（文件工具）和 `group:runtime`（exec 工具），否则 AI 会直接说"没有 exec 工具"。
+
 ```json
 {
   "tools": {
@@ -447,6 +462,27 @@ minSecurity("full", "deny") = "deny"
 
 ### `~/.openclaw/exec-approvals.json`（必须同步配置！）
 
+> **`socket.path` 和 `token` 不要手动修改**，保留 gateway 首次启动时自动生成的值。只需确保 `defaults` 段正确。
+
+**Linux / macOS：**
+
+```json
+{
+  "version": 1,
+  "socket": {
+    "path": "~/.openclaw/exec-approvals.sock",
+    "token": "<保留现有 token，不要修改>"
+  },
+  "defaults": {
+    "security": "full",
+    "ask": "off"
+  },
+  "agents": {}
+}
+```
+
+**Windows（路径格式不同）：**
+
 ```json
 {
   "version": 1,
@@ -462,16 +498,30 @@ minSecurity("full", "deny") = "deny"
 }
 ```
 
-**这两个文件必须同时配置**，缺一不可。`exec-approvals.json` 的 `defaults` 控制了子代理的权限上限，如果留空则子代理无法执行任何命令。
+**这两个文件必须同时配置**，缺一不可：
+
+- `openclaw.json` 的 `tools.allow` 决定 AI 能"看到"哪些工具
+- `openclaw.json` 的 `tools.exec` 声明想要的执行权限
+- `exec-approvals.json` 的 `defaults` 是运行时权限上限，留空则子代理无法执行任何命令
 
 ### 验证配置正确
 
 ```bash
-# 检查全局 exec 配置
+# 1. 检查全局 exec 配置
 openclaw config get tools.exec
+# 预期：{ "host": "gateway", "security": "full", "ask": "off" }
 
-# 预期输出：
-# { "host": "gateway", "security": "full", "ask": "off" }
+# 2. 检查工具可见性（allow 列表）
+openclaw config get tools.allow
+# 预期包含：group:openclaw, group:plugins, group:fs, group:runtime
+
+# 3. 实测 exec 工具是否可用（embedded 模式快速验证）
+openclaw agent --agent main --message "用exec工具运行：echo TEST_OK"
+# 预期：AI 调用 exec，输出 TEST_OK
+
+# 4. 实测子代理 exec 权限
+openclaw agent --agent main --message "spawn一个子代理，让它用exec工具运行：echo SUBAGENT_OK"
+# 预期：子代理成功执行并返回结果
 ```
 
 ---
@@ -544,6 +594,24 @@ openclaw config get tools.exec
 
 ## 7. 常见问题排查
 
+### ❌ AI 说"没有 exec 工具"或"exec 工具不可用"
+
+**症状**：AI 直接回复说没有执行命令的工具，不尝试调用 exec。
+
+**原因**：`tools.allow` 里没有包含 `exec`（或 `group:runtime`）。`group:openclaw` **不包含** exec、read、write、edit，这四类工具需要单独加。
+
+**修复**：在 `tools.allow` 里加 `group:fs` 和 `group:runtime`：
+
+```json
+{
+  "tools": {
+    "allow": ["group:openclaw", "group:plugins", "group:fs", "group:runtime"]
+  }
+}
+```
+
+---
+
 ### ❌ 子代理无法执行命令（exec denied）
 
 **症状**：主 agent 能执行命令，子代理全部报 `exec denied`。
@@ -553,7 +621,6 @@ openclaw config get tools.exec
 **修复**：
 
 ```json
-// exec-approvals.json
 {
   "defaults": {
     "security": "full",
@@ -572,29 +639,32 @@ openclaw config get tools.exec
 
 ---
 
-### ❌ AI "看不到" exec 工具
-
-**症状**：AI 说没有执行命令的工具，或者工具调用总是被过滤掉。
-
-**原因**：`tools.allow` 里没有包含 `exec`（或 `group:runtime`）。注意 `group:openclaw` **不包含** exec。
-
-**修复**：
-
-```json
-{
-  "tools": {
-    "allow": ["group:openclaw", "group:plugins", "group:fs", "group:runtime"]
-  }
-}
-```
-
----
-
 ### ❌ allowlist 模式下链式命令（`&&`）被拒绝
 
 **原因**：链式命令的每个命令段都需要独立命中 allowlist。`git status && ls` 需要 `git` 和 `ls` 都在 allowlist 中。
 
 **修复**：在 allowlist 中添加所有命令，或切换到 `security=full`。
+
+---
+
+### ❌ Windows 上 `&&` 命令报错
+
+**症状**：AI 尝试用 `cmd1 && cmd2` 的方式执行，PowerShell 报语法错误。
+
+**原因**：Windows 默认 shell 是 PowerShell，不支持 `&&` 链式语法（PowerShell 用 `;` 或 `-and`）。
+
+**修复**：不需要修改配置，提示 AI 用 PowerShell 兼容语法，或在 `tools.exec` 中指定 Git Bash：
+
+```json
+{
+  "tools": {
+    "exec": {
+      "shell": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "shellArgs": ["-c"]
+    }
+  }
+}
+```
 
 ---
 
@@ -651,4 +721,4 @@ openclaw config get tools.exec
 
 ---
 
-_文档基于 OpenClaw `2026.3.3` 源码分析生成。代码路径：`src/infra/exec-approvals.ts`、`src/agents/bash-tools.exec-host-shared.ts`、`src/agents/pi-tools.ts`、`src/agents/pi-tools.policy.ts`、`src/config/types.tools.ts`。_
+_文档基于 OpenClaw `2026.3.3` 源码分析 + 实机测试生成（2026-03-05）。代码路径：`src/infra/exec-approvals.ts`、`src/agents/bash-tools.exec-host-shared.ts`、`src/agents/pi-tools.ts`、`src/agents/pi-tools.policy.ts`、`src/config/types.tools.ts`、`src/agents/tool-catalog.ts`。实测验证：主 agent exec ✅、子代理 exec ✅、Windows PowerShell 兼容 ✅。_
