@@ -1,0 +1,140 @@
+---
+name: "OpenClaw 个人实践知识库"
+description: "OpenClaw 个人实践知识库 — 结构化知识体系，覆盖：个人知识库要从"可记录"演进到"可教学"，核心瓶颈是将时间线…；知识库架构的关键设计轴是"分层分离 + 增长驱动的组织策略"…；可持续的知识拆解体系需要三个支撑：文档化的增量流程、模板化的…；安全加固遵循"纵深防御 + 默认安全"——应用层攻击面独立防…；代码库规模化的核心工程挑战是同时保持质量和速度——去重/类型…；Fork 管理必须采用"三层分支隔离 + 选择性同步"策略，…；消息渠道部署需遵循"先决条件确认 - 差异化配置 - 状态验…；AI 模型与 Agent 配置需严格区分"提供商认证机制"与…；项目架构以"本地优先网关"为核心枢纽，通过五层抽象（Chan…；系统健康与配置规范化依赖自动化诊断工具（Doctor），具备…；极简环境（如 Tiny Core）部署需遵循"预编译依赖 +…；AI Agent 自我进化必须构建"OADA 闭环 + 预算…；Token 使用监控需构建"命令行实时查询 + Web UI…；Browser Relay 架构通过"本地中继服务器 + 扩…；Cron 调度器与 Heartbeat 心跳机制需根据"时间…；Windows 下 Cursor 终端必须切换为 Git B…；OpenClaw 扩展系统基于"统一注册 API+ 分层发现…；OpenClaw 外部集成需根据"自动化场景需求"在 CLI…；独立 Agent 创建需严格区分"CLI 交互式引导"与"R…；技能系统通过"元数据声明 + 三级加载 + 优先级覆盖"机制…；插件开发生命周期需遵循"SDK 隔离 + 清单驱动 + 安全…；知识棱镜的自动化落地需通过"OpenClaw 插件化"将繁琐…；JS-Eyes 通过 WebSocket 复用用户浏览器环境…；技能分发体系需构建"文本元数据驱动 + 语义搜索索引 + 安…；技能发现系统应从"手动注册"演进为"GitHub Pages…；路径配置需显式对齐 State 目录与 Workspace …；执行安全机制需构建"分段解析 + 白名单校验 + 动态审批"…；插件安装与子技能部署必须强制执行权限收紧（chmod 644…；长期记忆体系必须剥离 Heartbeat 的写入职责，构建"…；全开放配置必须通过 JSON5 精细化控制与网关重启生效，且…。25 个视角、30 个分组，可按需检索。"
+version: 1.0.0
+metadata:
+  openclaw:
+    emoji: "🔬"
+    requires:
+      skills:
+        - js-knowledge-prism
+---
+
+# 知识地图
+
+> 36篇journal, 35个atoms, 30个groups, 25个视角
+
+## 顶层观点
+
+| 序号 | 观点候选                                                                                                                    | 支撑 Groups           |
+| ---- | --------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| S1   | 个人知识库要从"可记录"演进到"可教学"，核心瓶颈是将时间线素材转化为逻辑结构                                                  | G01, G02, G27         |
+| S2   | 知识库架构的关键设计轴是"分层分离 + 增长驱动的组织策略"，而非一次性的扁平分类                                               | G03, G04, G05         |
+| S3   | 可持续的知识拆解体系需要三个支撑：文档化的增量流程、模板化的扩展入口、可追溯的修订链路                                      | G06                   |
+| S4   | 安全加固遵循"纵深防御 + 默认安全"——应用层攻击面独立防护，基础设施层不可变摘要 + 最小权限 + 自动迁移                         | G07, G11, G16         |
+| S5   | 代码库规模化的核心工程挑战是同时保持质量和速度——去重/类型提取降低维护成本，lightweight clears + 性能模式保障测试可持续性    | G09, G10              |
+| S6   | Fork 管理必须采用"三层分支隔离 + 选择性同步"策略，以平衡定制需求与上游演进，确保生产环境稳定                                | G08, G13, FM          |
+| S7   | 消息渠道部署需遵循"先决条件确认 - 差异化配置 - 状态验证"的标准化流程，并针对不同平台特性（如虚拟号限制、隐私模式）做适配    | G12, G23, G31, CD     |
+| S8   | AI 模型与 Agent 配置需严格区分"提供商认证机制"与"多 Agent 路由逻辑"，并通过独立工作区与会话隔离实现灵活调度与人设独立       | G14, G28, G29, MA     |
+| S9   | 项目架构以"本地优先网关"为核心枢纽，通过五层抽象（Channel-Agent-Workspace-Session-Node）连接多渠道与多工具，实现安全路由    | G15, G20, G28, AR, CP |
+| S10  | 系统健康与配置规范化依赖自动化诊断工具（Doctor），具备自动修复、深度审计及状态迁移能力，是保障长期可维护性的核心防线        | G16, OD               |
+| S11  | 极简环境（如 Tiny Core）部署需遵循"预编译依赖 + 定制化 Remaster"策略，通过裁剪模块与依赖平衡资源限制与核心功能需求          | G17, TC               |
+| S12  | AI Agent 自我进化必须构建"OADA 闭环 + 预算约束 + 人机协作"的三层防御体系，以确保持续优化而不失控                            | G18, AE               |
+| S13  | Token 使用监控需构建"命令行实时查询 + Web UI 历史分析 + OpenTelemetry 指标导出"的全栈可观测体系                             | G19, TM               |
+| S14  | Browser Relay 架构通过"本地中继服务器 + 扩展徽章状态机"实现安全可控的浏览器标签页共享控制，避免独立浏览器实例的资源开销     | G20, BR               |
+| S15  | Cron 调度器与 Heartbeat 心跳机制需根据"时间精度需求"与"会话隔离要求"进行差异化选型与组合使用，以实现高效自动化              | G21, CR               |
+| S16  | Windows 下 Cursor 终端必须切换为 Git Bash 以消除 AI Agent 生成 Unix 命令的执行障碍，确保跨平台脚本兼容性                    | G22, CT               |
+| S17  | OpenClaw 扩展系统基于"统一注册 API+ 分层发现机制 + 生命周期钩子"构建全类型插件生态，支持 Channel/Tool/Provider 等标准化扩展 | G24, ED               |
+| S18  | OpenClaw 外部集成需根据"自动化场景需求"在 CLI、HTTP API 与 WebSocket RPC 间进行差异化选型，以适配脚本调用与远程控制         | G25, ES               |
+| S19  | 独立 Agent 创建需严格区分"CLI 交互式引导"与"RPC 自动化构建"两种模式，并禁止跨 Agent 复用配置目录以确保人设与记忆独立性      | G26, G29, IA          |
+| S20  | 技能系统通过"元数据声明 + 三级加载 + 优先级覆盖"机制，实现 AI Agent 能力的灵活扩展与按需激活，支持从内置到工作区的多级覆盖  | G30, SG               |
+| S21  | 插件开发生命周期需遵循"SDK 隔离 + 清单驱动 + 安全加载"规范，通过 jiti 动态加载与严格的路径/所有权检查保障运行时安全         | G32, PC               |
+| S22  | 知识棱镜的自动化落地需通过"OpenClaw 插件化"将繁琐的手动流程转化为 AI 可调用的标准工具，实现从散乱笔记到结构化产出的闭环     | G33, FN, UP           |
+| S23  | JS-Eyes 通过 WebSocket 复用用户浏览器环境，填补了内置沙箱浏览器在"带登录态交互"场景的能力空白，支持多浏览器协同与远程控制   | G34, JE               |
+| S24  | 技能分发体系需构建"文本元数据驱动 + 语义搜索索引 + 安全合规扫描"的标准化机制，并辅以自主安装脚本以解耦对单一市场的依赖      | G35, AF               |
+| S25  | 技能发现系统应从"手动注册"演进为"GitHub Pages 静态注册表 + AI 工具链"的自动化架构，实现 Agent 友好与人类可读的双重服务      | G37, SD               |
+| S26  | 路径配置需显式对齐 State 目录与 Workspace 目录的解析逻辑，通过环境变量或配置文件避免默认路径不一致导致的 ENOENT 错误        | G38, OP               |
+| S27  | 执行安全机制需构建"分段解析 + 白名单校验 + 动态审批"的三重防线，强制阻断高风险的 curl\|bash 管道执行模式并防止配置回退失效  | G39, EX               |
+| S28  | 插件安装与子技能部署必须强制执行权限收紧（chmod 644/755），以规避 OpenClaw 安全机制对 world-writable 文件的拦截导致加载失败 | G40, JS               |
+| S29  | 长期记忆体系必须剥离 Heartbeat 的写入职责，构建"独立 Digest 任务 + 周治理复盘"的闭环以确保记忆质量与检索信噪比              | G41, MC               |
+| S30  | 全开放配置必须通过 JSON5 精细化控制与网关重启生效，且仅限可信环境使用，生产环境应严格限制 exec 和命令权限                   | G42, PS               |
+
+## 分组索引
+
+| 编号 | 观点句                                                                                                            | atom 数量 | 来源月份跨度 |
+| ---- | ----------------------------------------------------------------------------------------------------------------- | --------- | ------------ |
+| G01  | 按时间线组织的学习笔记天然不适合教学和知识复用，必须结构化重组                                                    | 2         | 2026-02      |
+| G02  | 金字塔原理的自上而下和自下而上方法互补协作，先归纳发现再验证表达                                                  | 3         | 2026-02      |
+| G03  | 知识库应分为输入（journal）、处理（pyramid）、输出（outputs）三层，各层职责单一                                   | 3         | 2026-02      |
+| G04  | 素材分析（analysis）跨视角共享，表达组织（structure）按视角独立，两者终点与起点不等价                             | 3         | 2026-02      |
+| G05  | 产物是否随素材规模增长决定组织方式——增长型用目录分维度，固定型用单文件保内聚                                      | 4         | 2026-02      |
+| G06  | 知识库拆解是持续增量过程，需要文档化流程、变更日志和模板化入口保障可持续运作                                      | 3         | 2026-02      |
+| G07  | 安全加固遵循纵深防御原则——路径、认证、执行、审计各层独立防护，关键路径 fail-closed                                | 4         | 2026-02      |
+| G08  | 大规模上游合并的核心策略是采纳上游架构方向，文档化丢失功能为后续重建铺路                                          | 3         | 2026-02      |
+| G09  | 代码库规模化演进的重构模式：共享 helper 去重 + 类型提取到独立模块                                                 | 2         | 2026-02      |
+| G10  | 测试基础设施规模化的两个支柱：lightweight clears 解决状态隔离，性能模式解决执行速度                               | 2         | 2026-02      |
+| G11  | 基础设施的安全默认值：镜像固定摘要 + 非 root 运行 + 自动化迁移工具                                                | 2         | 2026-02      |
+| G12  | 消息渠道部署需遵循“先决条件确认 - 差异化配置 - 状态验证”的标准化流程                                              | 26        | 2026-02      |
+| G13  | Fork 管理必须采用“三层分支隔离 + 选择性同步”策略以平衡定制需求与上游演进                                          | 30        | 2026-02      |
+| G14  | AI 模型与 Agent 配置需严格区分“提供商认证机制”与“多 Agent 路由逻辑”以实现灵活调度                                 | 25        | 2026-02      |
+| G15  | 项目架构与运行机理揭示了“本地优先网关”作为核心枢纽连接多渠道与多工具的设计哲学                                    | 32        | 2026-02      |
+| G16  | Doctor 诊断工具是保障系统健康与配置规范化的核心防线，具备自动修复与深度审计能力                                   | 24        | 2026-02      |
+| G17  | Tiny Core Linux 部署需遵循“极简内核 + 预编译依赖 + 定制化 Remaster"策略以平衡资源限制与功能需求                   | 30        | 2026-02      |
+| G18  | AI Agent 自我进化必须构建"OADA 闭环 + 预算约束 + 人机协作”的三层防御体系以确保持续优化而不失控                    | 30        | 2026-02      |
+| G19  | Token 使用监控需构建“命令行实时查询 + Web UI 历史分析 + OpenTelemetry 指标导出”的全栈可观测体系                   | 10        | 2026-02      |
+| G20  | Browser Relay 架构通过“本地中继服务器 + 扩展徽章状态机”实现安全可控的浏览器标签页共享控制                         | 20        | 2026-02      |
+| G21  | Cron 调度器与 Heartbeat 心跳机制需根据“时间精度需求”与“会话隔离要求”进行差异化选型与组合使用                      | 26        | 2026-02      |
+| G22  | Windows 下 Cursor 终端必须切换为 Git Bash 以消除 AI Agent 生成 Unix 命令的执行障碍                                | 15        | 2026-02      |
+| G23  | OpenClaw 渠道插件架构通过“元数据声明 + 适配器实现 + 配置驱动”模式实现消息平台的标准化扩展                         | 30        | 2026-02      |
+| G24  | OpenClaw 扩展系统基于“统一注册 API+ 分层发现机制 + 生命周期钩子”构建全类型插件生态                                | 30        | 2026-02      |
+| G25  | OpenClaw 外部集成需根据“自动化场景需求”在 CLI、HTTP API 与 WebSocket RPC 间进行差异化选型                         | 22        | 2026-02      |
+| G26  | 独立 Agent 创建需严格区分"CLI 交互式引导”与"RPC 自动化构建”两种模式以适配不同管理场景                             | 20        | 2026-02      |
+| G27  | 知识棱镜通过"Journal-Pyramid-Outputs"三层架构与双向轨道，将时间线笔记蒸馏为可复用的结构化知识体系                 | 18        | 2026-02      |
+| G28  | OpenClaw 核心架构通过"Channel-Agent-Workspace-Session"五层抽象与严格隔离机制，实现消息路由安全与上下文精准管理    | 20        | 2026-02      |
+| G29  | Agent 使用需严格区分“主 Agent 配置”与“子 Agent 衍生”，禁止跨 Agent 复用配置目录以确保人设与记忆的独立性           | 15        | 2026-02      |
+| G30  | OpenClaw 技能系统通过“元数据声明 + 三级加载 + 优先级覆盖”机制，实现 AI Agent 能力的灵活扩展与按需激活             | 20        | 2026-02      |
+| G31  | WeCom 插件部署需解决“公网 IP 可信校验”与"5 秒回调响应”两大核心挑战，采用先 ACK 后异步处理策略保障消息可靠送达     | 15        | 2026-02      |
+| G32  | OpenClaw 插件创建需遵循"SDK 隔离 + 清单驱动 + 安全加载”的全生命周期规范                                           | 36        | 2026-02      |
+| G33  | 知识棱镜的自动化落地需通过"OpenClaw 插件化”将繁琐的手动流程转化为 AI 可调用的标准工具                             | 39        | 2026-02      |
+| G34  | JS-Eyes 通过 WebSocket 复用用户浏览器环境，填补了内置沙箱浏览器在“带登录态交互”场景的能力空白                     | 28        | 2026-02      |
+| G35  | ClawHub 技能发布需遵循“文本元数据驱动 + 语义搜索索引 + 安全合规扫描”的标准化分发机制                              | 26        | 2026-02      |
+| G36  | Agent-First 项目必须构建“自主安装脚本 + 多源回退链 + 地域化资源映射”的独立分发体系以解耦市场依赖                  | 14        | 2026-02      |
+| G37  | 技能发现系统应从“手动注册”演进为"GitHub Pages 静态注册表 + AI 工具链”的自动化架构以实现 Agent 友好                | 14        | 2026-02      |
+| G38  | OpenClaw 路径解析存在 State 目录与 Workspace 目录的分离机制，需通过环境变量或配置文件显式对齐以避免 ENOENT 错误   | 8         | 2026-02      |
+| G39  | OpenClaw 的 exec 安全机制通过“分段解析 + 白名单校验 + 动态审批”三重防线，强制阻断高风险的 curl\|bash 管道执行模式 | 16        | 2026-02      |
+| G40  | JS-Eyes 子技能安装必须强制执行权限收紧，以规避 OpenClaw 安全机制对 world-writable 文件的拦截                      | 10        | 2026-03      |
+| G41  | 长期记忆体系必须剥离 Heartbeat 的写入职责，构建“独立 Digest 任务 + 周治理复盘”的闭环以确保记忆质量                | 23        | 2026-03      |
+| G42  | OpenClaw 的全开放配置必须通过 JSON5 精细化控制与网关重启生效，且仅限可信环境使用                                  | 17        | 2026-03      |
+
+## 视角索引
+
+| 编号 | 视角名称                                                 | 目标读者                               | 核心疑问                                                                       | 状态     | 上下文                                                                    |
+| ---- | -------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------- |
+| P01  | [个人知识库的结构化方法](P01-knowledge-org-methodology/) | 有笔记习惯但苦于笔记越多越难用的学习者 | 怎样把散乱笔记转化为可教学、可复用的结构化知识体系？                           | 首版完成 | [CONTEXT.md](pyramid/structure/P01-knowledge-org-methodology/CONTEXT.md)  |
+| P02  | [OpenClaw 部署与渠道](P02-openclaw-deployment/)          | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P02-openclaw-deployment/CONTEXT.md)        |
+| P03  | [安全纵深防御](P03-security-hardening/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P03-security-hardening/CONTEXT.md)         |
+| P04  | [代码库规模化](P04-codebase-scale/)                      | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P04-codebase-scale/CONTEXT.md)             |
+| P05  | [Fork 管理](P05-fork-management/)                        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P05-fork-management/CONTEXT.md)            |
+| P06  | [AI 模型与 Agent 配置](P06-model-agent-config/)          | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P06-model-agent-config/CONTEXT.md)         |
+| P07  | [Doctor 诊断工具](P07-doctor-diagnostics/)               | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P07-doctor-diagnostics/CONTEXT.md)         |
+| P08  | [极简环境部署](P08-minimal-env/)                         | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P08-minimal-env/CONTEXT.md)                |
+| P09  | [Agent 自我进化](P09-agent-evolution/)                   | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P09-agent-evolution/CONTEXT.md)            |
+| P10  | [Token 使用监控](P10-token-monitoring/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P10-token-monitoring/CONTEXT.md)           |
+| P11  | [Browser Relay 架构](P11-browser-relay/)                 | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
+| P11  | [Cron 与 Heartbeat](P11-cron-heartbeat/)                 | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
+| P12  | [Cursor 终端配置](P12-cursor-terminal/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P12-cursor-terminal/CONTEXT.md)            |
+| P13  | [扩展系统](P13-extension-system/)                        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P13-extension-system/CONTEXT.md)           |
+| P14  | [外部集成](P14-external-integration/)                    | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P14-external-integration/CONTEXT.md)       |
+| P15  | [独立 Agent 创建](P15-independent-agent/)                | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P15-independent-agent/CONTEXT.md)          |
+| P16  | [插件开发生命周期](P16-plugin-lifecycle/)                | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
+| P16  | [技能系统](P16-skills-system/)                           | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
+| P17  | [知识棱镜自动化](P17-knowledge-prism-automation/)        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P17-knowledge-prism-automation/CONTEXT.md) |
+| P18  | [JS-Eyes 浏览器复用](P18-js-eyes/)                       | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P18-js-eyes/CONTEXT.md)                    |
+| P19  | [技能分发](P19-skill-distribution/)                      | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P19-skill-distribution/CONTEXT.md)         |
+| P20  | [技能发现](P20-skill-discovery/)                         | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P20-skill-discovery/CONTEXT.md)            |
+| P21  | [执行安全](P21-exec-security/)                           | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P21-exec-security/CONTEXT.md)              |
+| P22  | [路径配置](P22-path-config/)                             | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P22-path-config/CONTEXT.md)                |
+| P23  | [OpenClaw 实践日记](P23-practice-diary/)                 | 想深度实践开源 AI 框架的开发者         | 从零 fork 改造 OpenClaw 并在上面构建工具会经历哪些阶段、卡在哪里、能做出什么？ | 初始化   | [CONTEXT.md](pyramid/structure/P23-practice-diary/CONTEXT.md)             |
+
+## 产出索引
+
+| 产出                               | 格式         | 基于视角                                                                             | 状态     |
+| ---------------------------------- | ------------ | ------------------------------------------------------------------------------------ | -------- |
+| [methodology/](methodology/)       | 方法论文章   | [P01-knowledge-org-methodology](../pyramid/structure/P01-knowledge-org-methodology/) | 首版完成 |
+| [practice-diary/](practice-diary/) | 实践日记系列 | [P23-practice-diary](../pyramid/structure/P23-practice-diary/)                       | 初始化   |
+
+## 检索指引
+
+1. 根据上方索引定位相关视角或分组
+2. 阅读对应视角的 CONTEXT.md 获取 SCQA 摘要和 Key Line 列表
+3. 按需深入阅读 atom/KL/group 具体文件获取完整论述
