@@ -12,7 +12,7 @@ metadata:
 
 # 知识地图
 
-> 36篇journal, 35个atoms, 30个groups, 25个视角
+> 39篇journal, 39个atoms, 46个groups, 25个视角
 
 ## 顶层观点
 
@@ -95,6 +95,10 @@ metadata:
 | G40  | JS-Eyes 子技能安装必须强制执行权限收紧，以规避 OpenClaw 安全机制对 world-writable 文件的拦截                      | 10        | 2026-03      |
 | G41  | 长期记忆体系必须剥离 Heartbeat 的写入职责，构建“独立 Digest 任务 + 周治理复盘”的闭环以确保记忆质量                | 23        | 2026-03      |
 | G42  | OpenClaw 的全开放配置必须通过 JSON5 精细化控制与网关重启生效，且仅限可信环境使用                                  | 17        | 2026-03      |
+| G43  | 权限配置完全指南覆盖工具可见性与 exec 双轨制，子代理需同步 exec-approvals defaults 方能执行                       | 15        | 2026-03      |
+| G44  | 状态目录权限加固需通过 security audit 检测与自动修复，保障配置与凭据不被其他用户篡改或读取                        | 6         | 2026-03      |
+| G45  | link-collector 技能采用 inbox/batch 轮转与 CLI 子命令注册 cron，实现链接收集与定时入库的并发安全                  | 10        | 2026-03      |
+| G46  | js-knowledge-collector 插件通过 registerHttpRoute 暴露 Web UI，纯 ESM 项目需用动态 import 替代 createRequire      | 12        | 2026-03      |
 
 ## 视角索引
 

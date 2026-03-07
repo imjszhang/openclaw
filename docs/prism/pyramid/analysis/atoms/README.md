@@ -39,6 +39,10 @@
 | KA   | knowledge-base-architecture-design    | 2026-02 |
 | FN   | from-notes-to-plugin                  | 2026-02 |
 | JE   | js-eyes-openclaw-plugin-guide         | 2026-02 |
+| PG   | openclaw-permissions-guide            | 2026-03 |
+| LC   | link-collector-skill-dev              | 2026-03 |
+| SP   | openclaw-security-permissions-guide   | 2026-03 |
+| KC   | js-knowledge-collector-plugin-dev     | 2026-03 |
 
 ## 按月分目录约定
 
