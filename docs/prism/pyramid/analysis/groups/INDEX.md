@@ -59,6 +59,8 @@
 | G51  | JS ClawHub 通过"纯静态架构 + 人工策展定位"打造轻量级 OpenClaw 生态导航站                                          | 20        | 2026-03      |
 | G52  | 知识收集器必须采用"inbox/batch 轮转 + 专用 scraper"架构以解决主会话阻塞与多平台适配难题                           | 22        | 2026-03      |
 | G53  | ClawHub 博客自动同步需采用"Cron 触发隔离会话 + 哈希去重空跑优化”策略以实现低耦合高可靠                            | 16        | 2026-03      |
+| G54  | JS ClawHub 升级为 OpenClaw 插件需遵循"结构复用 + 动态注入 + 双模并存"策略以实现生态导航站的 AI 化赋能             | 20        | 2026-03      |
+| G55  | 知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖核心”策略以实现低门槛与高扩展性                              | 22        | 2026-03      |
 
 ## 变更日志
 
@@ -85,3 +87,5 @@
 | 2026-03-08 | 新建 G48, G49, G50                                | 从 js-knowledge-prism 仓库合并：G48 (Knowledge Prism 介绍, 15 atoms)、G49 (Agent-First 架构, 45 atoms)、G50 (多知识库自动化, 12 atoms)                                                                                                                                            |
 | 2026-03-08 | 新建 G51, G52                                     | 归入 js-clawhub-project-creation (JC-01~JC-20) 和 js-knowledge-collector-project-creation (JK-01~JK-22) 共 42 个 atoms；形成生态导航站策展与全链路知识收集自动化两个新主题组                                                                                                      |
 | 2026-03-08 | 新建 G53                                          | 归入 clawhub-blog-auto-sync-cron (CB-01~CB-16) 共 16 个 atoms，形成博客自动同步与 Cron 集成主题组                                                                                                                                                                                 |
+| 2026-03-08 | 新建 G54                                          | 归入 js-clawhub-openclaw-plugin-upgrade (JU-01~JU-20) 共 20 个 atoms，形成 JS ClawHub 插件化升级完整指南组                                                                                                                                                                        |
+| 2026-03-08 | 新建 G55                                          | 归入 js-knowledge-prism-project-creation (JP-01~JP-22) 共 22 个 atoms，形成完整的知识棱镜工具创建与架构设计指南组                                                                                                                                                                 |
