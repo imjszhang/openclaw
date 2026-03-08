@@ -52,6 +52,13 @@
 | G44  | 状态目录权限加固需通过 security audit 检测与自动修复，保障配置与凭据不被其他用户篡改或读取                        | 6         | 2026-03      |
 | G45  | link-collector 技能采用 inbox/batch 轮转与 CLI 子命令注册 cron，实现链接收集与定时入库的并发安全                  | 10        | 2026-03      |
 | G46  | js-knowledge-collector 插件通过 registerHttpRoute 暴露 Web UI，纯 ESM 项目需用动态 import 替代 createRequire      | 12        | 2026-03      |
+| G47  | Gateway 升级验证需遵循"版本确认 - 服务重装 - 配置加固"的标准流程以规避权限与安全风险                              | 12        | 2026-03      |
+| G48  | Knowledge Prism 是一种将日常笔记转化为结构化知识的高效工作方法。                                                  | 15        | 2026-03      |
+| G49  | Agent-First 架构模式强调以 AI Agent 为中心，优化工具和项目能力的结构化调用。                                      | 45        | 2026-03      |
+| G50  | 多知识库注册与自动化管理是 Agent-First 插件生态在运维层面的自然延伸。                                             | 12        | 2026-03      |
+| G51  | JS ClawHub 通过"纯静态架构 + 人工策展定位"打造轻量级 OpenClaw 生态导航站                                          | 20        | 2026-03      |
+| G52  | 知识收集器必须采用"inbox/batch 轮转 + 专用 scraper"架构以解决主会话阻塞与多平台适配难题                           | 22        | 2026-03      |
+| G53  | ClawHub 博客自动同步需采用"Cron 触发隔离会话 + 哈希去重空跑优化”策略以实现低耦合高可靠                            | 16        | 2026-03      |
 
 ## 变更日志
 
@@ -74,3 +81,7 @@
 | 2026-03-04 | 新建 G40, G41, G42                                | 归入 js-eyes-install-script-fix (JS-01~10), memory-core-research-and-implementation-log (MC-01~23), permission-settings-guide (PS-01~17) 共 50 个 atoms；形成安装权限修复、记忆架构治理、权限配置指南三个新主题组                                                                 |
 | 2026-03-07 | 新建 G43, G44, G45, G46                           | 归入 openclaw-permissions-guide (PG-01~15), openclaw-security-permissions-guide (SP-01~06), link-collector-skill-dev (LC-01~10), js-knowledge-collector-plugin-dev (KC-01~12) 共 43 个 atoms；形成权限完全指南、状态目录加固、link-collector 技能设计、知识收集插件四个新主题组   |
 | 2026-03-08 | 更新 G07, G08, G09, G13                           | 归入 merge-main-upgrade-summary-v2 (MV-01~MV-20) 中的 9 个 atoms 到现有 4 个 group；MV-02 验证高频合并策略，MV-03 记录 fork 差异收窄趋势，MV-09~MV-11 补充安全纵深，MV-12~MV-13+MV-18 补充重构模式                                                                                |
+| 2026-03-08 | 新建 G47                                          | 归入 gateway-upgrade-verification (GV-01~GV-12) 共 12 个 atoms，形成完整的网关升级验证与安全配置指南组                                                                                                                                                                            |
+| 2026-03-08 | 新建 G48, G49, G50                                | 从 js-knowledge-prism 仓库合并：G48 (Knowledge Prism 介绍, 15 atoms)、G49 (Agent-First 架构, 45 atoms)、G50 (多知识库自动化, 12 atoms)                                                                                                                                            |
+| 2026-03-08 | 新建 G51, G52                                     | 归入 js-clawhub-project-creation (JC-01~JC-20) 和 js-knowledge-collector-project-creation (JK-01~JK-22) 共 42 个 atoms；形成生态导航站策展与全链路知识收集自动化两个新主题组                                                                                                      |
+| 2026-03-08 | 新建 G53                                          | 归入 clawhub-blog-auto-sync-cron (CB-01~CB-16) 共 16 个 atoms，形成博客自动同步与 Cron 集成主题组                                                                                                                                                                                 |

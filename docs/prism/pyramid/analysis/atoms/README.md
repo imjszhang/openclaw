@@ -43,6 +43,13 @@
 | LC   | link-collector-skill-dev              | 2026-03 |
 | SP   | openclaw-security-permissions-guide   | 2026-03 |
 | KC   | js-knowledge-collector-plugin-dev     | 2026-03 |
+| AU   | agent-first-architecture-upgrade      | 2026-03 |
+| RC   | multi-base-registry-and-cron          | 2026-03 |
+
+> 注：以下缩写来自 js-knowledge-prism 仓库合并，与本库已有缩写存在复用：
+>
+> - `KP`（knowledge-prism-introduction）：本库 2026-02 已有同名 journal，合并的 2026-03 版本使用相同缩写
+> - `AF`（agent-first-architecture）：本库 2026-02 已将 AF 分配给 js-eyes-agent-first-transformation，合并的 2026-03 版本中 agent-first-architecture 也使用 AF，两者通过月份目录区分
 
 ## 按月分目录约定
 
@@ -90,4 +97,8 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | PS    | permission-settings-guide                        | 2026-02            |
 | JS    | js-eyes-install-script-fix                       | 2026-02            |
 | MC    | memory-core-research-and-implementation-log      | 2026-02            |
+| GV    | gateway-upgrade-verification                     | 2026-03            |
+| JC    | js-clawhub-project-creation                      | 2026-02            |
+| JK    | js-knowledge-collector-project-creation          | 2026-03            |
+| CB    | clawhub-blog-auto-sync-cron                      | 2026-03            |
 ```
