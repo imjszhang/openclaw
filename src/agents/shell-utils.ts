@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { logInfo, logWarn } from "../logger.js";
 
 export function resolvePowerShellPath(): string {
   // Prefer PowerShell 7 when available; PS 5.1 lacks "&&" support.
@@ -40,77 +39,34 @@ export function resolvePowerShellPath(): string {
   return "powershell.exe";
 }
 
-/**
- * Auto-detect shell arguments based on the shell binary name.
- * Used when the user configures a custom shell path but omits shellArgs.
- */
-function detectShellArgs(shellPath: string): string[] {
-  const name = path
-    .basename(shellPath)
-    .toLowerCase()
-    .replace(/\.exe$/, "");
-  if (
-    name === "bash" ||
-    name === "sh" ||
-    name === "zsh" ||
-    name === "dash" ||
-    name === "ksh" ||
-    name === "fish"
-  ) {
-    return ["-c"];
-  }
-  if (name.includes("powershell") || name === "pwsh") {
-    return ["-NoProfile", "-NonInteractive", "-Command"];
-  }
-  // Default to POSIX-style -c for unknown shells.
-  return ["-c"];
-}
-
-export function getShellConfig(overrides?: { shell?: string; shellArgs?: string[] }): {
-  shell: string;
-  args: string[];
-} {
-  // When a custom shell is configured, use it directly.
-  if (overrides?.shell) {
-    // Warn when an absolute path doesn't exist, but still honor the user's choice.
-    if (path.isAbsolute(overrides.shell) && !fs.existsSync(overrides.shell)) {
-      logWarn(`exec: configured shell not found: ${overrides.shell}`);
-    }
-    logInfo(`exec: using custom shell: ${overrides.shell}`);
-    const args = overrides.shellArgs ?? detectShellArgs(overrides.shell);
-    return { shell: overrides.shell, args };
-  }
-
-  // Resolve the platform-default shell and args.
-  let shell: string;
-  let args: string[];
-
+export function getShellConfig(): { shell: string; args: string[] } {
   if (process.platform === "win32") {
     // Use PowerShell instead of cmd.exe on Windows.
     // Problem: Many Windows system utilities (ipconfig, systeminfo, etc.) write
     // directly to the console via WriteConsole API, bypassing stdout pipes.
     // When Node.js spawns cmd.exe with piped stdio, these utilities produce no output.
     // PowerShell properly captures and redirects their output to stdout.
-    shell = resolvePowerShellPath();
-    args = ["-NoProfile", "-NonInteractive", "-Command"];
-  } else {
-    const envShell = process.env.SHELL?.trim();
-    const shellName = envShell ? path.basename(envShell) : "";
-    // Fish rejects common bashisms used by tools, so prefer bash when detected.
-    if (shellName === "fish") {
-      shell = resolveShellFromPath("bash") ?? resolveShellFromPath("sh") ?? envShell!;
-    } else {
-      shell = envShell && envShell.length > 0 ? envShell : "sh";
+    return {
+      shell: resolvePowerShellPath(),
+      args: ["-NoProfile", "-NonInteractive", "-Command"],
+    };
+  }
+
+  const envShell = process.env.SHELL?.trim();
+  const shellName = envShell ? path.basename(envShell) : "";
+  // Fish rejects common bashisms used by tools, so prefer bash when detected.
+  if (shellName === "fish") {
+    const bash = resolveShellFromPath("bash");
+    if (bash) {
+      return { shell: bash, args: ["-c"] };
     }
-    args = ["-c"];
+    const sh = resolveShellFromPath("sh");
+    if (sh) {
+      return { shell: sh, args: ["-c"] };
+    }
   }
-
-  // Honor shellArgs override even when shell is not overridden.
-  if (overrides?.shellArgs) {
-    args = overrides.shellArgs;
-  }
-
-  return { shell, args };
+  const shell = envShell && envShell.length > 0 ? envShell : "sh";
+  return { shell, args: ["-c"] };
 }
 
 export function resolveShellFromPath(name: string): string | undefined {
