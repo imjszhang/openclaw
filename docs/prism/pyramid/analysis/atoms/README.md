@@ -103,4 +103,5 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | CB    | clawhub-blog-auto-sync-cron                      | 2026-03            |
 | JU    | js-clawhub-openclaw-plugin-upgrade               | 2026-03            |
 | JP    | js-knowledge-prism-project-creation              | 2026-02            |
+| KB    | knowledge-memory-bridge                          | 2026-03            |
 ```

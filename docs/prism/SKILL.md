@@ -1,6 +1,6 @@
 ---
 name: "prism"
-description: "prism — 结构化知识体系，覆盖：个人知识库要从"可记录"演进到"可教学"，核心瓶颈是将时间线…；知识库架构的关键设计轴是"分层分离 + 增长驱动的组织策略"…；可持续的知识拆解体系需要三个支撑：文档化的增量流程、模板化的…；安全加固遵循"纵深防御 + 默认安全"——应用层攻击面独立防…；代码库规模化的核心工程挑战是同时保持质量和速度——去重/类型…；Fork 管理必须采用"三层分支隔离 + 选择性同步"策略，…；消息渠道部署需遵循"先决条件确认 - 差异化配置 - 状态验…；AI 模型与 Agent 配置需严格区分"提供商认证机制"与…；项目架构以"本地优先网关"为核心枢纽，通过五层抽象（Chan…；系统健康与配置规范化依赖自动化诊断工具（Doctor），具备…；极简环境（如 Tiny Core）部署需遵循"预编译依赖 +…；AI Agent 自我进化必须构建"OADA 闭环 + 预算…；Token 使用监控需构建"命令行实时查询 + Web UI…；Browser Relay 架构通过"本地中继服务器 + 扩…；Cron 调度器与 Heartbeat 心跳机制需根据"时间…；Windows 下 Cursor 终端必须切换为 Git B…；OpenClaw 扩展系统基于"统一注册 API+ 分层发现…；OpenClaw 外部集成需根据"自动化场景需求"在 CLI…；独立 Agent 创建需严格区分"CLI 交互式引导"与"R…；技能系统通过"元数据声明 + 三级加载 + 优先级覆盖"机制…；插件开发生命周期需遵循"SDK 隔离 + 清单驱动 + 安全…；知识棱镜的自动化落地需通过"OpenClaw 插件化"将繁琐…；JS-Eyes 通过 WebSocket 复用用户浏览器环境…；技能分发体系需构建"文本元数据驱动 + 语义搜索索引 + 安…；技能发现系统应从"手动注册"演进为"GitHub Pages…；路径配置需显式对齐 State 目录与 Workspace …；执行安全机制需构建"分段解析 + 白名单校验 + 动态审批"…；插件安装与子技能部署必须强制执行权限收紧（chmod 644…；长期记忆体系必须剥离 Heartbeat 的写入职责，构建"…；全开放配置必须通过 JSON5 精细化控制与网关重启生效，且…；网关升级验证需遵循"版本确认 - 服务重装 - 配置加固"的…；生态导航站需采用"纯静态架构 + 人工策展定位"打造轻量级导…；全链路知识收集自动化必须采用"inbox/batch 轮转 …；博客自动同步管线需采用"Cron 触发隔离会话 + 哈希去重…；JS ClawHub 升级为 OpenClaw 插件需遵循"…；知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖…。26 个视角、43 个分组，可按需检索。"
+description: "prism — 结构化知识体系，覆盖：个人知识库要从"可记录"演进到"可教学"，核心瓶颈是将时间线…；知识库架构的关键设计轴是"分层分离 + 增长驱动的组织策略"…；可持续的知识拆解体系需要三个支撑：文档化的增量流程、模板化的…；安全加固遵循"纵深防御 + 默认安全"——应用层攻击面独立防…；代码库规模化的核心工程挑战是同时保持质量和速度——去重/类型…；Fork 管理必须采用"三层分支隔离 + 选择性同步"策略，…；消息渠道部署需遵循"先决条件确认 - 差异化配置 - 状态验…；AI 模型与 Agent 配置需严格区分"提供商认证机制"与…；项目架构以"本地优先网关"为核心枢纽，通过五层抽象（Chan…；系统健康与配置规范化依赖自动化诊断工具（Doctor），具备…；极简环境（如 Tiny Core）部署需遵循"预编译依赖 +…；AI Agent 自我进化必须构建"OADA 闭环 + 预算…；Token 使用监控需构建"命令行实时查询 + Web UI…；Browser Relay 架构通过"本地中继服务器 + 扩…；Cron 调度器与 Heartbeat 心跳机制需根据"时间…；Windows 下 Cursor 终端必须切换为 Git B…；OpenClaw 扩展系统基于"统一注册 API+ 分层发现…；OpenClaw 外部集成需根据"自动化场景需求"在 CLI…；独立 Agent 创建需严格区分"CLI 交互式引导"与"R…；技能系统通过"元数据声明 + 三级加载 + 优先级覆盖"机制…；插件开发生命周期需遵循"SDK 隔离 + 清单驱动 + 安全…；知识棱镜的自动化落地需通过"OpenClaw 插件化"将繁琐…；JS-Eyes 通过 WebSocket 复用用户浏览器环境…；技能分发体系需构建"文本元数据驱动 + 语义搜索索引 + 安…；技能发现系统应从"手动注册"演进为"GitHub Pages…；路径配置需显式对齐 State 目录与 Workspace …；执行安全机制需构建"分段解析 + 白名单校验 + 动态审批"…；插件安装与子技能部署必须强制执行权限收紧（chmod 644…；长期记忆体系必须剥离 Heartbeat 的写入职责，构建"…；全开放配置必须通过 JSON5 精细化控制与网关重启生效，且…；网关升级验证需遵循"版本确认 - 服务重装 - 配置加固"的…；生态导航站需采用"纯静态架构 + 人工策展定位"打造轻量级导…；全链路知识收集自动化必须采用"inbox/batch 轮转 …；博客自动同步管线需采用"Cron 触发隔离会话 + 哈希去重…；JS ClawHub 升级为 OpenClaw 插件需遵循"…；知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖…；知识库与记忆系统桥接需采用"Markdown 摘要导出 + …。27 个视角、44 个分组，可按需检索。"
 version: 1.0.0
 metadata:
   openclaw:
@@ -12,7 +12,7 @@ metadata:
 
 # 知识地图
 
-> 51篇journal, 50个atoms, 43个groups, 26个视角
+> 52篇journal, 51个atoms, 44个groups, 27个视角
 
 ## 顶层观点
 
@@ -54,6 +54,7 @@ metadata:
 | S34  | 博客自动同步管线需采用"Cron 触发隔离会话 + 哈希去重空跑优化”策略，以实现低耦合高可靠的定时内容导入与多语言构建                | G53, CB                 |
 | S35  | JS ClawHub 升级为 OpenClaw 插件需遵循"结构复用 + 动态注入 + 双模并存"策略，通过懒加载模块与配置透传实现生态导航站的 AI 化赋能 | G54, JU                 |
 | S36  | 知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖核心”策略，通过共享核心库实现 CLI 与插件模式的行为一致性与低门槛部署     | G55, JP, AU             |
+| S37  | 知识库与记忆系统桥接需采用"Markdown 摘要导出 + 增量时间戳同步"策略，以最低成本接入向量检索并避免全文噪声                      | G56, KB                 |
 
 ## 分组索引
 
@@ -114,37 +115,39 @@ metadata:
 | G53  | ClawHub 博客自动同步需采用"Cron 触发隔离会话 + 哈希去重空跑优化”策略以实现低耦合高可靠                            | 16        | 2026-03      |
 | G54  | JS ClawHub 升级为 OpenClaw 插件需遵循"结构复用 + 动态注入 + 双模并存"策略以实现生态导航站的 AI 化赋能             | 20        | 2026-03      |
 | G55  | 知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖核心”策略以实现低门槛与高扩展性                              | 22        | 2026-03      |
+| G56  | OpenClaw 记忆桥接需采用"Markdown 摘要导出 + 增量时间戳同步"策略以低成本接入向量检索                               | 13        | 2026-03      |
 
 ## 视角索引
 
-| 编号 | 视角名称                                                 | 目标读者                               | 核心疑问                                                                       | 状态     | 上下文                                                                    |
-| ---- | -------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------- |
-| P01  | [个人知识库的结构化方法](P01-knowledge-org-methodology/) | 有笔记习惯但苦于笔记越多越难用的学习者 | 怎样把散乱笔记转化为可教学、可复用的结构化知识体系？                           | 首版完成 | [CONTEXT.md](pyramid/structure/P01-knowledge-org-methodology/CONTEXT.md)  |
-| P02  | [OpenClaw 部署与渠道](P02-openclaw-deployment/)          | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P02-openclaw-deployment/CONTEXT.md)        |
-| P03  | [安全纵深防御](P03-security-hardening/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P03-security-hardening/CONTEXT.md)         |
-| P04  | [代码库规模化](P04-codebase-scale/)                      | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P04-codebase-scale/CONTEXT.md)             |
-| P05  | [Fork 管理](P05-fork-management/)                        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P05-fork-management/CONTEXT.md)            |
-| P06  | [AI 模型与 Agent 配置](P06-model-agent-config/)          | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P06-model-agent-config/CONTEXT.md)         |
-| P07  | [Doctor 诊断工具](P07-doctor-diagnostics/)               | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P07-doctor-diagnostics/CONTEXT.md)         |
-| P08  | [极简环境部署](P08-minimal-env/)                         | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P08-minimal-env/CONTEXT.md)                |
-| P09  | [Agent 自我进化](P09-agent-evolution/)                   | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P09-agent-evolution/CONTEXT.md)            |
-| P10  | [Token 使用监控](P10-token-monitoring/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P10-token-monitoring/CONTEXT.md)           |
-| P11  | [Browser Relay 架构](P11-browser-relay/)                 | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
-| P11  | [Cron 与 Heartbeat](P11-cron-heartbeat/)                 | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
-| P12  | [Cursor 终端配置](P12-cursor-terminal/)                  | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P12-cursor-terminal/CONTEXT.md)            |
-| P13  | [扩展系统](P13-extension-system/)                        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P13-extension-system/CONTEXT.md)           |
-| P14  | [外部集成](P14-external-integration/)                    | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P14-external-integration/CONTEXT.md)       |
-| P15  | [独立 Agent 创建](P15-independent-agent/)                | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P15-independent-agent/CONTEXT.md)          |
-| P16  | [插件开发生命周期](P16-plugin-lifecycle/)                | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
-| P16  | [技能系统](P16-skills-system/)                           | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
-| P17  | [知识棱镜自动化](P17-knowledge-prism-automation/)        | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P17-knowledge-prism-automation/CONTEXT.md) |
-| P18  | [JS-Eyes 浏览器复用](P18-js-eyes/)                       | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P18-js-eyes/CONTEXT.md)                    |
-| P19  | [技能分发](P19-skill-distribution/)                      | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P19-skill-distribution/CONTEXT.md)         |
-| P20  | [技能发现](P20-skill-discovery/)                         | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P20-skill-discovery/CONTEXT.md)            |
-| P21  | [执行安全](P21-exec-security/)                           | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P21-exec-security/CONTEXT.md)              |
-| P22  | [路径配置](P22-path-config/)                             | （待填写）                             | （待填写）                                                                     | 初始化   | [CONTEXT.md](pyramid/structure/P22-path-config/CONTEXT.md)                |
-| P23  | [OpenClaw 实践日记](P23-practice-diary/)                 | 想深度实践开源 AI 框架的开发者         | 从零 fork 改造 OpenClaw 并在上面构建工具会经历哪些阶段、卡在哪里、能做出什么？ | 初始化   | [CONTEXT.md](pyramid/structure/P23-practice-diary/CONTEXT.md)             |
-| P24  | [架构全景](P24-arch-overview/)                           | 架构师、技术经理、研发团队成员         | 如何设计一个以 AI Agent 为中心的架构，以优化工具和项目能力的结构化调用？       | 初始化   | [CONTEXT.md](pyramid/structure/P24-arch-overview/CONTEXT.md)              |
+| 编号 | 视角名称                                                 | 目标读者                                       | 核心疑问                                                                       | 状态      | 上下文                                                                    |
+| ---- | -------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ | --------- | ------------------------------------------------------------------------- |
+| P01  | [个人知识库的结构化方法](P01-knowledge-org-methodology/) | 有笔记习惯但苦于笔记越多越难用的学习者         | 怎样把散乱笔记转化为可教学、可复用的结构化知识体系？                           | 首版完成  | [CONTEXT.md](pyramid/structure/P01-knowledge-org-methodology/CONTEXT.md)  |
+| P02  | [OpenClaw 部署与渠道](P02-openclaw-deployment/)          | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P02-openclaw-deployment/CONTEXT.md)        |
+| P03  | [安全纵深防御](P03-security-hardening/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P03-security-hardening/CONTEXT.md)         |
+| P04  | [代码库规模化](P04-codebase-scale/)                      | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P04-codebase-scale/CONTEXT.md)             |
+| P05  | [Fork 管理](P05-fork-management/)                        | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P05-fork-management/CONTEXT.md)            |
+| P06  | [AI 模型与 Agent 配置](P06-model-agent-config/)          | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P06-model-agent-config/CONTEXT.md)         |
+| P07  | [Doctor 诊断工具](P07-doctor-diagnostics/)               | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P07-doctor-diagnostics/CONTEXT.md)         |
+| P08  | [极简环境部署](P08-minimal-env/)                         | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P08-minimal-env/CONTEXT.md)                |
+| P09  | [Agent 自我进化](P09-agent-evolution/)                   | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P09-agent-evolution/CONTEXT.md)            |
+| P10  | [Token 使用监控](P10-token-monitoring/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P10-token-monitoring/CONTEXT.md)           |
+| P11  | [Browser Relay 架构](P11-browser-relay/)                 | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
+| P11  | [Cron 与 Heartbeat](P11-cron-heartbeat/)                 | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P11-browser-relay/CONTEXT.md)              |
+| P12  | [Cursor 终端配置](P12-cursor-terminal/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P12-cursor-terminal/CONTEXT.md)            |
+| P13  | [扩展系统](P13-extension-system/)                        | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P13-extension-system/CONTEXT.md)           |
+| P14  | [外部集成](P14-external-integration/)                    | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P14-external-integration/CONTEXT.md)       |
+| P15  | [独立 Agent 创建](P15-independent-agent/)                | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P15-independent-agent/CONTEXT.md)          |
+| P16  | [插件开发生命周期](P16-plugin-lifecycle/)                | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
+| P16  | [技能系统](P16-skills-system/)                           | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P16-plugin-lifecycle/CONTEXT.md)           |
+| P17  | [知识棱镜自动化](P17-knowledge-prism-automation/)        | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P17-knowledge-prism-automation/CONTEXT.md) |
+| P18  | [JS-Eyes 浏览器复用](P18-js-eyes/)                       | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P18-js-eyes/CONTEXT.md)                    |
+| P19  | [技能分发](P19-skill-distribution/)                      | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P19-skill-distribution/CONTEXT.md)         |
+| P20  | [技能发现](P20-skill-discovery/)                         | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P20-skill-discovery/CONTEXT.md)            |
+| P21  | [执行安全](P21-exec-security/)                           | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P21-exec-security/CONTEXT.md)              |
+| P22  | [路径配置](P22-path-config/)                             | （待填写）                                     | （待填写）                                                                     | 初始化    | [CONTEXT.md](pyramid/structure/P22-path-config/CONTEXT.md)                |
+| P23  | [OpenClaw 实践日记](P23-practice-diary/)                 | 想深度实践开源 AI 框架的开发者                 | 从零 fork 改造 OpenClaw 并在上面构建工具会经历哪些阶段、卡在哪里、能做出什么？ | 初始化    | [CONTEXT.md](pyramid/structure/P23-practice-diary/CONTEXT.md)             |
+| P24  | [架构全景](P24-arch-overview/)                           | 架构师、技术经理、研发团队成员                 | 如何设计一个以 AI Agent 为中心的架构，以优化工具和项目能力的结构化调用？       | 初始化    | [CONTEXT.md](pyramid/structure/P24-arch-overview/CONTEXT.md)              |
+| P25  | [JS的养虾日记](P25-yangxia-series/)                      | 被媒体吸引、装完 OpenClaw 不知道干什么的普通人 | 装好了 OpenClaw，从哪开始、能干什么、怎么一步步变成有用的工具？                | KL01 展开 | [CONTEXT.md](pyramid/structure/P25-yangxia-series/CONTEXT.md)             |
 
 ## 产出索引
 

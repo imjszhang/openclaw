@@ -61,6 +61,7 @@
 | G53  | ClawHub 博客自动同步需采用"Cron 触发隔离会话 + 哈希去重空跑优化”策略以实现低耦合高可靠                            | 16        | 2026-03      |
 | G54  | JS ClawHub 升级为 OpenClaw 插件需遵循"结构复用 + 动态注入 + 双模并存"策略以实现生态导航站的 AI 化赋能             | 20        | 2026-03      |
 | G55  | 知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖核心”策略以实现低门槛与高扩展性                              | 22        | 2026-03      |
+| G56  | OpenClaw 记忆桥接需采用"Markdown 摘要导出 + 增量时间戳同步"策略以低成本接入向量检索                               | 13        | 2026-03      |
 
 ## 变更日志
 
@@ -90,3 +91,4 @@
 | 2026-03-08 | 新建 G54                                          | 归入 js-clawhub-openclaw-plugin-upgrade (JU-01~JU-20) 共 20 个 atoms，形成 JS ClawHub 插件化升级完整指南组                                                                                                                                                                        |
 | 2026-03-08 | 新建 G55                                          | 归入 js-knowledge-prism-project-creation (JP-01~JP-22) 共 22 个 atoms，形成完整的知识棱镜工具创建与架构设计指南组                                                                                                                                                                 |
 | 2026-03-08 | 新建 G55                                          | 归入 js-knowledge-prism-project-creation (JP-01~JP-22) 共 22 个 atoms，形成完整的知识棱镜工具创建与架构设计指南组                                                                                                                                                                 |
+| 2026-03-09 | 新建 G56                                          | 归入 knowledge-memory-bridge (KB-01~KB-13) 共 13 个 atoms，形成 OpenClaw 记忆系统桥接与增量同步完整指南组                                                                                                                                                                         |
