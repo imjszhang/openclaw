@@ -4,62 +4,65 @@
 
 ## 视角总览
 
-| 编号 | 视角名称                                                 | 目标读者                               | 核心疑问                                                                       | 状态     |
-| ---- | -------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------ | -------- |
-| P01  | [个人知识库的结构化方法](P01-knowledge-org-methodology/) | 有笔记习惯但苦于笔记越多越难用的学习者 | 怎样把散乱笔记转化为可教学、可复用的结构化知识体系？                           | 首版完成 |
-| P02  | [OpenClaw 部署与渠道](P02-openclaw-deployment/)          | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P03  | [安全纵深防御](P03-security-hardening/)                  | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P04  | [代码库规模化](P04-codebase-scale/)                      | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P05  | [Fork 管理](P05-fork-management/)                        | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P06  | [AI 模型与 Agent 配置](P06-model-agent-config/)          | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P07  | [Doctor 诊断工具](P07-doctor-diagnostics/)               | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P08  | [极简环境部署](P08-minimal-env/)                         | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P09  | [Agent 自我进化](P09-agent-evolution/)                   | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P10  | [Token 使用监控](P10-token-monitoring/)                  | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P11  | [Browser Relay 架构](P11-browser-relay/)                 | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P11  | [Cron 与 Heartbeat](P11-cron-heartbeat/)                 | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P12  | [Cursor 终端配置](P12-cursor-terminal/)                  | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P13  | [扩展系统](P13-extension-system/)                        | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P14  | [外部集成](P14-external-integration/)                    | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P15  | [独立 Agent 创建](P15-independent-agent/)                | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P16  | [插件开发生命周期](P16-plugin-lifecycle/)                | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P16  | [技能系统](P16-skills-system/)                           | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P17  | [知识棱镜自动化](P17-knowledge-prism-automation/)        | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P18  | [JS-Eyes 浏览器复用](P18-js-eyes/)                       | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P19  | [技能分发](P19-skill-distribution/)                      | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P20  | [技能发现](P20-skill-discovery/)                         | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P21  | [执行安全](P21-exec-security/)                           | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P22  | [路径配置](P22-path-config/)                             | （待填写）                             | （待填写）                                                                     | 初始化   |
-| P23  | [OpenClaw 实践日记](P23-practice-diary/)                 | 想深度实践开源 AI 框架的开发者         | 从零 fork 改造 OpenClaw 并在上面构建工具会经历哪些阶段、卡在哪里、能做出什么？ | 初始化   |
-| P24  | [架构全景](P24-arch-overview/)                           | 架构师、技术经理、研发团队成员         | 如何设计一个以 AI Agent 为中心的架构，以优化工具和项目能力的结构化调用？       | 初始化   |
+| 编号 | 视角名称                                                 | 目标读者                                       | 核心疑问                                                                       | 状态      |
+| ---- | -------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ | --------- |
+| P01  | [个人知识库的结构化方法](P01-knowledge-org-methodology/) | 有笔记习惯但苦于笔记越多越难用的学习者         | 怎样把散乱笔记转化为可教学、可复用的结构化知识体系？                           | 首版完成  |
+| P02  | [OpenClaw 部署与渠道](P02-openclaw-deployment/)          | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P03  | [安全纵深防御](P03-security-hardening/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P04  | [代码库规模化](P04-codebase-scale/)                      | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P05  | [Fork 管理](P05-fork-management/)                        | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P06  | [AI 模型与 Agent 配置](P06-model-agent-config/)          | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P07  | [Doctor 诊断工具](P07-doctor-diagnostics/)               | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P08  | [极简环境部署](P08-minimal-env/)                         | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P09  | [Agent 自我进化](P09-agent-evolution/)                   | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P10  | [Token 使用监控](P10-token-monitoring/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P11  | [Browser Relay 架构](P11-browser-relay/)                 | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P11  | [Cron 与 Heartbeat](P11-cron-heartbeat/)                 | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P12  | [Cursor 终端配置](P12-cursor-terminal/)                  | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P13  | [扩展系统](P13-extension-system/)                        | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P14  | [外部集成](P14-external-integration/)                    | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P15  | [独立 Agent 创建](P15-independent-agent/)                | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P16  | [插件开发生命周期](P16-plugin-lifecycle/)                | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P16  | [技能系统](P16-skills-system/)                           | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P17  | [知识棱镜自动化](P17-knowledge-prism-automation/)        | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P18  | [JS-Eyes 浏览器复用](P18-js-eyes/)                       | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P19  | [技能分发](P19-skill-distribution/)                      | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P20  | [技能发现](P20-skill-discovery/)                         | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P21  | [执行安全](P21-exec-security/)                           | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P22  | [路径配置](P22-path-config/)                             | （待填写）                                     | （待填写）                                                                     | 初始化    |
+| P23  | [OpenClaw 实践日记](P23-practice-diary/)                 | 想深度实践开源 AI 框架的开发者                 | 从零 fork 改造 OpenClaw 并在上面构建工具会经历哪些阶段、卡在哪里、能做出什么？ | 初始化    |
+| P24  | [架构全景](P24-arch-overview/)                           | 架构师、技术经理、研发团队成员                 | 如何设计一个以 AI Agent 为中心的架构，以优化工具和项目能力的结构化调用？       | 初始化    |
+| P25  | [JS的养虾日记](P25-yangxia-series/)                      | 被媒体吸引、装完 OpenClaw 不知道干什么的普通人 | 装好了 OpenClaw，从哪开始、能干什么、怎么一步步变成有用的工具？                | KL01 展开 |
 
 ## 变更日志
 
-| 日期       | 操作                                | 说明                                                     |
-| ---------- | ----------------------------------- | -------------------------------------------------------- |
-| 2026-02-22 | 创建 P01-knowledge-org-methodology  | 基于 synthesis S1–S3 因果链，3 个 Key Line               |
-| 2026-02-26 | 创建 P02-openclaw-deployment        | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P03-security-hardening         | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P04-codebase-scale             | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P05-fork-management            | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P06-model-agent-config         | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P07-doctor-diagnostics         | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P08-minimal-env                | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P09-agent-evolution            | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P10-token-monitoring           | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P11-browser-relay              | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P11-cron-heartbeat             | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P12-cursor-terminal            | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P13-extension-system           | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P14-external-integration       | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P15-independent-agent          | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P16-plugin-lifecycle           | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P16-skills-system              | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P17-knowledge-prism-automation | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P18-js-eyes                    | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P19-skill-distribution         | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P20-skill-discovery            | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P21-exec-security              | 从模板初始化新视角                                       |
-| 2026-02-26 | 创建 P22-path-config                | 从模板初始化新视角                                       |
-| 2026-03-04 | 创建 P23-practice-diary             | 以日期为 Key Line 的实践日记视角，15 个日期文件框架      |
-| 2026-03-08 | 创建 P24-arch-overview              | 从 js-knowledge-prism 仓库合并，Agent-First 架构全景视角 |
+| 日期       | 操作                                | 说明                                                              |
+| ---------- | ----------------------------------- | ----------------------------------------------------------------- |
+| 2026-02-22 | 创建 P01-knowledge-org-methodology  | 基于 synthesis S1–S3 因果链，3 个 Key Line                        |
+| 2026-02-26 | 创建 P02-openclaw-deployment        | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P03-security-hardening         | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P04-codebase-scale             | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P05-fork-management            | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P06-model-agent-config         | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P07-doctor-diagnostics         | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P08-minimal-env                | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P09-agent-evolution            | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P10-token-monitoring           | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P11-browser-relay              | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P11-cron-heartbeat             | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P12-cursor-terminal            | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P13-extension-system           | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P14-external-integration       | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P15-independent-agent          | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P16-plugin-lifecycle           | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P16-skills-system              | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P17-knowledge-prism-automation | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P18-js-eyes                    | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P19-skill-distribution         | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P20-skill-discovery            | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P21-exec-security              | 从模板初始化新视角                                                |
+| 2026-02-26 | 创建 P22-path-config                | 从模板初始化新视角                                                |
+| 2026-03-04 | 创建 P23-practice-diary             | 以日期为 Key Line 的实践日记视角，15 个日期文件框架               |
+| 2026-03-08 | 创建 P24-arch-overview              | 从 js-knowledge-prism 仓库合并，Agent-First 架构全景视角          |
+| 2026-03-09 | 创建 P25-yangxia-series             | 公众号系列视角，面向"装完发呆"人群，KL01 详细展开，KL02-KL08 骨架 |
+| 2026-03-09 | 更新 P25 KL01                       | KL01 从"ChatGPT 对比科普"重写为"两只龙虾的故事"叙事弧线           |
