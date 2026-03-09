@@ -104,4 +104,6 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | JU    | js-clawhub-openclaw-plugin-upgrade               | 2026-03            |
 | JP    | js-knowledge-prism-project-creation              | 2026-02            |
 | KB    | knowledge-memory-bridge                          | 2026-03            |
+| PB    | prism-memory-bridge                              | 2026-03            |
+| MH    | memory-core-embedding-hardware-qa                | 2026-03            |
 ```
