@@ -63,6 +63,7 @@
 | G55  | 知识棱镜工具创建需遵循“三层架构 + 双入口设计 + 零依赖核心”策略以实现低门槛与高扩展性                              | 22        | 2026-03      |
 | G56  | OpenClaw 记忆桥接需采用"Markdown 摘要导出 + 增量时间戳同步"策略以低成本接入向量检索                               | 13        | 2026-03      |
 | G57  | Prism 记忆桥接需通过“层次筛选 + 增量同步 + 双源互补”策略实现高价值结构化知识的低成本接入                          | 32        | 2026-03      |
+| G58  | 3D 知识图谱升级需通过"Three.js 生态整合 + 力导向分层布局 + 交互细节优化"实现高性能可视化                          | 24        | 2026-03      |
 
 ## 变更日志
 
@@ -99,3 +100,4 @@
 | 2026-03-09 | 更新 G57                                          | 归入 prism-memory-bridge (PB-01~PB-19) 和 memory-core-embedding-hardware-qa (MH-01~MH-13) 共 32 个 atoms，完善记忆系统桥接设计、增量同步实现及硬件/Provider 选型指南                                                                                                              |
 | 2026-03-09 | 更新 G57                                          | 归入 prism-memory-bridge (PB-01~PB-19) 和 memory-core-embedding-hardware-qa (MH-01~MH-13) 共 32 个 atoms，完善记忆系统桥接设计、增量同步实现及硬件/Provider 选型指南                                                                                                              |
 | 2026-03-09 | 更新 G57                                          | 归入 prism-memory-bridge (PB-01~PB-19) 和 memory-core-embedding-hardware-qa (MH-01~MH-13) 共 32 个 atoms，完善记忆系统桥接设计、增量同步实现及硬件/Provider 选型指南                                                                                                              |
+| 2026-03-10 | 新建 G58                                          | 归入 js-knowledge-prism-3d-graph-upgrade (JG-01~JG-24) 共 24 个 atoms，形成完整的 3D 知识图谱升级与优化指南组                                                                                                                                                                     |
