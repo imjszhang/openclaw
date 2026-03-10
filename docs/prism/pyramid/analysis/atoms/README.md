@@ -107,4 +107,5 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 | PB    | prism-memory-bridge                              | 2026-03            |
 | MH    | memory-core-embedding-hardware-qa                | 2026-03            |
 | JG    | js-knowledge-prism-3d-graph-upgrade              | 2026-03            |
+| JO    | js-knowledge-prism-auto-output-cron              | 2026-03            |
 ```
