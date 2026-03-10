@@ -12,7 +12,7 @@ metadata:
 
 # 知识地图
 
-> 56篇journal, 55个atoms, 47个groups, 27个视角
+> 57篇journal, 55个atoms, 47个groups, 27个视角
 
 ## 顶层观点
 
