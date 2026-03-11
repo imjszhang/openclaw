@@ -26,8 +26,10 @@
 
 基于 pyramid 视角产出的面向读者的内容，每种产出关联一个具体视角。
 
-| 产出                                 | 格式       | 基于视角                      | 状态     |
-| ------------------------------------ | ---------- | ----------------------------- | -------- |
-| [methodology/](outputs/methodology/) | 方法论文章 | P01-knowledge-org-methodology | 首版完成 |
+| 产出                                               | 格式         | 基于视角                      | 状态      |
+| -------------------------------------------------- | ------------ | ----------------------------- | --------- |
+| [methodology/](outputs/methodology/)               | 方法论文章   | P01-knowledge-org-methodology | 首版完成  |
+| [practice-diary/](outputs/practice-diary/)         | 实践日记系列 | P23-practice-diary            | 19 篇完成 |
+| [p25-yangxia-series/](outputs/p25-yangxia-series/) | 公众号系列   | P25-yangxia-series            | KL01 完成 |
 
 → [产出总览](outputs/README.md)
