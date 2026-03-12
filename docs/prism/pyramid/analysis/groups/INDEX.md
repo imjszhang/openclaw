@@ -66,6 +66,8 @@
 | G58  | 3D 知识图谱升级需通过"Three.js 生态整合 + 力导向分层布局 + 交互细节优化"实现高性能可视化                          | 24        | 2026-03      |
 | G59  | 知识棱镜全链路自动化需采用"双 Cron 分段驱动 + mtime 双层检测"架构以消除手动干预并保障时序一致性                   | 14        | 2026-03      |
 | G60  | Output Cron 可靠性优化需采用"inbox/batch 轮转 + 逐步 Checkpoint + 失败隔离”架构以消除单点故障                     | 15        | 2026-03      |
+| G61  | 模板创建技能需采用“决策引导 + 确定性 Scaffold+ 渐进式披露”策略以降低多层知识门槛                                  | 12        | 2026-03      |
+| G62  | Draft 机制的时区修复与今日产出处理必须强制采用本地日期计算并引入草稿状态流转                                      | 10        | 2026-03      |
 
 ## 变更日志
 
@@ -105,3 +107,5 @@
 | 2026-03-10 | 新建 G58                                          | 归入 js-knowledge-prism-3d-graph-upgrade (JG-01~JG-24) 共 24 个 atoms，形成完整的 3D 知识图谱升级与优化指南组                                                                                                                                                                     |
 | 2026-03-10 | 新建 G59                                          | 归入 js-knowledge-prism-auto-output-cron (JO-01~JO-14) 共 14 个 atoms，形成知识棱镜全链路自动化产出与 Cron 调度完整指南组                                                                                                                                                         |
 | 2026-03-10 | 新建 G60                                          | 归入 js-knowledge-prism-output-cron-reliability (OC-01~OC-15) 共 15 个 atoms，形成 Output Cron 可靠性优化完整指南组                                                                                                                                                               |
+| 2026-03-11 | 新建 G61                                          | 归入 js-knowledge-prism-prism-template-author-skill (PT-01~PT-12) 共 12 个 atoms，形成完整的模板创建专用技能开发指南组                                                                                                                                                            |
+| 2026-03-12 | 新建 G62                                          | 归入 js-knowledge-prism-draft-fix-process-today (JD-01~JD-10) 共 10 个 atoms，形成 Draft 机制时区修复与今日产出处理完整指南组                                                                                                                                                     |
