@@ -82,33 +82,34 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 
 ## Atoms
 
-| 编号  | 类型                                             | 内容               | 原文定位         |
-| ----- | ------------------------------------------------ | ------------------ | ---------------- |
-| XX-01 | 事实/步骤/经验/判断                              | 信息单元的简明描述 | 章节名或行号范围 |
-| XX-02 | ...                                              | ...                | ...              |
-| KP    | knowledge-prism-introduction                     | 2026-02            |
-| PC    | plugin-creation-guide                            | 2026-02            |
-| UP    | using-knowledge-prism-plugin                     | 2026-02            |
-| CH    | clawhub-publish-guide                            | 2026-02            |
-| AF    | js-eyes-agent-first-transformation               | 2026-02            |
-| SD    | skill-discovery-system-design-and-implementation | 2026-02            |
-| OP    | workspace-path-openclaw-state-dir-mismatch       | 2026-02            |
-| EX    | exec-approvals-curl-pipe-bash-blocked            | 2026-02            |
-| PS    | permission-settings-guide                        | 2026-02            |
-| JS    | js-eyes-install-script-fix                       | 2026-02            |
-| MC    | memory-core-research-and-implementation-log      | 2026-02            |
-| GV    | gateway-upgrade-verification                     | 2026-03            |
-| JC    | js-clawhub-project-creation                      | 2026-02            |
-| JK    | js-knowledge-collector-project-creation          | 2026-03            |
-| CB    | clawhub-blog-auto-sync-cron                      | 2026-03            |
-| JU    | js-clawhub-openclaw-plugin-upgrade               | 2026-03            |
-| JP    | js-knowledge-prism-project-creation              | 2026-02            |
-| KB    | knowledge-memory-bridge                          | 2026-03            |
-| PB    | prism-memory-bridge                              | 2026-03            |
-| MH    | memory-core-embedding-hardware-qa                | 2026-03            |
-| JG    | js-knowledge-prism-3d-graph-upgrade              | 2026-03            |
-| JO    | js-knowledge-prism-auto-output-cron              | 2026-03            |
-| OC    | js-knowledge-prism-output-cron-reliability       | 2026-03            |
-| PT    | js-knowledge-prism-prism-template-author-skill   | 2026-03            |
-| JD    | js-knowledge-prism-draft-fix-process-today       | 2026-03            |
+| 编号  | 类型                                                         | 内容               | 原文定位         |
+| ----- | ------------------------------------------------------------ | ------------------ | ---------------- |
+| XX-01 | 事实/步骤/经验/判断                                          | 信息单元的简明描述 | 章节名或行号范围 |
+| XX-02 | ...                                                          | ...                | ...              |
+| KP    | knowledge-prism-introduction                                 | 2026-02            |
+| PC    | plugin-creation-guide                                        | 2026-02            |
+| UP    | using-knowledge-prism-plugin                                 | 2026-02            |
+| CH    | clawhub-publish-guide                                        | 2026-02            |
+| AF    | js-eyes-agent-first-transformation                           | 2026-02            |
+| SD    | skill-discovery-system-design-and-implementation             | 2026-02            |
+| OP    | workspace-path-openclaw-state-dir-mismatch                   | 2026-02            |
+| EX    | exec-approvals-curl-pipe-bash-blocked                        | 2026-02            |
+| PS    | permission-settings-guide                                    | 2026-02            |
+| JS    | js-eyes-install-script-fix                                   | 2026-02            |
+| MC    | memory-core-research-and-implementation-log                  | 2026-02            |
+| GV    | gateway-upgrade-verification                                 | 2026-03            |
+| JC    | js-clawhub-project-creation                                  | 2026-02            |
+| JK    | js-knowledge-collector-project-creation                      | 2026-03            |
+| CB    | clawhub-blog-auto-sync-cron                                  | 2026-03            |
+| JU    | js-clawhub-openclaw-plugin-upgrade                           | 2026-03            |
+| JP    | js-knowledge-prism-project-creation                          | 2026-02            |
+| KB    | knowledge-memory-bridge                                      | 2026-03            |
+| PB    | prism-memory-bridge                                          | 2026-03            |
+| MH    | memory-core-embedding-hardware-qa                            | 2026-03            |
+| JG    | js-knowledge-prism-3d-graph-upgrade                          | 2026-03            |
+| JO    | js-knowledge-prism-auto-output-cron                          | 2026-03            |
+| OC    | js-knowledge-prism-output-cron-reliability                   | 2026-03            |
+| PT    | js-knowledge-prism-prism-template-author-skill               | 2026-03            |
+| JD    | js-knowledge-prism-draft-fix-process-today                   | 2026-03            |
+| RW    | js-knowledge-prism-rewrite-feature-design-and-implementation | 2026-03            |
 ```

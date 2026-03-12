@@ -68,6 +68,7 @@
 | G60  | Output Cron 可靠性优化需采用"inbox/batch 轮转 + 逐步 Checkpoint + 失败隔离”架构以消除单点故障                     | 15        | 2026-03      |
 | G61  | 模板创建技能需采用“决策引导 + 确定性 Scaffold+ 渐进式披露”策略以降低多层知识门槛                                  | 12        | 2026-03      |
 | G62  | Draft 机制的时区修复与今日产出处理必须强制采用本地日期计算并引入草稿状态流转                                      | 10        | 2026-03      |
+| G63  | 知识棱镜的改写功能必须采用"生成与风格正交分离"架构，通过独立定义文件与链式执行实现非破坏性多风格产出              | 12        | 2026-03      |
 
 ## 变更日志
 
@@ -109,3 +110,4 @@
 | 2026-03-10 | 新建 G60                                          | 归入 js-knowledge-prism-output-cron-reliability (OC-01~OC-15) 共 15 个 atoms，形成 Output Cron 可靠性优化完整指南组                                                                                                                                                               |
 | 2026-03-11 | 新建 G61                                          | 归入 js-knowledge-prism-prism-template-author-skill (PT-01~PT-12) 共 12 个 atoms，形成完整的模板创建专用技能开发指南组                                                                                                                                                            |
 | 2026-03-12 | 新建 G62                                          | 归入 js-knowledge-prism-draft-fix-process-today (JD-01~JD-10) 共 10 个 atoms，形成 Draft 机制时区修复与今日产出处理完整指南组                                                                                                                                                     |
+| 2026-03-12 | 新建 G63                                          | 归入 js-knowledge-prism-rewrite-feature-design-and-implementation (RW-01~RW-12) 共 12 个 atoms，形成完整的知识棱镜改写功能架构设计与实现指南组                                                                                                                                    |
