@@ -14,37 +14,65 @@
 
 新增 journal 时，在此表追加一行即可。
 
-| 缩写 | journal 文件名                        | 月份    |
-| ---- | ------------------------------------- | ------- |
-| AR   | openclaw-analysis-report              | 2026-01 |
-| FM   | fork-management-guide                 | 2026-01 |
-| CD   | channel-deployment-guide              | 2026-01 |
-| MA   | model-agent-config-guide              | 2026-01 |
-| OD   | openclaw-doctor-guide                 | 2026-01 |
-| TC   | tinycore-feasibility-report           | 2026-01 |
-| CC   | custom-channel-guide                  | 2026-02 |
-| ED   | extension-development-guide           | 2026-02 |
-| SG   | skills-guide                          | 2026-02 |
-| CR   | cron-config-guide                     | 2026-02 |
-| AE   | agent-evolution-guide                 | 2026-02 |
-| ES   | external-scripting-guide              | 2026-02 |
-| CT   | cursor-terminal-config-guide          | 2026-02 |
-| WP   | wecom-plugin-deployment-guide         | 2026-02 |
-| BR   | browser-relay-guide                   | 2026-02 |
-| CP   | openclaw-core-concepts-pyramid        | 2026-02 |
-| CQ   | openclaw-core-concepts-qa-and-usage   | 2026-02 |
-| IA   | independent-agent-creation-guide      | 2026-02 |
-| TM   | agent-token-usage-monitoring-analysis | 2026-02 |
-| MU   | merge-main-upgrade-summary            | 2026-02 |
-| KA   | knowledge-base-architecture-design    | 2026-02 |
-| FN   | from-notes-to-plugin                  | 2026-02 |
-| JE   | js-eyes-openclaw-plugin-guide         | 2026-02 |
-| PG   | openclaw-permissions-guide            | 2026-03 |
-| LC   | link-collector-skill-dev              | 2026-03 |
-| SP   | openclaw-security-permissions-guide   | 2026-03 |
-| KC   | js-knowledge-collector-plugin-dev     | 2026-03 |
-| AU   | agent-first-architecture-upgrade      | 2026-03 |
-| RC   | multi-base-registry-and-cron          | 2026-03 |
+| 缩写 | journal 文件名                                               | 月份    |
+| ---- | ------------------------------------------------------------ | ------- |
+| AR   | openclaw-analysis-report                                     | 2026-01 |
+| FM   | fork-management-guide                                        | 2026-01 |
+| CD   | channel-deployment-guide                                     | 2026-01 |
+| MA   | model-agent-config-guide                                     | 2026-01 |
+| OD   | openclaw-doctor-guide                                        | 2026-01 |
+| TC   | tinycore-feasibility-report                                  | 2026-01 |
+| CC   | custom-channel-guide                                         | 2026-02 |
+| ED   | extension-development-guide                                  | 2026-02 |
+| SG   | skills-guide                                                 | 2026-02 |
+| CR   | cron-config-guide                                            | 2026-02 |
+| AE   | agent-evolution-guide                                        | 2026-02 |
+| ES   | external-scripting-guide                                     | 2026-02 |
+| CT   | cursor-terminal-config-guide                                 | 2026-02 |
+| WP   | wecom-plugin-deployment-guide                                | 2026-02 |
+| BR   | browser-relay-guide                                          | 2026-02 |
+| CP   | openclaw-core-concepts-pyramid                               | 2026-02 |
+| CQ   | openclaw-core-concepts-qa-and-usage                          | 2026-02 |
+| IA   | independent-agent-creation-guide                             | 2026-02 |
+| TM   | agent-token-usage-monitoring-analysis                        | 2026-02 |
+| MU   | merge-main-upgrade-summary                                   | 2026-02 |
+| KA   | knowledge-base-architecture-design                           | 2026-02 |
+| FN   | from-notes-to-plugin                                         | 2026-02 |
+| JE   | js-eyes-openclaw-plugin-guide                                | 2026-02 |
+| PG   | openclaw-permissions-guide                                   | 2026-03 |
+| LC   | link-collector-skill-dev                                     | 2026-03 |
+| SP   | openclaw-security-permissions-guide                          | 2026-03 |
+| KC   | js-knowledge-collector-plugin-dev                            | 2026-03 |
+| AU   | agent-first-architecture-upgrade                             | 2026-03 |
+| RC   | multi-base-registry-and-cron                                 | 2026-03 |
+| KP   | knowledge-prism-introduction                                 | 2026-02 |
+| PC   | plugin-creation-guide                                        | 2026-02 |
+| UP   | using-knowledge-prism-plugin                                 | 2026-02 |
+| CH   | clawhub-publish-guide                                        | 2026-02 |
+| AF   | js-eyes-agent-first-transformation                           | 2026-02 |
+| SD   | skill-discovery-system-design-and-implementation             | 2026-02 |
+| OP   | workspace-path-openclaw-state-dir-mismatch                   | 2026-02 |
+| EX   | exec-approvals-curl-pipe-bash-blocked                        | 2026-02 |
+| PS   | permission-settings-guide                                    | 2026-02 |
+| JS   | js-eyes-install-script-fix                                   | 2026-02 |
+| MC   | memory-core-research-and-implementation-log                  | 2026-02 |
+| GV   | gateway-upgrade-verification                                 | 2026-03 |
+| JC   | js-clawhub-project-creation                                  | 2026-02 |
+| JK   | js-knowledge-collector-project-creation                      | 2026-03 |
+| CB   | clawhub-blog-auto-sync-cron                                  | 2026-03 |
+| JU   | js-clawhub-openclaw-plugin-upgrade                           | 2026-03 |
+| JP   | js-knowledge-prism-project-creation                          | 2026-02 |
+| KB   | knowledge-memory-bridge                                      | 2026-03 |
+| PB   | prism-memory-bridge                                          | 2026-03 |
+| MH   | memory-core-embedding-hardware-qa                            | 2026-03 |
+| JG   | js-knowledge-prism-3d-graph-upgrade                          | 2026-03 |
+| JO   | js-knowledge-prism-auto-output-cron                          | 2026-03 |
+| OC   | js-knowledge-prism-output-cron-reliability                   | 2026-03 |
+| PT   | js-knowledge-prism-prism-template-author-skill               | 2026-03 |
+| JD   | js-knowledge-prism-draft-fix-process-today                   | 2026-03 |
+| RW   | js-knowledge-prism-rewrite-feature-design-and-implementation | 2026-03 |
+| EP   | js-eyes-project-creation                                     | 2026-01 |
+| JR   | js-knowledge-prism-klstrategy-refactor                       | 2026-03 |
 
 > 注：以下缩写来自 js-knowledge-prism 仓库合并，与本库已有缩写存在复用：
 >
@@ -82,34 +110,8 @@ atoms 文件按 journal 创建日期的 `YYYY-MM` 部分归入子目录：
 
 ## Atoms
 
-| 编号  | 类型                                                         | 内容               | 原文定位         |
-| ----- | ------------------------------------------------------------ | ------------------ | ---------------- |
-| XX-01 | 事实/步骤/经验/判断                                          | 信息单元的简明描述 | 章节名或行号范围 |
-| XX-02 | ...                                                          | ...                | ...              |
-| KP    | knowledge-prism-introduction                                 | 2026-02            |
-| PC    | plugin-creation-guide                                        | 2026-02            |
-| UP    | using-knowledge-prism-plugin                                 | 2026-02            |
-| CH    | clawhub-publish-guide                                        | 2026-02            |
-| AF    | js-eyes-agent-first-transformation                           | 2026-02            |
-| SD    | skill-discovery-system-design-and-implementation             | 2026-02            |
-| OP    | workspace-path-openclaw-state-dir-mismatch                   | 2026-02            |
-| EX    | exec-approvals-curl-pipe-bash-blocked                        | 2026-02            |
-| PS    | permission-settings-guide                                    | 2026-02            |
-| JS    | js-eyes-install-script-fix                                   | 2026-02            |
-| MC    | memory-core-research-and-implementation-log                  | 2026-02            |
-| GV    | gateway-upgrade-verification                                 | 2026-03            |
-| JC    | js-clawhub-project-creation                                  | 2026-02            |
-| JK    | js-knowledge-collector-project-creation                      | 2026-03            |
-| CB    | clawhub-blog-auto-sync-cron                                  | 2026-03            |
-| JU    | js-clawhub-openclaw-plugin-upgrade                           | 2026-03            |
-| JP    | js-knowledge-prism-project-creation                          | 2026-02            |
-| KB    | knowledge-memory-bridge                                      | 2026-03            |
-| PB    | prism-memory-bridge                                          | 2026-03            |
-| MH    | memory-core-embedding-hardware-qa                            | 2026-03            |
-| JG    | js-knowledge-prism-3d-graph-upgrade                          | 2026-03            |
-| JO    | js-knowledge-prism-auto-output-cron                          | 2026-03            |
-| OC    | js-knowledge-prism-output-cron-reliability                   | 2026-03            |
-| PT    | js-knowledge-prism-prism-template-author-skill               | 2026-03            |
-| JD    | js-knowledge-prism-draft-fix-process-today                   | 2026-03            |
-| RW    | js-knowledge-prism-rewrite-feature-design-and-implementation | 2026-03            |
+| 编号  | 类型                | 内容               | 原文定位         |
+| ----- | ------------------- | ------------------ | ---------------- |
+| XX-01 | 事实/步骤/经验/判断 | 信息单元的简明描述 | 章节名或行号范围 |
+| XX-02 | ...                 | ...                | ...              |
 ```
