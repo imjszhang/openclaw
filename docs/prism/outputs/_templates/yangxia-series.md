@@ -13,6 +13,11 @@ fileNaming: sequence
 
 {{@include constraints.md}}
 
+## 作者与项目上下文
+
+- **GitHub 地址**：imjszhang（https://github.com/imjszhang）
+- 所有开源项目均在此 GitHub 账号下，文中涉及作者项目链接或引用时请使用该地址。
+
 输出格式：
 
 ```
