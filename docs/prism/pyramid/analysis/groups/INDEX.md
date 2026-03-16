@@ -71,6 +71,7 @@
 | G63  | 知识棱镜的改写功能必须采用"生成与风格正交分离"架构，通过独立定义文件与链式执行实现非破坏性多风格产出                  | 12        | 2026-03      |
 | G64  | JS Eyes 项目必须采用“浏览器主动连接 + 逆向架构”模式以填补 Agent 框架在实时复用用户浏览器环境上的能力空白              | 15        | 2026-03      |
 | G65  | Knowledge Prism 的 Structure 刷新必须从“二元开关”演进为“策略化驱动”模式，以兼容论点型与时间序列型视角的差异化组织逻辑 | 16        | 2026-03      |
+| G66  | 大规模上游合并需遵循"全量同步 - 冲突主分支优先 - 安装器直连"策略以保障版本演进与功能完整性                            | 37        | 2026-03      |
 
 ## 变更日志
 
@@ -114,3 +115,4 @@
 | 2026-03-12 | 新建 G62                                          | 归入 js-knowledge-prism-draft-fix-process-today (JD-01~JD-10) 共 10 个 atoms，形成 Draft 机制时区修复与今日产出处理完整指南组                                                                                                                                                     |
 | 2026-03-12 | 新建 G63                                          | 归入 js-knowledge-prism-rewrite-feature-design-and-implementation (RW-01~RW-12) 共 12 个 atoms，形成完整的知识棱镜改写功能架构设计与实现指南组                                                                                                                                    |
 | 2026-03-13 | 新建 G64, G65                                     | 归入 js-eyes-project-creation (EP-01~15) 和 js-knowledge-prism-klstrategy-refactor (JR-01~16) 共 31 个 atoms；形成 JS Eyes 浏览器自动化插件创建指南与 Knowledge Prism 策略化 Structure 刷新重构指南两个新主题组                                                                   |
+| 2026-03-16 | 新建 G66                                          | 归入 merge-main-resolve-by-main (OM-01~OM-37) 共 37 个 atoms，形成 2026.3.14 版本大规模上游合并与架构升级完整指南组                                                                                                                                                               |
