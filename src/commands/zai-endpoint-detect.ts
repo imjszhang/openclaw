@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { fetchWithTimeout } from "../utils/fetch-timeout.js";
 import {
   ZAI_CN_BASE_URL,
@@ -177,3 +178,6 @@ export async function detectZaiEndpoint(params: {
 
   return null;
 }
+=======
+export * from "../plugins/provider-zai-endpoint.js";
+>>>>>>> origin/main

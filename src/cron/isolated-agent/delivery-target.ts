@@ -13,7 +13,11 @@ import {
   resolveSessionDeliveryTarget,
 } from "../../infra/outbound/targets.js";
 import { readChannelAllowFromStoreSync } from "../../pairing/pairing-store.js";
+<<<<<<< HEAD
 import { resolveWhatsAppAccount } from "../../plugin-sdk-internal/whatsapp.js";
+=======
+import { resolveWhatsAppAccount } from "../../plugin-sdk/whatsapp.js";
+>>>>>>> origin/main
 import { buildChannelAccountBindings } from "../../routing/bindings.js";
 import { normalizeAccountId, normalizeAgentId } from "../../routing/session-key.js";
 import { normalizeWhatsAppTarget } from "../../whatsapp/normalize.js";

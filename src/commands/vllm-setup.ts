@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   VLLM_DEFAULT_API_KEY_ENV_VAR,
   VLLM_DEFAULT_BASE_URL,
@@ -40,3 +41,6 @@ export async function promptAndConfigureVllm(params: {
 }
 
 export { applyProviderDefaultModel as applyVllmDefaultModel };
+=======
+export * from "../plugins/provider-vllm-setup.js";
+>>>>>>> origin/main

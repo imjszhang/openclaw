@@ -1,20 +1,18 @@
+<<<<<<< HEAD
 import { describe, expect, it, vi } from "vitest";
+=======
+import { beforeEach, describe, expect, it, vi } from "vitest";
+>>>>>>> origin/main
 import { parseTelegramTarget } from "../../extensions/telegram/src/targets.js";
 import type { OpenClawConfig } from "../config/config.js";
 
 // Mock session store so we can control what entries exist.
 const mockStore: Record<string, Record<string, unknown>> = {};
-vi.mock("../config/sessions.js", () => ({
-  loadSessionStore: vi.fn((storePath: string) => mockStore[storePath] ?? {}),
-  resolveAgentMainSessionKey: vi.fn(({ agentId }: { agentId: string }) => `agent:${agentId}:main`),
-  resolveStorePath: vi.fn((_store: unknown, _opts: unknown) => "/mock/store.json"),
-}));
+type DeliveryTargetModule = typeof import("./isolated-agent/delivery-target.js");
 
-// Mock channel-selection to avoid real config resolution.
-vi.mock("../infra/outbound/channel-selection.js", () => ({
-  resolveMessageChannelSelection: vi.fn(async () => ({ channel: "telegram" })),
-}));
+let resolveDeliveryTarget: DeliveryTargetModule["resolveDeliveryTarget"];
 
+<<<<<<< HEAD
 // Minimal mock for channel plugins (Telegram resolveTarget is an identity).
 vi.mock("../channels/plugins/index.js", () => ({
   getChannelPlugin: vi.fn(() => ({
@@ -39,6 +37,46 @@ vi.mock("../channels/plugins/index.js", () => ({
 }));
 
 const { resolveDeliveryTarget } = await import("./isolated-agent/delivery-target.js");
+=======
+beforeEach(async () => {
+  vi.resetModules();
+  for (const key of Object.keys(mockStore)) {
+    delete mockStore[key];
+  }
+  vi.doMock("../config/sessions.js", () => ({
+    loadSessionStore: vi.fn((storePath: string) => mockStore[storePath] ?? {}),
+    resolveAgentMainSessionKey: vi.fn(
+      ({ agentId }: { agentId: string }) => `agent:${agentId}:main`,
+    ),
+    resolveStorePath: vi.fn((_store: unknown, _opts: unknown) => "/mock/store.json"),
+  }));
+  vi.doMock("../infra/outbound/channel-selection.js", () => ({
+    resolveMessageChannelSelection: vi.fn(async () => ({ channel: "telegram" })),
+  }));
+  vi.doMock("../channels/plugins/index.js", () => ({
+    getChannelPlugin: vi.fn(() => ({
+      meta: { label: "Telegram" },
+      config: {},
+      messaging: {
+        parseExplicitTarget: ({ raw }: { raw: string }) => {
+          const target = parseTelegramTarget(raw);
+          return {
+            to: target.chatId,
+            threadId: target.messageThreadId,
+            chatType: target.chatType === "unknown" ? undefined : target.chatType,
+          };
+        },
+      },
+      outbound: {
+        resolveTarget: ({ to }: { to?: string }) =>
+          to ? { ok: true, to } : { ok: false, error: new Error("missing") },
+      },
+    })),
+    normalizeChannelId: vi.fn((id: string) => id),
+  }));
+  ({ resolveDeliveryTarget } = await import("./isolated-agent/delivery-target.js"));
+});
+>>>>>>> origin/main
 
 describe("resolveDeliveryTarget thread session lookup", () => {
   const cfg: OpenClawConfig = {};

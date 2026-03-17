@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { loginOpenAICodex, type OAuthCredentials } from "@mariozechner/pi-ai/oauth";
 import type { RuntimeEnv } from "../runtime.js";
 import type { WizardPrompter } from "../wizard/prompts.js";
@@ -63,3 +64,6 @@ export async function loginOpenAICodexOAuth(params: {
     throw err;
   }
 }
+=======
+export { loginOpenAICodexOAuth } from "../plugins/provider-openai-codex-oauth.js";
+>>>>>>> origin/main

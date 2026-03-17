@@ -4,7 +4,6 @@ import type { HeartbeatRunResult } from "../infra/heartbeat-wake.js";
 import type { CronEvent, CronServiceDeps } from "./service.js";
 import { CronService } from "./service.js";
 import { createDeferred, createNoopLogger, installCronTestHooks } from "./service.test-harness.js";
-import { loadCronStore } from "./store.js";
 
 const noopLogger = createNoopLogger();
 installCronTestHooks({ logger: noopLogger });
@@ -58,10 +57,6 @@ async function makeStorePath() {
   const storePath = path.join(dir, "cron", "jobs.json");
   ensureDir(path.dirname(storePath));
   return { storePath, cleanup: async () => {} };
-}
-
-function writeStoreFile(storePath: string, payload: unknown) {
-  setFile(storePath, JSON.stringify(payload, null, 2));
 }
 
 vi.mock("node:fs", async (importOriginal) => {
@@ -415,14 +410,6 @@ async function createMainOneShotJobHarness(params: { name: string; deleteAfterRu
   return { ...harness, atMs, job };
 }
 
-async function loadLegacyDeliveryMigrationByPayload(params: {
-  id: string;
-  payload: { provider?: string; channel?: string };
-}) {
-  const rawJob = createLegacyDeliveryMigrationJob(params);
-  return loadLegacyDeliveryMigration(rawJob);
-}
-
 async function expectNoMainSummaryForIsolatedRun(params: {
   runIsolatedAgentJob: CronServiceDeps["runIsolatedAgentJob"];
   name: string;
@@ -437,43 +424,6 @@ async function expectNoMainSummaryForIsolatedRun(params: {
   expect(enqueueSystemEvent).not.toHaveBeenCalled();
   expect(requestHeartbeatNow).not.toHaveBeenCalled();
   await stopCronAndCleanup(cron, store);
-}
-
-function createLegacyDeliveryMigrationJob(options: {
-  id: string;
-  payload: { provider?: string; channel?: string };
-}) {
-  return {
-    id: options.id,
-    name: "legacy",
-    enabled: true,
-    createdAtMs: Date.now(),
-    updatedAtMs: Date.now(),
-    schedule: { kind: "cron", expr: "* * * * *" },
-    sessionTarget: "isolated",
-    wakeMode: "now",
-    payload: {
-      kind: "agentTurn",
-      message: "hi",
-      deliver: true,
-      ...options.payload,
-      to: "7200373102",
-    },
-    state: {},
-  };
-}
-
-async function loadLegacyDeliveryMigration(rawJob: Record<string, unknown>) {
-  ensureDir(fixturesRoot);
-  const store = await makeStorePath();
-  writeStoreFile(store.storePath, { version: 1, jobs: [rawJob] });
-
-  const cron = createStartedCronService(store.storePath);
-  await cron.start();
-  cron.stop();
-  const loaded = await loadCronStore(store.storePath);
-  const job = loaded.jobs.find((j) => j.id === rawJob.id);
-  return { store, cron, job };
 }
 
 describe("CronService", () => {
@@ -658,6 +608,7 @@ describe("CronService", () => {
     expect(runIsolatedAgentJob).toHaveBeenCalledTimes(1);
   });
 
+<<<<<<< HEAD
   it("migrates legacy payload.provider to payload.channel on load", async () => {
     const { store, cron, job } = await loadLegacyDeliveryMigrationByPayload({
       id: "legacy-1",
@@ -685,6 +636,8 @@ describe("CronService", () => {
     await stopCronAndCleanup(cron, store);
   });
 
+=======
+>>>>>>> origin/main
   it("does not post a fallback main summary when an isolated job errors", async () => {
     const runIsolatedAgentJob = vi.fn(async () => ({
       status: "error" as const,
@@ -760,6 +713,7 @@ describe("CronService", () => {
         payload: { kind: "systemEvent", text: "nope" },
       }),
     ).rejects.toThrow(/isolated.*cron jobs require/);
+<<<<<<< HEAD
 
     cron.stop();
     await store.cleanup();
@@ -816,6 +770,8 @@ describe("CronService", () => {
     const jobs = await cron.list({ includeDisabled: true });
     expect(jobs[0]?.state.lastStatus).toBe("skipped");
     expect(jobs[0]?.state.lastError).toMatch(/main job requires/i);
+=======
+>>>>>>> origin/main
 
     cron.stop();
     await store.cleanup();

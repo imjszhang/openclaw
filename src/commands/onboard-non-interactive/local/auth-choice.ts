@@ -1,15 +1,21 @@
 import type { ApiKeyCredential } from "../../../agents/auth-profiles/types.js";
 import type { OpenClawConfig } from "../../../config/config.js";
 import type { SecretInput } from "../../../config/types.secrets.js";
+import { applyAuthProfileConfig } from "../../../plugins/provider-auth-helpers.js";
+import { setCloudflareAiGatewayConfig } from "../../../plugins/provider-auth-storage.js";
 import type { RuntimeEnv } from "../../../runtime.js";
 import { resolveDefaultSecretProviderAlias } from "../../../secrets/ref-contract.js";
 import { normalizeSecretInputModeInput } from "../../auth-choice.apply-helpers.js";
 import { normalizeApiKeyTokenProviderAuthChoice } from "../../auth-choice.apply.api-providers.js";
+<<<<<<< HEAD
 import {
   applyAuthProfileConfig,
   applyCloudflareAiGatewayConfig,
   setCloudflareAiGatewayConfig,
 } from "../../onboard-auth.js";
+=======
+import { applyCloudflareAiGatewayConfig } from "../../onboard-auth.config-gateways.js";
+>>>>>>> origin/main
 import {
   applyCustomApiConfig,
   CustomApiError,

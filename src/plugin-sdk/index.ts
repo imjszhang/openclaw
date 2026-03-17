@@ -1,67 +1,23 @@
-export { createAccountListHelpers } from "../channels/plugins/account-helpers.js";
-export { CHANNEL_MESSAGE_ACTION_NAMES } from "../channels/plugins/message-action-names.js";
-export {
-  BLUEBUBBLES_ACTIONS,
-  BLUEBUBBLES_ACTION_NAMES,
-  BLUEBUBBLES_GROUP_ACTIONS,
-} from "../channels/plugins/bluebubbles-actions.js";
+// Shared root plugin-sdk surface.
+// Keep this entry intentionally tiny. Channel/provider helpers belong on
+// dedicated subpaths or, for legacy consumers, the compat surface.
+
 export type {
   ChannelAccountSnapshot,
-  ChannelAccountState,
   ChannelAgentTool,
   ChannelAgentToolFactory,
-  ChannelAuthAdapter,
   ChannelCapabilities,
-  ChannelCommandAdapter,
-  ChannelConfigAdapter,
-  ChannelDirectoryAdapter,
-  ChannelDirectoryEntry,
-  ChannelDirectoryEntryKind,
-  ChannelElevatedAdapter,
-  ChannelGatewayAdapter,
   ChannelGatewayContext,
-  ChannelGroupAdapter,
-  ChannelGroupContext,
-  ChannelHeartbeatAdapter,
-  ChannelHeartbeatDeps,
   ChannelId,
-  ChannelLogSink,
-  ChannelLoginWithQrStartResult,
-  ChannelLoginWithQrWaitResult,
-  ChannelLogoutContext,
-  ChannelLogoutResult,
-  ChannelMentionAdapter,
   ChannelMessageActionAdapter,
   ChannelMessageActionContext,
   ChannelMessageActionName,
-  ChannelMessagingAdapter,
-  ChannelMeta,
-  ChannelOutboundAdapter,
-  ChannelOutboundContext,
-  ChannelOutboundTargetMode,
-  ChannelPairingAdapter,
-  ChannelPollContext,
-  ChannelPollResult,
-  ChannelResolveKind,
-  ChannelResolveResult,
-  ChannelResolverAdapter,
-  ChannelSecurityAdapter,
-  ChannelSecurityContext,
-  ChannelSecurityDmPolicy,
-  ChannelSetupAdapter,
-  ChannelSetupInput,
-  ChannelStatusAdapter,
   ChannelStatusIssue,
-  ChannelStreamingAdapter,
-  ChannelThreadingAdapter,
-  ChannelThreadingContext,
-  ChannelThreadingToolContext,
-  ChannelToolSend,
-  BaseProbeResult,
-  BaseTokenResolution,
 } from "../channels/plugins/types.js";
 export type { ChannelConfigSchema, ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelSetupAdapter, ChannelSetupInput } from "../channels/plugins/types.js";
 export type {
+<<<<<<< HEAD
   AcpRuntimeCapabilities,
   AcpRuntimeControl,
   AcpRuntimeDoctorReport,
@@ -84,10 +40,16 @@ export {
 } from "../acp/runtime/registry.js";
 export { ACP_ERROR_CODES, AcpRuntimeError } from "../acp/runtime/errors.js";
 export type { AcpRuntimeErrorCode } from "../acp/runtime/errors.js";
+=======
+  ChannelSetupWizard,
+  ChannelSetupWizardAllowFromEntry,
+} from "../channels/plugins/setup-wizard.js";
+>>>>>>> origin/main
 export type {
   AnyAgentTool,
-  OpenClawPluginConfigSchema,
+  MediaUnderstandingProviderPlugin,
   OpenClawPluginApi,
+<<<<<<< HEAD
   OpenClawPluginService,
   OpenClawPluginServiceContext,
   PluginHookInboundClaimContext,
@@ -117,11 +79,17 @@ export type {
   ProviderResolveUsageAuthContext,
   ProviderResolveDynamicModelContext,
   ProviderNormalizeResolvedModelContext,
+=======
+  OpenClawPluginConfigSchema,
+  PluginLogger,
+  ProviderAuthContext,
+  ProviderAuthResult,
+>>>>>>> origin/main
   ProviderRuntimeModel,
-  ProviderThinkingPolicyContext,
-  ProviderWrapStreamFnContext,
+  SpeechProviderPlugin,
 } from "../plugins/types.js";
 export type {
+<<<<<<< HEAD
   ProviderUsageSnapshot,
   UsageProviderId,
   UsageWindow,
@@ -140,24 +108,17 @@ export type {
   RespondFn,
 } from "../gateway/server-methods/types.js";
 export type {
+=======
+>>>>>>> origin/main
   PluginRuntime,
   RuntimeLogger,
   SubagentRunParams,
   SubagentRunResult,
-  SubagentWaitParams,
-  SubagentWaitResult,
-  SubagentGetSessionMessagesParams,
-  SubagentGetSessionMessagesResult,
-  SubagentGetSessionParams,
-  SubagentGetSessionResult,
-  SubagentDeleteSessionParams,
 } from "../plugins/runtime/types.js";
-export { normalizePluginHttpPath } from "../plugins/http-path.js";
-export { registerPluginHttpRoute } from "../plugins/http-registry.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 export type { OpenClawConfig } from "../config/config.js";
 /** @deprecated Use OpenClawConfig instead */
 export type { OpenClawConfig as ClawdbotConfig } from "../config/config.js";
+<<<<<<< HEAD
 export { isDangerousNameMatchingEnabled } from "../config/dangerous-name-matching.js";
 
 export type { FileLockHandle, FileLockOptions } from "./file-lock.js";
@@ -309,9 +270,12 @@ export {
   normalizeResolvedSecretInputString,
   normalizeSecretInputString,
 } from "../config/types.secrets.js";
+=======
+export * from "./image-generation.js";
+>>>>>>> origin/main
 export type { SecretInput, SecretRef } from "../config/types.secrets.js";
-export { ToolPolicySchema } from "../config/zod-schema.agent-runtime.js";
 export type { RuntimeEnv } from "../runtime.js";
+<<<<<<< HEAD
 export type { WizardPrompter } from "../wizard/prompts.js";
 export {
   DEFAULT_ACCOUNT_ID,
@@ -757,3 +721,12 @@ export {
 
 // Security utilities
 export { redactSensitiveText } from "../logging/redact.js";
+=======
+export type { HookEntry } from "../hooks/types.js";
+export type { ReplyPayload } from "../auto-reply/types.js";
+export type { WizardPrompter } from "../wizard/prompts.js";
+export type { ContextEngineFactory } from "../context-engine/registry.js";
+
+export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { registerContextEngine } from "../context-engine/registry.js";
+>>>>>>> origin/main

@@ -1,10 +1,14 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../config/config.js";
 import type { MemorySearchConfig } from "../config/types.tools.js";
+<<<<<<< HEAD
 import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
+=======
+import type { MemoryIndexManager } from "./index.js";
+>>>>>>> origin/main
 
 const { watchMock } = vi.hoisted(() => ({
   watchMock: vi.fn(() => ({
@@ -34,10 +38,19 @@ vi.mock("./embeddings.js", () => ({
   }),
 }));
 
+type MemoryIndexModule = typeof import("./index.js");
+
+let getMemorySearchManager: MemoryIndexModule["getMemorySearchManager"];
+
 describe("memory watcher config", () => {
   let manager: MemoryIndexManager | null = null;
   let workspaceDir = "";
   let extraDir = "";
+
+  beforeEach(async () => {
+    vi.resetModules();
+    ({ getMemorySearchManager } = await import("./index.js"));
+  });
 
   afterEach(async () => {
     watchMock.mockClear();
