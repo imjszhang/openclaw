@@ -72,6 +72,7 @@
 | G64  | JS Eyes 项目必须采用“浏览器主动连接 + 逆向架构”模式以填补 Agent 框架在实时复用用户浏览器环境上的能力空白              | 15        | 2026-03      |
 | G65  | Knowledge Prism 的 Structure 刷新必须从“二元开关”演进为“策略化驱动”模式，以兼容论点型与时间序列型视角的差异化组织逻辑 | 16        | 2026-03      |
 | G66  | 大规模上游合并需遵循"全量同步 - 冲突主分支优先 - 安装器直连"策略以保障版本演进与功能完整性                            | 37        | 2026-03      |
+| G67  | OpenClaw 安全体系基于“个人助手信任模型”，通过五层边界与形式化验证构建纵深防御                                         | 41        | 2026-03      |
 
 ## 变更日志
 
@@ -116,3 +117,4 @@
 | 2026-03-12 | 新建 G63                                          | 归入 js-knowledge-prism-rewrite-feature-design-and-implementation (RW-01~RW-12) 共 12 个 atoms，形成完整的知识棱镜改写功能架构设计与实现指南组                                                                                                                                    |
 | 2026-03-13 | 新建 G64, G65                                     | 归入 js-eyes-project-creation (EP-01~15) 和 js-knowledge-prism-klstrategy-refactor (JR-01~16) 共 31 个 atoms；形成 JS Eyes 浏览器自动化插件创建指南与 Knowledge Prism 策略化 Structure 刷新重构指南两个新主题组                                                                   |
 | 2026-03-16 | 新建 G66                                          | 归入 merge-main-resolve-by-main (OM-01~OM-37) 共 37 个 atoms，形成 2026.3.14 版本大规模上游合并与架构升级完整指南组                                                                                                                                                               |
+| 2026-03-17 | 新建 G67                                          | 归入 openclaw-security-architecture-guide (OS-01~OS-41) 共 41 个 atoms，形成完整的 OpenClaw 安全架构原理与纵深防御指南组                                                                                                                                                          |

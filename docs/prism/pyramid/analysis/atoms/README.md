@@ -74,6 +74,7 @@
 | EP   | js-eyes-project-creation                                     | 2026-01 |
 | JR   | js-knowledge-prism-klstrategy-refactor                       | 2026-03 |
 | OM   | merge-main-resolve-by-main                                   | 2026-03 |
+| OS   | openclaw-security-architecture-guide                         | 2026-03 |
 
 > 注：以下缩写来自 js-knowledge-prism 仓库合并，与本库已有缩写存在复用：
 >
