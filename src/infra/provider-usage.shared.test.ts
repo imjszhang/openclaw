@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
->>>>>>> origin/main
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   clampPercent,
@@ -62,8 +59,6 @@ describe("provider-usage.shared", () => {
     await expect(withTimeout(Promise.resolve("ok"), 100, "fallback")).resolves.toBe("ok");
 
     expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
-<<<<<<< HEAD
-=======
   });
 
   it("reads legacy pi auth tokens for known provider aliases", async () => {
@@ -94,6 +89,5 @@ describe("provider-usage.shared", () => {
     } finally {
       await fs.rm(home, { recursive: true, force: true });
     }
->>>>>>> origin/main
   });
 });

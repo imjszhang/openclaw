@@ -44,14 +44,6 @@ export async function statusAllCommand(
   await withProgress({ label: "Scanning status --all…", total: 11 }, async (progress) => {
     progress.setLabel("Loading config…");
     const loadedRaw = await readBestEffortConfig();
-<<<<<<< HEAD
-    const { resolvedConfig: cfg } = await resolveCommandSecretRefsViaGateway({
-      config: loadedRaw,
-      commandName: "status --all",
-      targetIds: getStatusCommandSecretTargetIds(),
-      mode: "read_only_status",
-    });
-=======
     const { resolvedConfig: cfg, diagnostics: secretDiagnostics } =
       await resolveCommandSecretRefsViaGateway({
         config: loadedRaw,
@@ -59,7 +51,6 @@ export async function statusAllCommand(
         targetIds: getStatusCommandSecretTargetIds(),
         mode: "read_only_status",
       });
->>>>>>> origin/main
     const osSummary = resolveOsSummary();
     const snap = await readConfigFileSnapshot().catch(() => null);
     progress.tick();

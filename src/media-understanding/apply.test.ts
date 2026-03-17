@@ -8,15 +8,10 @@ import { resolvePreferredOpenClawTmpDir } from "../infra/tmp-openclaw-dir.js";
 import { withEnvAsync } from "../test-utils/env.js";
 import { createSafeAudioFixtureBuffer } from "./runner.test-utils.js";
 
-<<<<<<< HEAD
-const resolveApiKeyForProviderMock = vi.hoisted(() =>
-  vi.fn<typeof resolveApiKeyForProvider>(async () => ({
-=======
 type ResolveApiKeyForProvider = typeof import("../agents/model-auth.js").resolveApiKeyForProvider;
 
 const resolveApiKeyForProviderMock = vi.hoisted(() =>
   vi.fn<ResolveApiKeyForProvider>(async () => ({
->>>>>>> origin/main
     apiKey: "test-key", // pragma: allowlist secret
     source: "test",
     mode: "api-key",
@@ -28,30 +23,8 @@ const hasAvailableAuthForProviderMock = vi.hoisted(() =>
     return Boolean(resolved?.apiKey);
   }),
 );
-<<<<<<< HEAD
-
-vi.mock("../agents/model-auth.js", () => ({
-  resolveApiKeyForProvider: resolveApiKeyForProviderMock,
-  hasAvailableAuthForProvider: hasAvailableAuthForProviderMock,
-  requireApiKey: (auth: { apiKey?: string; mode?: string }, provider: string) => {
-    if (auth?.apiKey) {
-      return auth.apiKey;
-    }
-    throw new Error(`No API key resolved for provider "${provider}" (auth mode: ${auth?.mode}).`);
-  },
-}));
-
-vi.mock("../media/fetch.js", () => ({
-  fetchRemoteMedia: vi.fn(),
-}));
-
-vi.mock("../process/exec.js", () => ({
-  runExec: vi.fn(),
-}));
-=======
 const fetchRemoteMediaMock = vi.hoisted(() => vi.fn());
 const runExecMock = vi.hoisted(() => vi.fn());
->>>>>>> origin/main
 
 let applyMediaUnderstanding: typeof import("./apply.js").applyMediaUnderstanding;
 let clearMediaUnderstandingBinaryCacheForTests: typeof import("./runner.js").clearMediaUnderstandingBinaryCacheForTests;

@@ -4,11 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../config/config.js";
 import type { MemorySearchConfig } from "../config/types.tools.js";
-<<<<<<< HEAD
-import { getMemorySearchManager, type MemoryIndexManager } from "./index.js";
-=======
 import type { MemoryIndexManager } from "./index.js";
->>>>>>> origin/main
 
 const { watchMock } = vi.hoisted(() => ({
   watchMock: vi.fn(() => ({

@@ -13,11 +13,7 @@ import { CANVAS_WS_PATH, handleA2uiHttpRequest } from "../canvas-host/a2ui.js";
 import type { CanvasHostHandler } from "../canvas-host/server.js";
 import { loadConfig } from "../config/config.js";
 import type { createSubsystemLogger } from "../logging/subsystem.js";
-<<<<<<< HEAD
-import { handleSlackHttpRequest } from "../plugin-sdk-internal/slack.js";
-=======
 import { handleSlackHttpRequest } from "../plugin-sdk/slack.js";
->>>>>>> origin/main
 import { safeEqualSecret } from "../security/secret-equal.js";
 import {
   AUTH_RATE_LIMIT_SCOPE_HOOK_AUTH,

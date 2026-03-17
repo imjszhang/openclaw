@@ -56,8 +56,6 @@ export {
   buildComputedAccountStatusSnapshot,
   buildTokenChannelStatusSummary,
 } from "./status-helpers.js";
-<<<<<<< HEAD
-=======
 
 export {
   createDiscordActionGate,
@@ -131,4 +129,3 @@ export {
   uploadStickerDiscord,
 } from "../../extensions/discord/src/send.js";
 export { discordMessageActions } from "../../extensions/discord/src/channel-actions.js";
->>>>>>> origin/main

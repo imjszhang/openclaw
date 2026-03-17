@@ -9,11 +9,7 @@ import {
   listChatChannels,
   normalizeChatChannelId,
 } from "../channels/registry.js";
-<<<<<<< HEAD
-import { hasAnyWhatsAppAuth } from "../plugin-sdk-internal/whatsapp.js";
-=======
 import { hasAnyWhatsAppAuth } from "../plugin-sdk/whatsapp.js";
->>>>>>> origin/main
 import {
   loadPluginManifestRegistry,
   type PluginManifestRegistry,

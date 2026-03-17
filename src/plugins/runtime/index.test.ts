@@ -80,8 +80,6 @@ describe("plugin runtime command execution", () => {
     const runtime = createPluginRuntime();
     expect(runtime.system.requestHeartbeatNow).toBe(requestHeartbeatNow);
   });
-<<<<<<< HEAD
-=======
 
   it("exposes runtime.agent host helpers", () => {
     const runtime = createPluginRuntime();
@@ -93,7 +91,6 @@ describe("plugin runtime command execution", () => {
     expect(typeof runtime.agent.resolveAgentDir).toBe("function");
     expect(typeof runtime.agent.session.resolveSessionFilePath).toBe("function");
   });
->>>>>>> origin/main
 
   it("exposes runtime.modelAuth with getApiKeyForModel and resolveApiKeyForProvider", () => {
     const runtime = createPluginRuntime();
@@ -111,8 +108,6 @@ describe("plugin runtime command execution", () => {
     // Wrappers should NOT be the same reference as the raw functions
     expect(runtime.modelAuth.getApiKeyForModel).not.toBe(rawGetApiKey);
   });
-<<<<<<< HEAD
-=======
 
   it("keeps subagent unavailable by default even after gateway initialization", async () => {
     const runtime = createPluginRuntime();
@@ -146,5 +141,4 @@ describe("plugin runtime command execution", () => {
     });
     expect(run).toHaveBeenCalledWith({ sessionKey: "s-2", message: "hello" });
   });
->>>>>>> origin/main
 });

@@ -11,10 +11,7 @@ import { normalizeProviderId } from "../agents/model-selection.js";
 import { loadConfig, type OpenClawConfig } from "../config/config.js";
 import { resolveProviderUsageAuthWithPlugin } from "../plugins/provider-runtime.js";
 import { normalizeSecretInput } from "../utils/normalize-secret-input.js";
-<<<<<<< HEAD
-=======
 import { resolveLegacyPiAgentAccessToken } from "./provider-usage.shared.js";
->>>>>>> origin/main
 import type { UsageProviderId } from "./provider-usage.types.js";
 
 export type ProviderAuth = {
@@ -180,8 +177,6 @@ async function resolveProviderUsageAuthViaPlugin(params: {
     token: resolved.token,
     ...(resolved.accountId ? { accountId: resolved.accountId } : {}),
   };
-<<<<<<< HEAD
-=======
 }
 
 async function resolveProviderUsageAuthFallback(params: {
@@ -228,7 +223,6 @@ async function resolveProviderUsageAuthFallback(params: {
     default:
       return null;
   }
->>>>>>> origin/main
 }
 
 export async function resolveProviderAuths(params: {
@@ -257,8 +251,6 @@ export async function resolveProviderAuths(params: {
     });
     if (pluginAuth) {
       auths.push(pluginAuth);
-<<<<<<< HEAD
-=======
       continue;
     }
     const fallbackAuth = await resolveProviderUsageAuthFallback({
@@ -267,7 +259,6 @@ export async function resolveProviderAuths(params: {
     });
     if (fallbackAuth) {
       auths.push(fallbackAuth);
->>>>>>> origin/main
     }
   }
 

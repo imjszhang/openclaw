@@ -13,7 +13,15 @@ function relativeSymlinkTarget(sourcePath, targetPath) {
 }
 
 function symlinkPath(sourcePath, targetPath, type) {
-  fs.symlinkSync(relativeSymlinkTarget(sourcePath, targetPath), targetPath, type);
+  try {
+    fs.symlinkSync(relativeSymlinkTarget(sourcePath, targetPath), targetPath, type);
+  } catch (err) {
+    if (err?.code === "EPERM" && process.platform === "win32") {
+      fs.copyFileSync(sourcePath, targetPath);
+    } else {
+      throw err;
+    }
+  }
 }
 
 function shouldWrapRuntimeJsFile(sourcePath) {

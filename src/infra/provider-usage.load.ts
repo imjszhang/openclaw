@@ -3,8 +3,6 @@ import { resolveProviderUsageSnapshotWithPlugin } from "../plugins/provider-runt
 import { resolveFetch } from "./fetch.js";
 import { type ProviderAuth, resolveProviderAuths } from "./provider-usage.auth.js";
 import {
-<<<<<<< HEAD
-=======
   fetchClaudeUsage,
   fetchCodexUsage,
   fetchGeminiUsage,
@@ -12,7 +10,6 @@ import {
   fetchZaiUsage,
 } from "./provider-usage.fetch.js";
 import {
->>>>>>> origin/main
   DEFAULT_TIMEOUT_MS,
   ignoredErrors,
   PROVIDER_LABELS,

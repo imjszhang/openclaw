@@ -166,12 +166,9 @@ export type PluginRecord = {
   hookNames: string[];
   channelIds: string[];
   providerIds: string[];
-<<<<<<< HEAD
-=======
   speechProviderIds: string[];
   mediaUnderstandingProviderIds: string[];
   imageGenerationProviderIds: string[];
->>>>>>> origin/main
   webSearchProviderIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
@@ -614,8 +611,6 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
       provider: params.provider,
       source: record.source,
       rootDir: record.rootDir,
-<<<<<<< HEAD
-=======
     } as R);
   };
 
@@ -662,7 +657,6 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
       kindLabel: "web search provider",
       registrations: registry.webSearchProviders,
       ownedIds: record.webSearchProviderIds,
->>>>>>> origin/main
     });
   };
 
@@ -959,12 +953,9 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerTool,
     registerChannel,
     registerProvider,
-<<<<<<< HEAD
-=======
     registerSpeechProvider,
     registerMediaUnderstandingProvider,
     registerImageGenerationProvider,
->>>>>>> origin/main
     registerWebSearchProvider,
     registerGatewayMethod,
     registerCli,

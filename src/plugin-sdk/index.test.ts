@@ -62,23 +62,6 @@ describe("plugin-sdk exports", () => {
     expect(Object.prototype.hasOwnProperty.call(sdk, "isDangerousNameMatchingEnabled")).toBe(false);
   });
 
-<<<<<<< HEAD
-  // Verify critical constants that extensions depend on are exported.
-  it("exports critical constants used by channel extensions", () => {
-    const requiredConstants = [
-      "DEFAULT_GROUP_HISTORY_LIMIT",
-      "DEFAULT_ACCOUNT_ID",
-      "SILENT_REPLY_TOKEN",
-      "PAIRING_APPROVED_MESSAGE",
-    ];
-
-    for (const key of requiredConstants) {
-      expect(sdk).toHaveProperty(key);
-    }
-  });
-
-=======
->>>>>>> origin/main
   it("emits importable bundled subpath entries", { timeout: 240_000 }, async () => {
     const fixtureDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-plugin-sdk-consumer-"));
     const repoDistDir = path.join(process.cwd(), "dist");

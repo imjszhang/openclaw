@@ -11,10 +11,7 @@ import type {
 
 export type {
   AnyAgentTool,
-<<<<<<< HEAD
-=======
   MediaUnderstandingProviderPlugin,
->>>>>>> origin/main
   OpenClawPluginConfigSchema,
   ProviderDiscoveryContext,
   ProviderCatalogContext,
@@ -87,10 +84,6 @@ export {
 export { buildOutboundBaseSessionKey } from "../infra/outbound/base-session-key.js";
 export { normalizeOutboundThreadId } from "../infra/outbound/thread-id.js";
 export { resolveThreadSessionKeys } from "../routing/session-key.js";
-<<<<<<< HEAD
-export { runPassiveAccountLifecycle } from "./channel-lifecycle.js";
-export { createLoggerBackedRuntime } from "./runtime.js";
-=======
 
 type DefineChannelPluginEntryOptions<TPlugin extends ChannelPlugin = ChannelPlugin> = {
   id: string;
@@ -174,4 +167,3 @@ export function defineChannelPluginEntry<TPlugin extends ChannelPlugin>({
 export function defineSetupPluginEntry<TPlugin>(plugin: TPlugin) {
   return { plugin };
 }
->>>>>>> origin/main

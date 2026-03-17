@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 export type { OpenClawConfig } from "../config/config.js";
 
 export { createAccountActionGate } from "../channels/plugins/account-action-gate.js";
@@ -29,7 +27,6 @@ export {
   type ResolvedSignalAccount,
 } from "../../extensions/signal/src/accounts.js";
 
->>>>>>> origin/main
 /** Resolve an account by id, then fall back to the default account when the primary lacks credentials. */
 export function resolveAccountWithDefaultFallback<TAccount>(params: {
   accountId?: string | null;

@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type FetchMock, withFetchPreconnect } from "../test-utils/fetch-mock.js";
-<<<<<<< HEAD
-import { createVoyageEmbeddingProvider, normalizeVoyageModel } from "./embeddings-voyage.js";
-=======
->>>>>>> origin/main
 import { mockPublicPinnedHostname } from "./test-helpers/ssrf.js";
 
 vi.mock("../agents/model-auth.js", async () => {

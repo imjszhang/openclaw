@@ -45,8 +45,6 @@ export {
 } from "../channels/plugins/group-mentions.js";
 export { SlackConfigSchema } from "../config/zod-schema.providers-core.js";
 export { buildComputedAccountStatusSnapshot } from "./status-helpers.js";
-<<<<<<< HEAD
-=======
 
 export {
   listEnabledSlackAccounts,
@@ -85,4 +83,3 @@ export { recordSlackThreadParticipation } from "../../extensions/slack/src/sent-
 export { handleSlackMessageAction } from "./slack-message-actions.js";
 export { createSlackActions } from "../channels/plugins/slack.actions.js";
 export type { SlackActionContext } from "../agents/tools/slack-actions.js";
->>>>>>> origin/main

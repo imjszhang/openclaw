@@ -608,36 +608,6 @@ describe("CronService", () => {
     expect(runIsolatedAgentJob).toHaveBeenCalledTimes(1);
   });
 
-<<<<<<< HEAD
-  it("migrates legacy payload.provider to payload.channel on load", async () => {
-    const { store, cron, job } = await loadLegacyDeliveryMigrationByPayload({
-      id: "legacy-1",
-      payload: { provider: " TeLeGrAm " },
-    });
-    // Legacy delivery fields are migrated to the top-level delivery object
-    const delivery = job?.delivery as unknown as Record<string, unknown>;
-    expect(delivery?.channel).toBe("telegram");
-    const payload = job?.payload as unknown as Record<string, unknown>;
-    expect("provider" in payload).toBe(false);
-    expect("channel" in payload).toBe(false);
-
-    await stopCronAndCleanup(cron, store);
-  });
-
-  it("canonicalizes payload.channel casing on load", async () => {
-    const { store, cron, job } = await loadLegacyDeliveryMigrationByPayload({
-      id: "legacy-2",
-      payload: { channel: "Telegram" },
-    });
-    // Legacy delivery fields are migrated to the top-level delivery object
-    const delivery = job?.delivery as unknown as Record<string, unknown>;
-    expect(delivery?.channel).toBe("telegram");
-
-    await stopCronAndCleanup(cron, store);
-  });
-
-=======
->>>>>>> origin/main
   it("does not post a fallback main summary when an isolated job errors", async () => {
     const runIsolatedAgentJob = vi.fn(async () => ({
       status: "error" as const,
@@ -713,65 +683,6 @@ describe("CronService", () => {
         payload: { kind: "systemEvent", text: "nope" },
       }),
     ).rejects.toThrow(/isolated.*cron jobs require/);
-<<<<<<< HEAD
-
-    cron.stop();
-    await store.cleanup();
-  });
-
-  it("skips invalid main jobs with agentTurn payloads from disk", async () => {
-    ensureDir(fixturesRoot);
-    const store = await makeStorePath();
-    const enqueueSystemEvent = vi.fn();
-    const requestHeartbeatNow = vi.fn();
-    const events = createCronEventHarness();
-
-    const atMs = Date.parse("2025-12-13T00:00:01.000Z");
-    writeStoreFile(store.storePath, {
-      version: 1,
-      jobs: [
-        {
-          id: "job-1",
-          enabled: true,
-          createdAtMs: Date.parse("2025-12-13T00:00:00.000Z"),
-          updatedAtMs: Date.parse("2025-12-13T00:00:00.000Z"),
-          schedule: { kind: "at", at: new Date(atMs).toISOString() },
-          sessionTarget: "main",
-          wakeMode: "now",
-          payload: { kind: "agentTurn", message: "bad" },
-          state: {},
-        },
-      ],
-    });
-
-    const cron = new CronService({
-      storePath: store.storePath,
-      cronEnabled: true,
-      log: noopLogger,
-      enqueueSystemEvent,
-      requestHeartbeatNow,
-      runIsolatedAgentJob: vi.fn(async (_params: { job: unknown; message: string }) => ({
-        status: "ok",
-      })) as unknown as CronServiceDeps["runIsolatedAgentJob"],
-      onEvent: events.onEvent,
-    });
-
-    await cron.start();
-
-    vi.setSystemTime(new Date("2025-12-13T00:00:01.000Z"));
-    await vi.runOnlyPendingTimersAsync();
-    await events.waitFor(
-      (evt) => evt.jobId === "job-1" && evt.action === "finished" && evt.status === "skipped",
-    );
-
-    expect(enqueueSystemEvent).not.toHaveBeenCalled();
-    expect(requestHeartbeatNow).not.toHaveBeenCalled();
-
-    const jobs = await cron.list({ includeDisabled: true });
-    expect(jobs[0]?.state.lastStatus).toBe("skipped");
-    expect(jobs[0]?.state.lastError).toMatch(/main job requires/i);
-=======
->>>>>>> origin/main
 
     cron.stop();
     await store.cleanup();
