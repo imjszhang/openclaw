@@ -167,3 +167,7 @@ metadata:
 1. 根据上方索引定位相关视角或分组
 2. 阅读对应视角的 CONTEXT.md 获取 SCQA 摘要和 Key Line 列表
 3. 按需深入阅读 atom/KL/group 具体文件获取完整论述
+
+## 产出规约
+
+多篇系列的产出目录下配有 `_convention.md` 规约文档，AI 生成新篇目时**必须**先读取该文件。规约包含系列身份、作者事实、核心实体定义、已确立数据、前文提要、系列惯例和硬性禁止七个章节，确保跨篇一致性。详见 [outputs/README.md](outputs/README.md#系列规约文档_conventionmd)。
