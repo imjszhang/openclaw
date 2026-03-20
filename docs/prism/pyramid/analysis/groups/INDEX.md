@@ -77,6 +77,8 @@
 | G69  | 飞书知识库变现需构建"支付闭环 + 自动化维护 + 技能固化"的实战路径以实现低门槛盈利                                      | 13        | 2026-03      |
 | G70  | JS VI 系统必须采用"Design Tokens 单源驱动 + 五层架构 + 刚柔并济视觉哲学"以实现品牌风格的全链路自动化                  | 19        | 2026-03      |
 | G71  | JS VI 系统必须通过“微信专用尺寸枚举 + 静态模板约束 + 双模导出流程”实现公众号封面图的自动化与品牌一致性                | 15        | 2026-03      |
+| G72  | 上游 PR 贡献必须采用「独立分支隔离 + Cherry-pick 回合并」策略以规避定制线冲突                                         | 10        | 2026-03      |
+| G73  | 插件注册表架构必须严格分离「类型契约声明」与「运行时装配逻辑」并实施细粒度权限控制                                    | 16        | 2026-03      |
 
 ## 变更日志
 
@@ -125,3 +127,4 @@
 | 2026-03-18 | 新建 G68                                          | 归入 js-cursor-agent-project-creation (JA-01~JA-20) 共 20 个 atoms，形成完整的 Cursor Agent 长驻进程集成与架构设计指南组                                                                                                                                                          |
 | 2026-03-18 | 新建 G69, G70                                     | 归入 feishu-knowledge-base-monetization (FK-01~13) 和 js-vi-system-project-creation (JV-01~19) 共 32 个 atoms；形成飞书知识库变现实战路径与 JS 品牌视觉系统自动化构建两个新主题组                                                                                                 |
 | 2026-03-20 | 新建 G71                                          | 归入 js-vi-system-wechat-official-account-cover (JW-01~JW-15) 共 15 个 atoms，形成微信公众号封面图自动化生成与品牌一致性保障指南组                                                                                                                                                |
+| 2026-03-20 | 新建 G72, G73                                     | 归入 openclaw-acp-plugin-api-pr-and-merge (OA-01~OA-13) 和 openclaw-plugin-types-and-registry (OT-01~OT-16) 共 26 个 atoms；形成上游 PR 协作策略与插件注册表内部架构两个新主题组                                                                                                  |
