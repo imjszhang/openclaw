@@ -22,6 +22,8 @@ export function createTestPluginApi(api: TestPluginApiInput): OpenClawPluginApi 
     registerInteractiveHandler() {},
     registerCommand() {},
     registerContextEngine() {},
+    registerAcpRuntimeBackend() {},
+    unregisterAcpRuntimeBackend() {},
     resolvePath(input: string) {
       return input;
     },
