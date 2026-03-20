@@ -78,6 +78,7 @@
 | JA   | js-cursor-agent-project-creation                             | 2026-03 |
 | FK   | feishu-knowledge-base-monetization                           | 2026-03 |
 | JV   | js-vi-system-project-creation                                | 2026-03 |
+| JW   | js-vi-system-wechat-official-account-cover                   | 2026-03 |
 
 > 注：以下缩写来自 js-knowledge-prism 仓库合并，与本库已有缩写存在复用：
 >

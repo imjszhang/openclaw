@@ -76,6 +76,7 @@
 | G68  | Cursor Agent 集成必须采用“零依赖核心层 + 长驻进程池 + 多入口适配”架构以解决短命令模型与有状态会话的冲突               | 20        | 2026-03      |
 | G69  | 飞书知识库变现需构建"支付闭环 + 自动化维护 + 技能固化"的实战路径以实现低门槛盈利                                      | 13        | 2026-03      |
 | G70  | JS VI 系统必须采用"Design Tokens 单源驱动 + 五层架构 + 刚柔并济视觉哲学"以实现品牌风格的全链路自动化                  | 19        | 2026-03      |
+| G71  | JS VI 系统必须通过“微信专用尺寸枚举 + 静态模板约束 + 双模导出流程”实现公众号封面图的自动化与品牌一致性                | 15        | 2026-03      |
 
 ## 变更日志
 
@@ -123,3 +124,4 @@
 | 2026-03-17 | 新建 G67                                          | 归入 openclaw-security-architecture-guide (OS-01~OS-41) 共 41 个 atoms，形成完整的 OpenClaw 安全架构原理与纵深防御指南组                                                                                                                                                          |
 | 2026-03-18 | 新建 G68                                          | 归入 js-cursor-agent-project-creation (JA-01~JA-20) 共 20 个 atoms，形成完整的 Cursor Agent 长驻进程集成与架构设计指南组                                                                                                                                                          |
 | 2026-03-18 | 新建 G69, G70                                     | 归入 feishu-knowledge-base-monetization (FK-01~13) 和 js-vi-system-project-creation (JV-01~19) 共 32 个 atoms；形成飞书知识库变现实战路径与 JS 品牌视觉系统自动化构建两个新主题组                                                                                                 |
+| 2026-03-20 | 新建 G71                                          | 归入 js-vi-system-wechat-official-account-cover (JW-01~JW-15) 共 15 个 atoms，形成微信公众号封面图自动化生成与品牌一致性保障指南组                                                                                                                                                |
