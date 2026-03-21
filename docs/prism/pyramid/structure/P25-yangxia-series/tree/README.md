@@ -20,6 +20,7 @@
 | KL04 | OpenClaw 新手起飞：20 条救命要点，看完直接上手             | 清单     | KL01(新手教程)                | S7,S30                      | 🆕 已创建 | G12,G35                         | KL04-newbie-checklist.md    |
 | KL05 | 知识收集器是 AI 时代的"感官系统"——让龙虾能看、能记、能思考 | 系统     | KL17,KL18,KL19                | S27,S45                     | ✅ 已完成 | G06,G07,G08,G09,G10             | KL05-knowledge-collector.md |
 | KL06 | 知识棱镜是 AI 时代的"消化系统"——把信息洪流变成可复用的洞察 | 系统     | KL10,KL21,KL22,KL23,KL24,KL25 | S27,S45,S49                 | 🆕 已创建 | G27,G49,G55,G56,G57,G58,G59,G60 | KL06-knowledge-prism.md     |
+| KL07 | App 消亡论：我的 OpenClaw 没有界面，因为它本身就是界面     | 哲学     | KL34,KL35                     | S23,S45,S49                 | 🆕 已创建 | G34,G50,G52,G64                 | KL07-app-disappears.md      |
 
 ## 结构检查
 

@@ -81,6 +81,7 @@
 | JW   | js-vi-system-wechat-official-account-cover                   | 2026-03 |
 | OA   | openclaw-acp-plugin-api-pr-and-merge                         | 2026-03 |
 | OT   | openclaw-plugin-types-and-registry                           | 2026-03 |
+| AD   | kl07-app-disappears                                          | 2026-03 |
 
 > 注：以下缩写来自 js-knowledge-prism 仓库合并，与本库已有缩写存在复用：
 >

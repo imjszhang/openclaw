@@ -79,6 +79,7 @@
 | G71  | JS VI 系统必须通过“微信专用尺寸枚举 + 静态模板约束 + 双模导出流程”实现公众号封面图的自动化与品牌一致性                | 15        | 2026-03      |
 | G72  | 上游 PR 贡献必须采用「独立分支隔离 + Cherry-pick 回合并」策略以规避定制线冲突                                         | 10        | 2026-03      |
 | G73  | 插件注册表架构必须严格分离「类型契约声明」与「运行时装配逻辑」并实施细粒度权限控制                                    | 16        | 2026-03      |
+| G74  | "App 消亡论"揭示了未来交互范式——对话即界面，配置即逻辑，人与 AI 共同进化是核心资产                                    | 17        | 2026-03      |
 
 ## 变更日志
 
@@ -128,3 +129,4 @@
 | 2026-03-18 | 新建 G69, G70                                     | 归入 feishu-knowledge-base-monetization (FK-01~13) 和 js-vi-system-project-creation (JV-01~19) 共 32 个 atoms；形成飞书知识库变现实战路径与 JS 品牌视觉系统自动化构建两个新主题组                                                                                                 |
 | 2026-03-20 | 新建 G71                                          | 归入 js-vi-system-wechat-official-account-cover (JW-01~JW-15) 共 15 个 atoms，形成微信公众号封面图自动化生成与品牌一致性保障指南组                                                                                                                                                |
 | 2026-03-20 | 新建 G72, G73                                     | 归入 openclaw-acp-plugin-api-pr-and-merge (OA-01~OA-13) 和 openclaw-plugin-types-and-registry (OT-01~OT-16) 共 26 个 atoms；形成上游 PR 协作策略与插件注册表内部架构两个新主题组                                                                                                  |
+| 2026-03-21 | 新建 G74                                          | 归入 kl07-app-disappears (AD-01~AD-17) 共 17 个 atoms，形成关于 App 消亡论、无 UI 交互范式及人与 AI 共同进化的完整理论组                                                                                                                                                          |
