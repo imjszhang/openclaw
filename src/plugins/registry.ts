@@ -9,12 +9,15 @@ import type {
 } from "../gateway/server-methods/types.js";
 import { registerInternalHook } from "../hooks/internal-hooks.js";
 import type { HookEntry } from "../hooks/types.js";
+import { registerMemoryPromptSection } from "../memory/prompt-section.js";
 import { resolveUserPath } from "../utils.js";
 import { registerPluginCommand, validatePluginCommandDefinition } from "./commands.js";
 import { normalizePluginHttpPath } from "./http-path.js";
 import { findOverlappingPluginHttpRoute } from "./http-route-overlap.js";
 import { registerPluginInteractiveHandler } from "./interactive.js";
 import { normalizeRegisteredProvider } from "./provider-validation.js";
+import { createEmptyPluginRegistry } from "./registry-empty.js";
+import { withPluginRuntimePluginIdScope } from "./runtime/gateway-request-scope.js";
 import type { PluginRuntime } from "./runtime/types.js";
 import { defaultSlotIdForKey } from "./slots.js";
 import {
@@ -28,6 +31,7 @@ import type {
   OpenClawPluginChannelRegistration,
   OpenClawPluginCliRegistrar,
   OpenClawPluginCommandDefinition,
+  PluginConversationBindingResolvedEvent,
   OpenClawPluginHttpRouteAuth,
   OpenClawPluginHttpRouteMatch,
   OpenClawPluginHttpRouteHandler,
@@ -147,6 +151,15 @@ export type PluginCommandRegistration = {
   rootDir?: string;
 };
 
+export type PluginConversationBindingResolvedHandlerRegistration = {
+  pluginId: string;
+  pluginName?: string;
+  pluginRoot?: string;
+  handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>;
+  source: string;
+  rootDir?: string;
+};
+
 export type PluginRecord = {
   id: string;
   name: string;
@@ -199,6 +212,7 @@ export type PluginRegistry = {
   cliRegistrars: PluginCliRegistration[];
   services: PluginServiceRegistration[];
   commands: PluginCommandRegistration[];
+  conversationBindingResolvedHandlers: PluginConversationBindingResolvedHandlerRegistration[];
   diagnostics: PluginDiagnostic[];
 };
 
@@ -229,27 +243,7 @@ const constrainLegacyPromptInjectionHook = (
   };
 };
 
-export function createEmptyPluginRegistry(): PluginRegistry {
-  return {
-    plugins: [],
-    tools: [],
-    hooks: [],
-    typedHooks: [],
-    channels: [],
-    channelSetups: [],
-    providers: [],
-    speechProviders: [],
-    mediaUnderstandingProviders: [],
-    imageGenerationProviders: [],
-    webSearchProviders: [],
-    gatewayHandlers: {},
-    httpRoutes: [],
-    cliRegistrars: [],
-    services: [],
-    commands: [],
-    diagnostics: [],
-  };
-}
+export { createEmptyPluginRegistry } from "./registry-empty.js";
 
 export function createPluginRegistry(registryParams: PluginRegistryParams) {
   const registry = createEmptyPluginRegistry();
@@ -829,12 +823,56 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     } as TypedPluginHookRegistration);
   };
 
+  const registerConversationBindingResolvedHandler = (
+    record: PluginRecord,
+    handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,
+  ) => {
+    registry.conversationBindingResolvedHandlers.push({
+      pluginId: record.id,
+      pluginName: record.name,
+      pluginRoot: record.rootDir,
+      handler,
+      source: record.source,
+      rootDir: record.rootDir,
+    });
+  };
+
   const normalizeLogger = (logger: PluginLogger): PluginLogger => ({
     info: logger.info,
     warn: logger.warn,
     error: logger.error,
     debug: logger.debug,
   });
+
+  const pluginRuntimeById = new Map<string, PluginRuntime>();
+
+  const resolvePluginRuntime = (pluginId: string): PluginRuntime => {
+    const cached = pluginRuntimeById.get(pluginId);
+    if (cached) {
+      return cached;
+    }
+    const runtime = new Proxy(registryParams.runtime, {
+      get(target, prop, receiver) {
+        if (prop !== "subagent") {
+          return Reflect.get(target, prop, receiver);
+        }
+        const subagent = Reflect.get(target, prop, receiver);
+        return {
+          run: (params) => withPluginRuntimePluginIdScope(pluginId, () => subagent.run(params)),
+          waitForRun: (params) =>
+            withPluginRuntimePluginIdScope(pluginId, () => subagent.waitForRun(params)),
+          getSessionMessages: (params) =>
+            withPluginRuntimePluginIdScope(pluginId, () => subagent.getSessionMessages(params)),
+          getSession: (params) =>
+            withPluginRuntimePluginIdScope(pluginId, () => subagent.getSession(params)),
+          deleteSession: (params) =>
+            withPluginRuntimePluginIdScope(pluginId, () => subagent.deleteSession(params)),
+        } satisfies PluginRuntime["subagent"];
+      },
+    });
+    pluginRuntimeById.set(pluginId, runtime);
+    return runtime;
+  };
 
   const createApi = (
     record: PluginRecord,
@@ -856,7 +894,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
       registrationMode,
       config: params.config,
       pluginConfig: params.pluginConfig,
-      runtime: registryParams.runtime,
+      runtime: resolvePluginRuntime(record.id),
       logger: normalizeLogger(registryParams.logger),
       registerTool:
         registrationMode === "full" ? (tool, opts) => registerTool(record, tool, opts) : () => {},
@@ -912,6 +950,10 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
               }
             }
           : () => {},
+      onConversationBindingResolved:
+        registrationMode === "full"
+          ? (handler) => registerConversationBindingResolvedHandler(record, handler)
+          : () => {},
       registerCommand:
         registrationMode === "full" ? (command) => registerCommand(record, command) : () => {},
       registerContextEngine: (id, factory) => {
@@ -943,6 +985,21 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full" ? (backend) => registerAcpRuntimeBackend(backend) : () => {},
       unregisterAcpRuntimeBackend:
         registrationMode === "full" ? (id) => unregisterAcpRuntimeBackend(id) : () => {},
+      registerMemoryPromptSection: (builder) => {
+        if (registrationMode !== "full") {
+          return;
+        }
+        if (record.kind !== "memory") {
+          pushDiagnostic({
+            level: "error",
+            pluginId: record.id,
+            source: record.source,
+            message: "only memory plugins can register a memory prompt section",
+          });
+          return;
+        }
+        registerMemoryPromptSection(builder);
+      },
       resolvePath: (input: string) => resolveUserPath(input),
       on: (hookName, handler, opts) =>
         registrationMode === "full"

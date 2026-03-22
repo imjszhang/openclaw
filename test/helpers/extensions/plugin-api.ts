@@ -20,10 +20,12 @@ export function createTestPluginApi(api: TestPluginApiInput): OpenClawPluginApi 
     registerImageGenerationProvider() {},
     registerWebSearchProvider() {},
     registerInteractiveHandler() {},
+    onConversationBindingResolved() {},
     registerCommand() {},
     registerContextEngine() {},
     registerAcpRuntimeBackend() {},
     unregisterAcpRuntimeBackend() {},
+    registerMemoryPromptSection() {},
     resolvePath(input: string) {
       return input;
     },
