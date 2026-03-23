@@ -15,6 +15,21 @@ function makeRepoRoot(prefix: string): string {
   return repoRoot;
 }
 
+/** Symlink preferred; Windows without symlink permission uses a file copy fallback in stage script. */
+function expectRuntimeDistOverlayFile(
+  distFilePath: string,
+  runtimeFilePath: string,
+  expectedUtf8: string,
+) {
+  expect(fs.readFileSync(runtimeFilePath, "utf8")).toBe(expectedUtf8);
+  const stat = fs.lstatSync(runtimeFilePath);
+  if (stat.isSymbolicLink()) {
+    expect(fs.realpathSync(runtimeFilePath)).toBe(fs.realpathSync(distFilePath));
+  } else {
+    expect(stat.isFile()).toBe(true);
+  }
+}
+
 afterEach(() => {
   for (const dir of tempDirs.splice(0, tempDirs.length)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -224,13 +239,13 @@ describe("stageBundledPluginRuntime", () => {
       "assets",
       "info.txt",
     );
+    const distAssetPath = path.join(distPluginDir, "assets", "info.txt");
 
     expect(fs.lstatSync(runtimePackagePath).isSymbolicLink()).toBe(false);
     expect(fs.readFileSync(runtimePackagePath, "utf8")).toContain('"extensions": [');
     expect(fs.lstatSync(runtimeManifestPath).isSymbolicLink()).toBe(false);
     expect(fs.readFileSync(runtimeManifestPath, "utf8")).toBe("{}\n");
-    expect(fs.lstatSync(runtimeAssetPath).isSymbolicLink()).toBe(true);
-    expect(fs.readFileSync(runtimeAssetPath, "utf8")).toBe("ok\n");
+    expectRuntimeDistOverlayFile(distAssetPath, runtimeAssetPath, "ok\n");
   });
 
   it("preserves package metadata needed for bundled plugin discovery from dist-runtime", () => {
@@ -360,8 +375,8 @@ describe("stageBundledPluginRuntime", () => {
       "feishu-doc",
       "SKILL.md",
     );
-    expect(fs.lstatSync(runtimeSkillPath).isSymbolicLink()).toBe(true);
-    expect(fs.readFileSync(runtimeSkillPath, "utf8")).toBe("# Feishu Doc\n");
+    const distSkillPath = path.join(distSkillDir, "SKILL.md");
+    expectRuntimeDistOverlayFile(distSkillPath, runtimeSkillPath, "# Feishu Doc\n");
 
     symlinkSpy.mockRestore();
   });

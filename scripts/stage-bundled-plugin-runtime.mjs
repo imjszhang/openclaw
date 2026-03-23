@@ -35,7 +35,17 @@ function ensureSymlink(targetValue, targetPath, type) {
 }
 
 function symlinkPath(sourcePath, targetPath, type) {
-  ensureSymlink(relativeSymlinkTarget(sourcePath, targetPath), targetPath, type);
+  const targetValue = relativeSymlinkTarget(sourcePath, targetPath);
+  try {
+    ensureSymlink(targetValue, targetPath, type);
+  } catch (err) {
+    // Windows often denies symlink creation without Developer Mode / elevation.
+    if (err?.code === "EPERM" && process.platform === "win32") {
+      fs.copyFileSync(sourcePath, targetPath);
+      return;
+    }
+    throw err;
+  }
 }
 
 function shouldWrapRuntimeJsFile(sourcePath) {
