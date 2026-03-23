@@ -39,8 +39,6 @@ type NodesRunOpts = NodesRpcOpts & {
 };
 
 type ExecDefaults = {
-  shell?: string;
-  shellArgs?: string[];
   security?: ExecSecurity;
   ask?: ExecAsk;
   node?: string;
@@ -56,8 +54,6 @@ function resolveExecDefaults(
   if (!agentId) {
     return globalExec
       ? {
-          shell: globalExec.shell,
-          shellArgs: globalExec.shellArgs,
           security: globalExec.security,
           ask: globalExec.ask,
           node: globalExec.node,
@@ -68,8 +64,6 @@ function resolveExecDefaults(
   }
   const agentExec = resolveAgentConfig(cfg, agentId)?.tools?.exec;
   return {
-    shell: agentExec?.shell ?? globalExec?.shell,
-    shellArgs: agentExec?.shellArgs ?? globalExec?.shellArgs,
     security: agentExec?.security ?? globalExec?.security,
     ask: agentExec?.ask ?? globalExec?.ask,
     node: agentExec?.node ?? globalExec?.node,

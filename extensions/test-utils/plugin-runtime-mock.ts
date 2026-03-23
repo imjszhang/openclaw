@@ -47,6 +47,28 @@ export function createPluginRuntimeMock(overrides: DeepPartial<PluginRuntime> = 
         () => "",
       ) as unknown as PluginRuntime["system"]["formatNativeDependencyHint"],
     },
+    agent: {
+      defaults: {} as PluginRuntime["agent"]["defaults"],
+      resolveAgentDir: vi.fn() as unknown as PluginRuntime["agent"]["resolveAgentDir"],
+      resolveAgentWorkspaceDir:
+        vi.fn() as unknown as PluginRuntime["agent"]["resolveAgentWorkspaceDir"],
+      ensureAgentWorkspace: vi.fn() as unknown as PluginRuntime["agent"]["ensureAgentWorkspace"],
+      resolveAgentIdentity: vi.fn() as unknown as PluginRuntime["agent"]["resolveAgentIdentity"],
+      resolveThinkingDefault:
+        vi.fn() as unknown as PluginRuntime["agent"]["resolveThinkingDefault"],
+      runEmbeddedPiAgent: vi.fn() as unknown as PluginRuntime["agent"]["runEmbeddedPiAgent"],
+      resolveAgentTimeoutMs: vi.fn() as unknown as PluginRuntime["agent"]["resolveAgentTimeoutMs"],
+      session: {
+        resolveStorePath:
+          vi.fn() as unknown as PluginRuntime["agent"]["session"]["resolveStorePath"],
+        loadSessionStore:
+          vi.fn() as unknown as PluginRuntime["agent"]["session"]["loadSessionStore"],
+        saveSessionStore:
+          vi.fn() as unknown as PluginRuntime["agent"]["session"]["saveSessionStore"],
+        resolveSessionFilePath:
+          vi.fn() as unknown as PluginRuntime["agent"]["session"]["resolveSessionFilePath"],
+      },
+    },
     media: {
       loadWebMedia: vi.fn() as unknown as PluginRuntime["media"]["loadWebMedia"],
       detectMime: vi.fn() as unknown as PluginRuntime["media"]["detectMime"],
@@ -57,10 +79,36 @@ export function createPluginRuntimeMock(overrides: DeepPartial<PluginRuntime> = 
       resizeToJpeg: vi.fn() as unknown as PluginRuntime["media"]["resizeToJpeg"],
     },
     tts: {
+      textToSpeech: vi.fn() as unknown as PluginRuntime["tts"]["textToSpeech"],
       textToSpeechTelephony: vi.fn() as unknown as PluginRuntime["tts"]["textToSpeechTelephony"],
+      listVoices: vi.fn() as unknown as PluginRuntime["tts"]["listVoices"],
+    },
+    mediaUnderstanding: {
+      runFile: vi.fn() as unknown as PluginRuntime["mediaUnderstanding"]["runFile"],
+      describeImageFile:
+        vi.fn() as unknown as PluginRuntime["mediaUnderstanding"]["describeImageFile"],
+      describeImageFileWithModel:
+        vi.fn() as unknown as PluginRuntime["mediaUnderstanding"]["describeImageFileWithModel"],
+      describeVideoFile:
+        vi.fn() as unknown as PluginRuntime["mediaUnderstanding"]["describeVideoFile"],
+      transcribeAudioFile:
+        vi.fn() as unknown as PluginRuntime["mediaUnderstanding"]["transcribeAudioFile"],
+    },
+    imageGeneration: {
+      generate: vi.fn() as unknown as PluginRuntime["imageGeneration"]["generate"],
+      listProviders: vi.fn() as unknown as PluginRuntime["imageGeneration"]["listProviders"],
+    },
+    webSearch: {
+      listProviders: vi.fn() as unknown as PluginRuntime["webSearch"]["listProviders"],
+      search: vi.fn() as unknown as PluginRuntime["webSearch"]["search"],
     },
     stt: {
       transcribeAudioFile: vi.fn() as unknown as PluginRuntime["stt"]["transcribeAudioFile"],
+    },
+    modelAuth: {
+      getApiKeyForModel: vi.fn() as unknown as PluginRuntime["modelAuth"]["getApiKeyForModel"],
+      resolveApiKeyForProvider:
+        vi.fn() as unknown as PluginRuntime["modelAuth"]["resolveApiKeyForProvider"],
     },
     tools: {
       createMemoryGetTool: vi.fn() as unknown as PluginRuntime["tools"]["createMemoryGetTool"],
@@ -229,6 +277,7 @@ export function createPluginRuntimeMock(overrides: DeepPartial<PluginRuntime> = 
       discord: {} as PluginRuntime["channel"]["discord"],
       activity: {} as PluginRuntime["channel"]["activity"],
       line: {} as PluginRuntime["channel"]["line"],
+      matrix: {} as PluginRuntime["channel"]["matrix"],
       slack: {} as PluginRuntime["channel"]["slack"],
       telegram: {} as PluginRuntime["channel"]["telegram"],
       signal: {} as PluginRuntime["channel"]["signal"],
