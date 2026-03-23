@@ -339,7 +339,7 @@ export function registerNodesInvokeCommands(nodes: Command) {
           }
 
           const result = await callGatewayCli("node.invoke", opts, invokeParams);
-          defaultRuntime.log(JSON.stringify(result, null, 2));
+          defaultRuntime.writeJson(result);
         });
       }),
     { timeoutMs: 30_000 },
@@ -427,7 +427,7 @@ export function registerNodesInvokeCommands(nodes: Command) {
 
           const result = await callGatewayCli("node.invoke", opts, invokeParams);
           if (opts.json) {
-            defaultRuntime.log(JSON.stringify(result, null, 2));
+            defaultRuntime.writeJson(result);
             return;
           }
 
